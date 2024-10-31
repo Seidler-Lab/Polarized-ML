@@ -1,0 +1,6 @@
+FullPolarization.py
+-Corvus (mp-interface branch)
+-Corvus2 conda environment (this is set up on Macchiato lab computer)
+
+XMU_plotter.ipynb
+-Should be able to just work with Macchiato
