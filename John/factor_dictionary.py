@@ -1,18 +1,13 @@
 import helpers
-import pickle
+import json
 import pprint
 import os
 import sys
 import numpy as np
+from datetime import datetime 
 from pymatgen.core import Structure
 
-# Define globally so dict is only created once
-# mp_ids = helpers.read_mp_id_file("Cif/Materials2/mp_id.txt")
-mp_ids = helpers.read_mp_id_file("Data/Materials_2/Materials_2_cifs/README.txt")
-# mp_ids = helpers.read_mp_id_file("Data/Materials_1/Materials_1_cifs/README.txt")
-
-
-def factor_dictionary(structure, degree_l, central_atom, crystal_NN=False, cluster_radius=0):
+def factor_dictionary(structure, mp_id, degree_l, central_atom, crystal_NN=False, cluster_radius=0):
     """
     Generate a dictionary containing various properties and factors for a material cluster extracted 
     from a CIF file. This function computes various descriptors such as Steinhart parameters, quadrupole 
@@ -25,7 +20,6 @@ def factor_dictionary(structure, degree_l, central_atom, crystal_NN=False, clust
     
     # Get Materials Project ID (MP-ID)
     try:
-        mp_id = mp_ids[cluster_name]
         print(f"MP-ID for {cluster_name}: {mp_id}")
     except KeyError:
         print(f"MP-ID for {cluster_name} not found.")
@@ -142,15 +136,18 @@ def factor_dictionary(structure, degree_l, central_atom, crystal_NN=False, clust
 
 def write_factor_dictionary_to_file(factor_dict, filename):
     """
-    Writes the factor dictionary to a file using pickle for serialization.
+    Writes the factor dictionary to a JSON file.
 
     Args:
     - factor_dict: Dictionary containing data (including numpy arrays).
-    - file_path: The name of the file to write the dictionary to.
+    - filename: The name of the file to write the dictionary to.
     """
     print(f"Started writing dictionary to {filename}")
-    with open(filename, "wb") as fp:
-        pickle.dump(factor_dict, fp)  # Use pickle to serialize the dictionary
+    # Convert the dictionary to a JSON-serializable format
+    serializable_dict = helpers.convert_to_json_serializable(factor_dict)
+
+    with open(filename, "w") as fp:
+        json.dump(serializable_dict, fp, indent=4)  # Use JSON to serialize the dictionary
         fp.flush()  # Ensure the buffer is flushed
         os.fsync(fp.fileno())  # Ensure file is written to disk
     print(f"Done writing dict to {filename}")
@@ -158,11 +155,11 @@ def write_factor_dictionary_to_file(factor_dict, filename):
 
 def process_folder_of_cifs(cif_folder, output_folder, degree_l, crystal_NN=False, cluster_radius=0):
     """
-    Processes all CIF files in the given folder, detects the transition metal, calculates the factor dictionary for each,
+    Processes all CIF files in the given folder structure, detects the transition metal, calculates the factor dictionary for each,
     and writes the resulting dictionary to a separate file in the output folder.
 
     Args:
-        cif_folder (str): Path to the folder containing the CIF files.
+        cif_folder (str): Path to the folder containing subfolders with CIF files.
         output_folder (str): Path to the folder where the output dictionaries will be written.
         degree_l (int): Degree of the spherical harmonics used in the Steinhart calculation.
         crystal_NN (bool): Whether to use CrystalNN to extract neighbors instead of a fixed radius.
@@ -171,90 +168,105 @@ def process_folder_of_cifs(cif_folder, output_folder, degree_l, crystal_NN=False
     Returns:
         None
     """
-    # Ensure the output folder exists
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    # Ensure a unique output folder exists
+    output_folder = helpers.get_unique_output_folder(output_folder)
 
-    # Get all CIF files from the directory
-    cif_files = [f for f in os.listdir(cif_folder) if f.endswith(".cif")]
-
-    print("Beginning Factor Dictionary Calculations")
-    sys.stdout.flush()
-
-    successful_runs = 0
-    incomplete_runs = 0
-    failed_runs = 0
-    index = 1
-    incomplete_index = []
-    failed_index = []
-
-    # Loop over each CIF file
-    for cif_file in cif_files:
-        cif_path = os.path.join(cif_folder, cif_file)
-
-        print("\n\n----------------------------------------------------------")
-
-        print(f"Index: {index}\n")
-        sys.stdout.flush()  # Ensure buffer flushes immediately
-
-        print(f"Processing CIF file: {cif_path}")
-
-        # Load the structure and detect the transition metal
-        try:
-            structure = Structure.from_file(cif_path)
-            central_atom = helpers.detect_transition_metal(structure)
-            if not central_atom:
-                print(f"No transition metal found in {cif_file}. Skipping...")
-                continue
-            print(f"Detected transition metal {central_atom} in {cif_file}")
-        except Exception as e:
-            print(f"Error detecting transition metal in {cif_file}: {e}")
-            failed_runs += 1
-            continue
-
-        # Call the factor dictionary function
-        factor_dict = factor_dictionary(structure, degree_l, central_atom, crystal_NN, cluster_radius)
-
-        print("Factor Dictionary")
-        pprint.pprint(factor_dict)
-        sys.stdout.flush()  # Ensure pprint is flushed immediately
-
-        if factor_dict is not None:
-            # Write the factor dictionary to file
-            output_filename = os.path.splitext(cif_file)[0] + "_factor_dict.pkl"
-            output_path = os.path.join(output_folder, output_filename)
-            write_factor_dictionary_to_file(factor_dict, output_path)
-            if factor_dict['possible_species'] == []:
-                print(f"Completed processing CIF file: {cif_file}, but possible species could not be found")
-                sys.stdout.flush()  # Flush at the end of each loop
-                incomplete_runs += 1
-                incomplete_index.append(("No possible species" , index))
-            elif np.isnan(factor_dict['steinhart_parameter_sum']) :
-                print(f"Completed processing CIF file: {cif_file}, but possible species could not be found")
-                sys.stdout.flush()  # Flush at the end of each loop
-                incomplete_runs += 1
-                incomplete_index.append(("Steinhart is NaN", index))
-            else:
-                successful_runs += 1
-        else:
-            print(f"Failed to process {cif_file}")
-            failed_runs += 1
-            failed_index.append(("None", index))
-
-        index += 1
-
-    # Summary of runs
-    print(f"\nSummary:")
-    print(f"Success: {successful_runs}")
-    print(f"Incomplete: {incomplete_runs}")
-    print(f"Failures: {failed_runs}")
-
-    if incomplete_index != []:
-        print(f"Incomplete at indicies {incomplete_index}")
-    if failed_index != []:
-        print(f"Failure at indicies {failed_index}")
-    sys.stdout.flush()  # Final flush to ensure all output is printed
+    #Get time
+    time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
-# process_folder_of_cifs("Cif/Materials2", "Cif/Materials2/Factor_Dictionary", 10, crystal_NN=True)
-process_folder_of_cifs("Data/Materials_2/Materials_2_cifs", "Data/Materials_2/factor_dictionaries", 10, crystal_NN=True)
-# process_folder_of_cifs("Data/Materials_1/Materials_1_cifs", "Data/Materials_1/factor_dictionaries_temp", 10, crystal_NN=True)
+    # Set up the log file
+    log_path = os.path.join(output_folder, "process_log.txt")
+    with open(log_path, "w") as log_file:
+        sys.stdout = helpers.DualWriter(log_file)  # Redirect stdout to the log file and terminal uses custom class in helpers
+
+        try:
+            # Get all subfolders in the directory
+            subfolders = [os.path.join(cif_folder, d) for d in os.listdir(cif_folder) if os.path.isdir(os.path.join(cif_folder, d))]
+
+            print(f"Beginning Factor Dictionary Calculations at {time}")
+            successful_runs = 0
+            incomplete_runs = 0
+            failed_runs = 0
+            index = 1
+            incomplete_index = []
+            failed_index = []
+            
+            # Loop over each subfolder
+            for subfolder in subfolders:
+                # Find a CIF file in the subfolder
+                cif_files = [f for f in os.listdir(subfolder) if f.endswith(".cif")]
+                
+                if not cif_files:
+                    print(f"No CIF file found in {subfolder}. Skipping...")
+                    continue
+                
+                # Assume each subfolder contains only one CIF file
+                cif_file = cif_files[0]
+                cif_path = os.path.join(subfolder, cif_file)
+
+                # Extract mp_id from the filename (e.g., "mp-2515" from "mp-2515.cif")
+                mp_id = os.path.splitext(cif_file)[0]
+                
+                print("\n\n----------------------------------------------------------")
+                print(f"Index: {index}\n")
+                print(f"Processing CIF file: {cif_path}")
+
+                # Load the structure and detect the transition metal
+                try:
+                    structure = Structure.from_file(cif_path)
+                    cluster_name = structure.composition.reduced_formula
+                    central_atom = helpers.detect_transition_metal(structure)
+                    if not central_atom:
+                        print(f"No transition metal found in {cif_file}. Skipping...")
+                        continue
+                    print(f"Detected transition metal {central_atom} in {cif_file}")
+                except Exception as e:
+                    print(f"Error detecting transition metal in {cif_file}: {e}")
+                    failed_runs += 1
+                    continue
+                
+                # Call the factor dictionary function
+                factor_dict = factor_dictionary(structure, mp_id, degree_l, central_atom, crystal_NN, cluster_radius)
+
+                print("Factor Dictionary")
+                pprint.pprint(factor_dict)
+
+                if factor_dict is not None:
+                    # Write the factor dictionary to file
+                    output_filename = os.path.splitext(cif_file)[0] + "_factor_dict.json"
+                    output_path = os.path.join(output_folder, output_filename)
+                    write_factor_dictionary_to_file(factor_dict, output_path)
+                    
+                    if factor_dict['possible_species'] == []:
+                        print(f"Completed processing CIF file: {cif_file}, but possible species could not be found")
+                        incomplete_runs += 1
+                        incomplete_index.append(("No possible species", "Index: ", index, mp_id, cluster_name))
+                    elif np.isnan(factor_dict['steinhart_parameter_sum']):
+                        print(f"Completed processing CIF file: {cif_file}, but possible species could not be found")
+                        incomplete_runs += 1
+                        incomplete_index.append(("Steinhart is NaN", f"Index: {index} ", mp_id, cluster_name))
+                    else:
+                        successful_runs += 1
+                else:
+                    print(f"Failed to process {cif_file}")
+                    failed_runs += 1
+                    failed_index.append(("None", "Index: ", index, mp_id, cluster_name))
+
+                index += 1
+
+            # Summary of runs
+            print(f"\nSummary:")
+            print(f"Success: {successful_runs}")
+            print(f"Incomplete: {incomplete_runs}")
+            print(f"Failures: {failed_runs}")
+
+            if incomplete_index:
+                print(f"Incomplete {incomplete_index}")
+            if failed_index:
+                print(f"Failure {failed_index}")
+
+        finally:
+            sys.stdout = sys.__stdout__  # Restore original stdout
+    
+#process_folder_of_cifs("Practice_Cif", "Practice_Cif/Factor_Dictionary", 10, crystal_NN=True)
+process_folder_of_cifs("Cr_Data_dir", "Factor_Dictionary/Cr_Factor_Dictionary", 10, crystal_NN=True)

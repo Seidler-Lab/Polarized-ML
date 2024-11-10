@@ -1,7 +1,9 @@
 from pymatgen.core import Structure
 import numpy as np
+import numpy.linalg as linalg
 from scipy.special import sph_harm
 import os
+import sys
 from mp_api.client import MPRester
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.analysis.local_env import VoronoiNN
@@ -948,7 +950,7 @@ def get_oxidation_state(possible_species, atom):
     - atom (str): The symbol of the atom for which to retrieve the oxidation state, e.g., 'V'.
 
     Returns:
-    - int: The oxidation state of the atom, or None if not found.
+    - float: The oxidation state of the atom, or None if not found.
     """
     for species in possible_species:
         # Check if the species starts with the atom symbol (e.g., "V" for vanadium)
@@ -960,33 +962,33 @@ def get_oxidation_state(possible_species, atom):
             if oxidation_state_str.endswith('+'):
                 # If no number, assume it's 1
                 if oxidation_state_str[:-1] == '':
-                    oxidation_state = 1
+                    oxidation_state = 1.0
                 else:
-                    oxidation_state = int(oxidation_state_str[:-1])  # Positive oxidation state
+                    oxidation_state = float(oxidation_state_str[:-1])  # Positive oxidation state
             elif oxidation_state_str.endswith('-'):
                 # If no number, assume it's -1
                 if oxidation_state_str[:-1] == '':
-                    oxidation_state = -1
+                    oxidation_state = -1.0
                 else:
-                    oxidation_state = -int(oxidation_state_str[:-1])  # Negative oxidation state
+                    oxidation_state = -float(oxidation_state_str[:-1])  # Negative oxidation state
 
             # Handle cases like '+2' or '-3' (sign at the start)
             elif oxidation_state_str.startswith('+'):
                 # If no number, assume it's 1
                 if oxidation_state_str[1:] == '':
-                    oxidation_state = 1
+                    oxidation_state = 1.0
                 else:
-                    oxidation_state = int(oxidation_state_str[1:])  # Positive oxidation state
+                    oxidation_state = float(oxidation_state_str[1:])  # Positive oxidation state
             elif oxidation_state_str.startswith('-'):
                 # If no number, assume it's -1
                 if oxidation_state_str[1:] == '':
-                    oxidation_state = -1
+                    oxidation_state = -1.0
                 else:
-                    oxidation_state = int(oxidation_state_str)  # Negative oxidation state
+                    oxidation_state = float(oxidation_state_str)  # Negative oxidation state
 
             # If no sign is provided, assume positive oxidation state
             else:
-                oxidation_state = int(oxidation_state_str)
+                oxidation_state = float(oxidation_state_str)
 
             return oxidation_state
 
@@ -1142,7 +1144,7 @@ def quadrupole_moment_normalized(positions, charges, atomic_numbers):
         r_x, r_y, r_z = pos
 
         # Update the Q matrix using the normalized formula.
-        normalization_factor = charge / atomic_number / (r_x**2 + r_y**2 + r_z**2)**2
+        normalization_factor = charge / (atomic_number * (r_x**2+r_y**2+r_z**2)**2)
 
         Q[0, 0] += normalization_factor * (r_x * r_x)
         Q[0, 1] += normalization_factor * (r_x * r_y)
@@ -1191,3 +1193,56 @@ def get_charges(possible_species, atomic_symbols):
         charges.append(charge)
 
     return charges
+
+
+def get_eigs_of_qm(quadrupole_moment):
+    """Work in progress"""
+    eigenvalues = linalg.eig(quadrupole_moment)
+
+    #Order the eigen values in some way 
+
+    return eigenvalues
+
+
+def get_unique_output_folder(base_folder):
+    """Generate a unique folder name by adding a numeric suffix if the folder exists."""
+    folder = base_folder
+    counter = 1
+    while os.path.exists(folder):
+        folder = f"{base_folder}_{counter}"
+        counter += 1
+    os.makedirs(folder)
+    return folder
+
+
+class DualWriter:
+    def __init__(self, log_file):
+        self.terminal = sys.stdout  # Keep the original terminal stdout
+        self.log_file = log_file    # File to write logs to
+
+    def write(self, message):
+        self.terminal.write(message)    # Write to terminal
+        self.log_file.write(message)    # Write to log file
+
+    def flush(self):
+        # This flushes the output for both the terminal and the log file
+        self.terminal.flush()
+        self.log_file.flush()
+
+
+def convert_to_json_serializable(data):
+    """
+    Recursively convert data to JSON-serializable format.
+    Converts numpy arrays to lists, and handles other non-serializable data types as needed.
+    """
+    if isinstance(data, np.ndarray):
+        return data.tolist()
+    elif isinstance(data, dict):
+        return {key: convert_to_json_serializable(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [convert_to_json_serializable(element) for element in data]
+    elif isinstance(data, tuple):
+        return tuple(convert_to_json_serializable(element) for element in data)
+    else:
+        return data    
+    
