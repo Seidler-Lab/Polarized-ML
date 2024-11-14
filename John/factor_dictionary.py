@@ -7,6 +7,9 @@ import numpy as np
 from datetime import datetime 
 from pymatgen.core import Structure
 
+import importlib
+importlib.reload(helpers) #Reload helpers if necessary
+
 def factor_dictionary(structure, mp_id, degree_l, central_atom, crystal_NN=False, cluster_radius=0):
     """
     Generate a dictionary containing various properties and factors for a material cluster extracted 
@@ -29,7 +32,7 @@ def factor_dictionary(structure, mp_id, degree_l, central_atom, crystal_NN=False
     if not crystal_NN:
         print(f"Extracting cluster data from structure within a radius of {cluster_radius} Angstroms")
         try:
-            cluster_data = helpers.extract_cluster(structure, central_atom, cluster_radius)
+            cluster_data = helpers.extract_cluster_structure(structure, central_atom, cluster_radius)
             coords, atomic_symbols, atomic_numbers = cluster_data
         except Exception as e:
             print(f"Error extracting cluster data: {e} using distance from central atom.")
@@ -37,7 +40,7 @@ def factor_dictionary(structure, mp_id, degree_l, central_atom, crystal_NN=False
     else:
         print(f"Extracting cluster data from structure with Crystal NN")
         try:
-            cluster_data = helpers.crystalnn_extract_cluster(structure, central_atom)
+            cluster_data = helpers.crystalnn_extract_cluster_structure(structure, central_atom)
             coords, atomic_symbols, atomic_numbers = cluster_data
         except Exception as e:
             print(f"Error extracting cluster data: {e} using crystal_NN.")
@@ -47,6 +50,7 @@ def factor_dictionary(structure, mp_id, degree_l, central_atom, crystal_NN=False
     center_atom = atomic_symbols[0]
     print(f"Central atom: {center_atom}")
     print(f"Number of atoms in the cluster: {len(coords)}")
+
 
     # Remove the central atom from the cluster
     coords = coords[1:]
@@ -153,6 +157,8 @@ def write_factor_dictionary_to_file(factor_dict, filename):
     print(f"Done writing dict to {filename}")
 
 
+#Add conditional statement to check if cof file is found if not mark a failure
+
 def process_folder_of_cifs(cif_folder, output_folder, degree_l, crystal_NN=False, cluster_radius=0):
     """
     Processes all CIF files in the given folder structure, detects the transition metal, calculates the factor dictionary for each,
@@ -198,6 +204,9 @@ def process_folder_of_cifs(cif_folder, output_folder, degree_l, crystal_NN=False
                 
                 if not cif_files:
                     print(f"No CIF file found in {subfolder}. Skipping...")
+                    incomplete_runs += 1
+                    incomplete_index.append(("No CIF found in folder", f"Index: {index}", os.path.basename(subfolder)))
+                    index += 1
                     continue
                 
                 # Assume each subfolder contains only one CIF file
@@ -215,7 +224,7 @@ def process_folder_of_cifs(cif_folder, output_folder, degree_l, crystal_NN=False
                 try:
                     structure = Structure.from_file(cif_path)
                     cluster_name = structure.composition.reduced_formula
-                    central_atom = helpers.detect_transition_metal(structure)
+                    central_atom = helpers.detect_3d_transition_metal(structure)
                     if not central_atom:
                         print(f"No transition metal found in {cif_file}. Skipping...")
                         continue

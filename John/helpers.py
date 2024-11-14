@@ -13,11 +13,10 @@ from pymatgen.core import Element
 parity = True  # Include parity or not for the plot
 degree_l = 40
 
-# List of transition metals based on their atomic numbers
-transition_metals = [Element(sym).symbol for sym in [
-    "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", 
-    "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", 
-    "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg"]]
+# List of 3d transition metals based on their atomic numbers
+transition_metals_3d = [Element(sym).symbol for sym in [
+    "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn"
+]]
 
 def read_xyz_file(file_path):
     """
@@ -44,7 +43,7 @@ def read_xyz_file(file_path):
     return atomic_coordinates, atomic_symbols
 
 
-def extract_cluster(cif_file, index_number, cluster_radius=3):
+def extract_cluster_cif_index(cif_file, index_number, cluster_radius=3):
     """
     Extracts a cluster of atoms around a specified index position in a crystal structure from a CIF file.
     The central atom (specified by index_number) will be the first in the returned arrays.
@@ -57,7 +56,7 @@ def extract_cluster(cif_file, index_number, cluster_radius=3):
     Returns:
     - coords (np.ndarray): A 2D array of shape (n, 3) where 'n' is the number of atoms in the cluster.
       Each row contains the x, y, z coordinates of the corresponding atom.
-    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols (e.g., "H", "O") of the atoms in the cluster,
+    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols of the atoms in the cluster,
       with the central atom's symbol first.
     - atomic_numbers (np.ndarray): A 1D array containing the atomic numbers (Z) of the atoms in the cluster,
       with the central atom's atomic number first.
@@ -65,16 +64,9 @@ def extract_cluster(cif_file, index_number, cluster_radius=3):
 
     # Load the crystal structure from the provided CIF file
     structure = Structure.from_file(cif_file)
-
-    # Initialize a SpacegroupAnalyzer to symmetrize the structure
-    structure_analyzer = SpacegroupAnalyzer(structure)
-
-    # Get the symmetrized structure
-    symmetrized_structure = structure_analyzer.get_symmetrized_structure()
 
     # Find all sites (atoms) within the specified radius around the atom at 'index_number'
-    sites = symmetrized_structure.get_sites_in_sphere(symmetrized_structure.cart_coords[index_number],
-                                                      cluster_radius)
+    sites = structure.get_sites_in_sphere(structure[index_number].coords, cluster_radius)
 
     # Create a new structure consisting of only the atoms within the cluster
     cluster_structure = Structure.from_sites(sites)
@@ -85,52 +77,29 @@ def extract_cluster(cif_file, index_number, cluster_radius=3):
     atomic_numbers = []
 
     # Reverse the structure so that the central atom is the first one in the final list
-    # This ensures that the central atom (the one at index_number) is the first element
     for site in reversed(cluster_structure):
-        coords.append(site.coords)  # Append the coordinates of each atom
-        # Append the atomic symbol (e.g., "H", "O")
+        coords.append(site.coords)
         atomic_symbols.append(site.specie.symbol)
-        atomic_numbers.append(site.specie.Z)  # Append the atomic number (Z)
+        atomic_numbers.append(site.specie.Z)
 
-    # Convert the lists to numpy arrays for easier manipulation and center the central atom at (0,0,0)
+    # Convert the lists to numpy arrays and center the central atom at (0,0,0)
     coords = np.array(translate_coords(coords))
     atomic_symbols = np.array(atomic_symbols)
     atomic_numbers = np.array(atomic_numbers)
 
-    # Return the coordinates, atomic symbols, and atomic numbers
     return coords, atomic_symbols, atomic_numbers
 
 
-def extract_cluster(cif_file, atomic_symbol, cluster_radius=3):
+def extract_cluster_cif_symbol(cif_file, atomic_symbol, cluster_radius=3):
     """
     Extracts a cluster of atoms around the first occurrence of the specified atomic symbol in a crystal structure from a CIF file.
     The central atom (specified by atomic_symbol) will be the first in the returned arrays.
-
-    Parameters:
-    - cif_file (str): Path to the CIF file containing the crystal structure.
-    - atomic_symbol (str): Atomic symbol (e.g., "Si", "O") of the atom to center the cluster around.
-    - cluster_radius (float): Radius of the cluster in angstroms within which atoms will be selected.
-
-    Returns:
-    - coords (np.ndarray): A 2D array of shape (n, 3) where 'n' is the number of atoms in the cluster.
-      Each row contains the x, y, z coordinates of the corresponding atom.
-    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols (e.g., "H", "O") of the atoms in the cluster,
-      with the central atom's symbol first.
-    - atomic_numbers (np.ndarray): A 1D array containing the atomic numbers (Z) of the atoms in the cluster,
-      with the central atom's atomic number first.
     """
 
-    # Load the crystal structure from the provided CIF file
     structure = Structure.from_file(cif_file)
 
-    # Initialize a SpacegroupAnalyzer to symmetrize the structure
-    structure_analyzer = SpacegroupAnalyzer(structure)
-
-    # Get the symmetrized structure
-    symmetrized_structure = structure_analyzer.get_symmetrized_structure()
-
     # Find the first atom matching the atomic symbol
-    for i, site in enumerate(symmetrized_structure):
+    for i, site in enumerate(structure):
         if site.specie.symbol == atomic_symbol:
             chosen_atom_index = i
             break
@@ -138,59 +107,35 @@ def extract_cluster(cif_file, atomic_symbol, cluster_radius=3):
         raise ValueError(f"No atoms with symbol '{atomic_symbol}' found in structure.")
 
     # Find all sites within the specified radius around the chosen atom
-    sites = symmetrized_structure.get_sites_in_sphere(symmetrized_structure.cart_coords[chosen_atom_index],
-                                                      cluster_radius)
+    sites = structure.get_sites_in_sphere(structure[chosen_atom_index].coords, cluster_radius)
 
     # Create a new structure consisting of only the atoms within the cluster
     cluster_structure = Structure.from_sites(sites)
 
-    # Initialize lists to hold the coordinates, atomic symbols, and atomic numbers
     coords = []
     atomic_symbols = []
     atomic_numbers = []
 
-    # Reverse the structure so that the central atom is the first one in the final list
     for site in reversed(cluster_structure):
-        coords.append(site.coords)  # Append the coordinates of each atom
-        atomic_symbols.append(site.specie.symbol)  # Append the atomic symbol
-        atomic_numbers.append(site.specie.Z)  # Append the atomic number
+        coords.append(site.coords)
+        atomic_symbols.append(site.specie.symbol)
+        atomic_numbers.append(site.specie.Z)
 
-    # Convert the lists to numpy arrays for easier manipulation and center the central atom at (0,0,0)
     coords = np.array(translate_coords(coords))
     atomic_symbols = np.array(atomic_symbols)
     atomic_numbers = np.array(atomic_numbers)
 
-    # Return the coordinates, atomic symbols, and atomic numbers
     return coords, atomic_symbols, atomic_numbers
 
 
-def extract_cluster(structure, atomic_symbol, cluster_radius=3):
+def extract_cluster_structure(structure, atomic_symbol, cluster_radius=3):
     """
     Extracts a cluster of atoms around the first occurrence of the specified atomic symbol in a crystal structure.
     The central atom (specified by atomic_symbol) will be the first in the returned arrays.
-
-    Parameters:
-    - cif_file (str): Path to the CIF file containing the crystal structure.
-    - atomic_symbol (str): Atomic symbol (e.g., "Si", "O") of the atom to center the cluster around.
-    - cluster_radius (float): Radius of the cluster in angstroms within which atoms will be selected.
-
-    Returns:
-    - coords (np.ndarray): A 2D array of shape (n, 3) where 'n' is the number of atoms in the cluster.
-      Each row contains the x, y, z coordinates of the corresponding atom.
-    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols (e.g., "H", "O") of the atoms in the cluster,
-      with the central atom's symbol first.
-    - atomic_numbers (np.ndarray): A 1D array containing the atomic numbers (Z) of the atoms in the cluster,
-      with the central atom's atomic number first.
     """
 
-    # Initialize a SpacegroupAnalyzer to symmetrize the structure
-    structure_analyzer = SpacegroupAnalyzer(structure)
-
-    # Get the symmetrized structure
-    symmetrized_structure = structure_analyzer.get_symmetrized_structure()
-
     # Find the first atom matching the atomic symbol
-    for i, site in enumerate(symmetrized_structure):
+    for i, site in enumerate(structure):
         if site.specie.symbol == atomic_symbol:
             chosen_atom_index = i
             break
@@ -198,33 +143,28 @@ def extract_cluster(structure, atomic_symbol, cluster_radius=3):
         raise ValueError(f"No atoms with symbol '{atomic_symbol}' found in structure.")
 
     # Find all sites within the specified radius around the chosen atom
-    sites = symmetrized_structure.get_sites_in_sphere(symmetrized_structure.cart_coords[chosen_atom_index],
-                                                      cluster_radius)
+    sites = structure.get_sites_in_sphere(structure[chosen_atom_index].coords, cluster_radius)
 
-    # Create a new structure consisting of only the atoms within the cluster
     cluster_structure = Structure.from_sites(sites)
 
-    # Initialize lists to hold the coordinates, atomic symbols, and atomic numbers
     coords = []
     atomic_symbols = []
     atomic_numbers = []
 
-    # Reverse the structure so that the central atom is the first one in the final list
     for site in reversed(cluster_structure):
-        coords.append(site.coords)  # Append the coordinates of each atom
-        atomic_symbols.append(site.specie.symbol)  # Append the atomic symbol
-        atomic_numbers.append(site.specie.Z)  # Append the atomic number
+        coords.append(site.coords)
+        atomic_symbols.append(site.specie.symbol)
+        atomic_numbers.append(site.specie.Z)
 
-    # Convert the lists to numpy arrays for easier manipulation and center the central atom at (0,0,0)
     coords = np.array(translate_coords(coords))
     atomic_symbols = np.array(atomic_symbols)
     atomic_numbers = np.array(atomic_numbers)
 
-    # Return the coordinates, atomic symbols, and atomic numbers
     return coords, atomic_symbols, atomic_numbers
 
 
-def crystalnn_extract_cluster(cif_file, atomic_symbol):
+
+def crystalnn_extract_cluster_cif(cif_file, atomic_symbol):
     """
     Extracts a cluster of atoms around the first occurrence of the specified atomic symbol in a crystal structure from a CIF file.
     The central atom (specified by atomic_symbol) will be the first in the returned arrays. The cluster is based on CrystalNN nearest neighbors.
@@ -266,11 +206,11 @@ def crystalnn_extract_cluster(cif_file, atomic_symbol):
     neighbors = crystal_nn.get_nn_info(symmetrized_structure, chosen_atom_index)
 
     # Include the central atom in the cluster
-    cluster_sites = [symmetrized_structure[chosen_atom_index]]
+    cluster_sites = [structure[chosen_atom_index]]
 
     # Collect the neighbor sites
     for neighbor in neighbors:
-        cluster_sites.append(symmetrized_structure[neighbor['site_index']])
+        cluster_sites.append(neighbor['site_index'])
 
     # Initialize lists to hold the coordinates, atomic symbols, and atomic numbers
     coords = []
@@ -292,13 +232,13 @@ def crystalnn_extract_cluster(cif_file, atomic_symbol):
     return coords, atomic_symbols, atomic_numbers
 
 
-def crystalnn_extract_cluster(structure, atomic_symbol):
+def crystalnn_extract_cluster_structure(structure, atomic_symbol):
     """
     Extracts a cluster of atoms around the first occurrence of the specified atomic symbol in a crystal structure.
     The central atom (specified by atomic_symbol) will be the first in the returned arrays. The cluster is based on CrystalNN nearest neighbors.
 
     Parameters:
-    - cif_file (str): Path to the CIF file containing the crystal structure.
+    - structure (Structure): Pymatgen Structure object of the crystal structure.
     - atomic_symbol (str): Atomic symbol (e.g., "Si", "O") of the atom to center the cluster around.
 
     Returns:
@@ -310,45 +250,34 @@ def crystalnn_extract_cluster(structure, atomic_symbol):
       with the central atom's atomic number first.
     """
 
-    # Initialize a SpacegroupAnalyzer to symmetrize the structure
-    structure_analyzer = SpacegroupAnalyzer(structure)
-
-    # Get the symmetrized structure
-    symmetrized_structure = structure_analyzer.get_symmetrized_structure()
-
-    # Find the first atom matching the atomic symbol
-    for i, site in enumerate(symmetrized_structure):
+    # Find the first atom matching the atomic symbol in the original structure
+    chosen_atom_index = None
+    for i, site in enumerate(structure):
         if site.specie.symbol == atomic_symbol:
             chosen_atom_index = i
             break
-    else:
+    if chosen_atom_index is None:
         raise ValueError(f"No atoms with symbol '{atomic_symbol}' found in structure.")
 
     # Initialize CrystalNN nearest neighbors calculator
     crystal_nn = CrystalNN()
 
     # Get the CrystalNN neighbors of the selected atom
-    neighbors = crystal_nn.get_nn_info(symmetrized_structure, chosen_atom_index)
+    neighbors = crystal_nn.get_nn_info(structure, chosen_atom_index)
 
     # Include the central atom in the cluster
-    cluster_sites = [symmetrized_structure[chosen_atom_index]]
+    cluster_sites = [structure[chosen_atom_index]]
 
     # Collect the neighbor sites
     for neighbor in neighbors:
-        cluster_sites.append(symmetrized_structure[neighbor['site_index']])
+        cluster_sites.append(neighbor['site'])
 
     # Initialize lists to hold the coordinates, atomic symbols, and atomic numbers
-    coords = []
-    atomic_symbols = []
-    atomic_numbers = []
+    coords = [site.coords for site in cluster_sites]  # Collect coordinates
+    atomic_symbols = [site.specie.symbol for site in cluster_sites]  # Collect atomic symbols
+    atomic_numbers = [site.specie.Z for site in cluster_sites]  # Collect atomic numbers
 
-    # Append the central atom first, followed by its neighbors
-    for site in cluster_sites:
-        coords.append(site.coords)  # Append the coordinates of each atom
-        atomic_symbols.append(site.specie.symbol)  # Append the atomic symbol
-        atomic_numbers.append(site.specie.Z)  # Append the atomic number
-
-    # Convert the lists to numpy arrays for easier manipulation and center the central atom at (0,0,0)
+    # Convert lists to numpy arrays for easier manipulation and center the central atom
     coords = np.array(translate_coords(coords))
     atomic_symbols = np.array(atomic_symbols)
     atomic_numbers = np.array(atomic_numbers)
@@ -357,7 +286,7 @@ def crystalnn_extract_cluster(structure, atomic_symbol):
     return coords, atomic_symbols, atomic_numbers
 
 
-def voronoi_extract_cluster(cif_file, atomic_symbol):
+def voronoi_extract_cluster_cif(cif_file, atomic_symbol):
     """
     Extracts a cluster of atoms around the first occurrence of the specified atomic symbol in a crystal structure from a CIF file.
     The central atom (specified by atomic_symbol) will be the first in the returned arrays. The cluster is based on Voronoi neighbors.
@@ -369,23 +298,17 @@ def voronoi_extract_cluster(cif_file, atomic_symbol):
     Returns:
     - coords (np.ndarray): A 2D array of shape (n, 3) where 'n' is the number of atoms in the cluster.
       Each row contains the x, y, z coordinates of the corresponding atom.
-    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols (e.g., "H", "O") of the atoms in the cluster,
+    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols of the atoms in the cluster,
       with the central atom's symbol first.
     - atomic_numbers (np.ndarray): A 1D array containing the atomic numbers (Z) of the atoms in the cluster,
       with the central atom's atomic number first.
     """
-
+    
     # Load the crystal structure from the provided CIF file
     structure = Structure.from_file(cif_file)
 
-    # Initialize a SpacegroupAnalyzer to symmetrize the structure
-    structure_analyzer = SpacegroupAnalyzer(structure)
-
-    # Get the symmetrized structure
-    symmetrized_structure = structure_analyzer.get_symmetrized_structure()
-
     # Find the first atom matching the atomic symbol
-    for i, site in enumerate(symmetrized_structure):
+    for i, site in enumerate(structure):
         if site.specie.symbol == atomic_symbol:
             chosen_atom_index = i
             break
@@ -396,61 +319,54 @@ def voronoi_extract_cluster(cif_file, atomic_symbol):
     voronoi_nn = VoronoiNN()
 
     # Get the Voronoi neighbors of the selected atom
-    neighbors = voronoi_nn.get_nn_info(symmetrized_structure, chosen_atom_index)
+    neighbors = voronoi_nn.get_nn_info(structure, chosen_atom_index)
 
     # Include the central atom in the cluster
-    cluster_sites = [symmetrized_structure[chosen_atom_index]]
+    cluster_sites = [structure[chosen_atom_index]]
 
     # Collect the neighbor sites
     for neighbor in neighbors:
-        cluster_sites.append(symmetrized_structure[neighbor['site_index']])
+        cluster_sites.append(structure[neighbor['site_index']])
 
     # Initialize lists to hold the coordinates, atomic symbols, and atomic numbers
     coords = []
     atomic_symbols = []
     atomic_numbers = []
 
-    # Append the central atom first, followed by its neighbors (no reversing this time)
+    # Append the central atom first, followed by its neighbors
     for site in cluster_sites:
-        coords.append(site.coords)  # Append the coordinates of each atom
-        atomic_symbols.append(site.specie.symbol)  # Append the atomic symbol
-        atomic_numbers.append(site.specie.Z)  # Append the atomic number
+        coords.append(site.coords)
+        atomic_symbols.append(site.specie.symbol)
+        atomic_numbers.append(site.specie.Z)
 
     # Convert the lists to numpy arrays for easier manipulation and center the central atom at (0,0,0)
     coords = np.array(translate_coords(coords))
     atomic_symbols = np.array(atomic_symbols)
     atomic_numbers = np.array(atomic_numbers)
 
-    # Return the coordinates, atomic symbols, and atomic numbers
     return coords, atomic_symbols, atomic_numbers
 
 
-def voronoi_extract_cluster(structure, atomic_symbol):
+def voronoi_extract_cluster_structure(structure, atomic_symbol):
     """
     Extracts a cluster of atoms around the first occurrence of the specified atomic symbol in a crystal structure.
     The central atom (specified by atomic_symbol) will be the first in the returned arrays. The cluster is based on Voronoi neighbors.
 
     Parameters:
-    - cif_file (str): Path to the CIF file containing the crystal structure.
+    - structure (Structure): Pymatgen Structure object of the crystal.
     - atomic_symbol (str): Atomic symbol (e.g., "Si", "O") of the atom to center the cluster around.
 
     Returns:
     - coords (np.ndarray): A 2D array of shape (n, 3) where 'n' is the number of atoms in the cluster.
       Each row contains the x, y, z coordinates of the corresponding atom.
-    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols (e.g., "H", "O") of the atoms in the cluster,
+    - atomic_symbols (np.ndarray): A 1D array containing the atomic symbols of the atoms in the cluster,
       with the central atom's symbol first.
     - atomic_numbers (np.ndarray): A 1D array containing the atomic numbers (Z) of the atoms in the cluster,
       with the central atom's atomic number first.
     """
 
-    # Initialize a SpacegroupAnalyzer to symmetrize the structure
-    structure_analyzer = SpacegroupAnalyzer(structure)
-
-    # Get the symmetrized structure
-    symmetrized_structure = structure_analyzer.get_symmetrized_structure()
-
     # Find the first atom matching the atomic symbol
-    for i, site in enumerate(symmetrized_structure):
+    for i, site in enumerate(structure):
         if site.specie.symbol == atomic_symbol:
             chosen_atom_index = i
             break
@@ -461,32 +377,28 @@ def voronoi_extract_cluster(structure, atomic_symbol):
     voronoi_nn = VoronoiNN()
 
     # Get the Voronoi neighbors of the selected atom
-    neighbors = voronoi_nn.get_nn_info(symmetrized_structure, chosen_atom_index)
+    neighbors = voronoi_nn.get_nn_info(structure, chosen_atom_index)
 
     # Include the central atom in the cluster
-    cluster_sites = [symmetrized_structure[chosen_atom_index]]
+    cluster_sites = [structure[chosen_atom_index]]
 
     # Collect the neighbor sites
     for neighbor in neighbors:
-        cluster_sites.append(symmetrized_structure[neighbor['site_index']])
+        cluster_sites.append(structure[neighbor['site_index']])
 
-    # Initialize lists to hold the coordinates, atomic symbols, and atomic numbers
     coords = []
     atomic_symbols = []
     atomic_numbers = []
 
-    # Append the central atom first, followed by its neighbors (no reversing this time)
     for site in cluster_sites:
-        coords.append(site.coords)  # Append the coordinates of each atom
-        atomic_symbols.append(site.specie.symbol)  # Append the atomic symbol
-        atomic_numbers.append(site.specie.Z)  # Append the atomic number
+        coords.append(site.coords)
+        atomic_symbols.append(site.specie.symbol)
+        atomic_numbers.append(site.specie.Z)
 
-    # Convert the lists to numpy arrays for easier manipulation and center the central atom at (0,0,0)
     coords = np.array(translate_coords(coords))
     atomic_symbols = np.array(atomic_symbols)
     atomic_numbers = np.array(atomic_numbers)
 
-    # Return the coordinates, atomic symbols, and atomic numbers
     return coords, atomic_symbols, atomic_numbers
 
 
@@ -507,13 +419,24 @@ def translate_coords(coords):
     # Take the first entry as the translation vector
     translation_vector = coords[0]
 
+    # Print message for checking cluster
+    print("Checking cluster...")
+
+    # Check if the first entry is already at (0, 0, 0)
+    if np.allclose(translation_vector, [0, 0, 0]):
+        print("Cluster already centered.")
+        return coords
+    else:
+        print("Centering cluster...")
+
     # Apply translation: subtract the translation vector from all coords
     translated_coords = coords - translation_vector
 
     return translated_coords
 
 
-def detect_transition_metal(structure):
+
+def detect_3d_transition_metal(structure):
     """
     Detect the first occurrence of a transition metal in the given structure.
     
@@ -524,7 +447,7 @@ def detect_transition_metal(structure):
         str: The symbol of the transition metal, or None if no transition metal is found.
     """
     for site in structure:
-        if site.specie.symbol in transition_metals:
+        if site.specie.symbol in transition_metals_3d:
             return site.specie.symbol
     return None
 
@@ -558,7 +481,7 @@ def extract_cluster_test(cif_folder, mp_id_file):
         structure = Structure.from_file(file_path)
         
         # Detect the transition metal in the structure
-        transition_metal = detect_transition_metal(structure)
+        transition_metal = detect_3d_transition_metal(structure)
         
         if transition_metal is None:
             print(f"No transition metal found in {cif_file}. Skipping...")
@@ -567,7 +490,7 @@ def extract_cluster_test(cif_folder, mp_id_file):
         print(f"Processing {cif_file} for transition metal {transition_metal} (MP-ID: {mp_id})...")
         
         # Call the extract_crystalnn_cluster function
-        coords, symbols, numbers = crystalnn_extract_cluster(file_path, transition_metal)
+        coords, symbols, numbers = crystalnn_extract_cluster_structure(file_path, transition_metal)
         
         # Print the extracted data
         print(f"Extracted cluster for {transition_metal} in {cif_file} (MP-ID: {mp_id}):")
@@ -593,6 +516,12 @@ def cartesian_to_spherical(coords):
 
     # Extract x, y, and z coordinates from the input array
     x, y, z = coords[:, 0], coords[:, 1], coords[:, 2]
+    
+    # print(np.round(x, 6))
+    # print(np.round(y, 6))
+    # print(np.round(z, 6))
+    # print("blah")
+
 
     # Compute the radial distance for each point
     r = np.sqrt(x**2 + y**2 + z**2)
@@ -648,6 +577,7 @@ def calculate_lbop_r(sph_coords, atomic_numbers, degree_l, order_m, parity=True)
       and spherical harmonic parameters. Weighted by a factor of 1/r
     """
     # Get number of nearest neighbors to central atom at (0,0,0)
+    
     n_neighbors = sph_coords.shape[0]
 
     # Extract r from the spherical coordinates
@@ -714,7 +644,7 @@ def calculate_steinhart(spherical_coords, atomic_numbers, degree_l):
     return ql
 
 
-def calculate_steinhart_sum(file_path, degree_l):
+def calculate_steinhart_sum_from_filepath(file_path, degree_l):
     """
     Calculates the sum of Steinhardt parameters (q_l) up to a given degree (l) for a cluster of atoms.
 
@@ -735,7 +665,7 @@ def calculate_steinhart_sum(file_path, degree_l):
     """
 
  # Read atomic coordinates and symbols from the file
-    cluster_data = extract_cluster(file_path, 0, 5)
+    cluster_data = extract_cluster_cif_index(file_path, 0, 5)
 
     # Get atomic coordinates and removes center atom, at [0,0,0]
     coords, atomic_symbols, atomic_numbers  = cluster_data
@@ -815,7 +745,7 @@ def calculate_steinhart_sum(spherical_coords, atomic_numbers, degree_l):
     return q_l_sum
 
 
-def compute_steinhart_vector(file_path, degree_l):
+def compute_steinhart_vector_from_filepath(file_path, degree_l):
     """
     Compute the Steinhardt parameters for all degrees from 0 up to the specified degree_l
     based on atomic coordinates and types read from an XYZ file. The function calculates
@@ -837,14 +767,16 @@ def compute_steinhart_vector(file_path, degree_l):
     - The `calculate_steinhart` function is also required and must be implemented to compute individual
       ql values based on spherical coordinates and atomic numbers.
     """
+    
     # Get atomic coordinates and removes center atom, at [0,0,0]
-    cluster_data = extract_cluster(file_path, 0, 5)
+    cluster_data = extract_cluster_cif_index(file_path, 0, 5)
     coords, atomic_symbols, atomic_numbers  = cluster_data
+
     coords = coords[1:]  # Exclude the center atom's coordinates
 
     spherical_coords = cartesian_to_spherical(
         coords)  # Convert coordinates
-
+    
     # Get atomic symbols (excluding the central atom)
     atomic_symbols = atomic_symbols[1:]  # Exclude the center atom's symbol
 
