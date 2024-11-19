@@ -1,0 +1,9 @@
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   1.576 eV.
+Your calculation:
+ Once upon a time ...
+Ni+ K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+

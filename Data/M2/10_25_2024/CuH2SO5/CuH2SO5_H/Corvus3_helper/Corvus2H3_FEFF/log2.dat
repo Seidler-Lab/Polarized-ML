@@ -1,0 +1,18 @@
+Calculating cross-section and phases ...
+    absorption cross section
+ ihole, xinorm        1  5.95519E-01
+ There may be convergence problems.
+ Xinorm should be 1. If you set the RGRID, minor interpolation errors that will not affect final results may occur.
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+    phase shifts for unique potential    4
+    phase shifts for unique potential    5
+    phase shifts for unique potential    6
+    phase shifts for unique potential    7
+    phase shifts for unique potential    8
+    phase shifts for unique potential    9
+    phase shifts for unique potential   10
+Done with module: cross-section and phases (XSPH).
+

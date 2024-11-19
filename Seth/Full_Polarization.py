@@ -13,6 +13,7 @@ import re
 import subprocess
 from pathlib import Path
 from pymatgen.io.cif import CifParser
+from pymatgen.core import Structure
 import time
 import copy
 
@@ -85,7 +86,7 @@ class Calculation:
 
 
     def __repr__(self):
-        return list(self.cif_file, self.input_file, self.potential_files, self.scf_files, self.fms_files)
+        return f"[{self.cif_file}, {self.input_file}, {self.potential_files}, {self.scf_files}, {self.fms_files}]"
     
     def read_cif_file_custom_API(self, cif_file:Path)->dict: 
         """This is meant to iterate over an iterable. You loop this over all of the .cifs in a directory
@@ -116,37 +117,18 @@ class Calculation:
         
         self.input_file['Output Path'] = in_file_path
 
-    def extract_oxidation_numbers(self)->list:
-        """I have to learn how to use PYMATGEN just to do this."""
-
-        oxidation_numbers = []
-
-        with open(self.cif_file, 'r') as file:
-            lines = file.readlines()
-
-            start_reading = False
-
-            for line in lines:
-                # Look for the oxidation number section
-                if "_atom_type_oxidation_number" in line:
-                    start_reading = True
-                    continue  # Skip the header line itself
-
-                # If we are in the right section, extract data
-                if start_reading:
-                    line = line.strip()  # Remove leading/trailing whitespace
-
-                    #print(line)
-                    if not line or "loop_" in line:  # Stop reading on blank line or another section
-                        break
-
-                    # Split the line by spaces and get atom and oxidation number
-                    columns = line.split()
-                    if len(columns) > 1:
-                        atom_symbol = re.sub(r'[^a-zA-Z]+$', '', columns[0])
-                        oxidation_numbers.append(atom_symbol)
-
-        return oxidation_numbers
+    def extract_elements(self) -> list:
+        """
+        Extract elements in string format (e.g., 'O', 'H', 'He') from a CIF file using Pymatgen.
+        """
+        # Load the structure from the CIF file
+        structure = Structure.from_file(self.cif_file)
+        
+        # Extract unique elements from the structure
+        elements = {str(site.specie) for site in structure}
+        
+        # Convert the set to a sorted list
+        return sorted(elements)
     
     def update_input_file(self, key, value=None, start=None, increment=None, times=None):
 
@@ -186,35 +168,6 @@ class Calculation:
             json.dump(metadata, json_file, indent=4)
 
         print(f"Metadata written to hidden JSON file: {metadata_file_path}")
-
-
-    # def read_atoms(self, file_path):
-        
-    
-    # def clean_cif(self, file_path):
-    #     """This is meant to go into a .cif file and remove the oxidation states from the 
-    #     elements in the first column at the bottom of the file. Have to try and play around with 
-    #     the pymatgen.py in corvus to see if we can get around this instead."""
-        
-    #     with open(file_path, 'w') as f:
-    #         lines = f.readlines()
-
-    #     non_letter_pattern = re.compile(r'[^a-zA-Z]')
-
-    # # Start reading the file from the end (in reverse). There is a bug in Corvus I have found in pymatgen.py. This function is entirely a
-    # #temporary fix 10/10/2024
-    #     for line in reversed(lines):
-
-    #         if line.startswith('_'):
-    #             break
-
-    #         columns = line.split()
-
-    #         # If the line has the expected structure, clean the first column
-    #         if columns:
-    #             first_col = columns[0]
-    #             cleaned_col = re.sub(non_letter_pattern, '', first_col)
-    #             columns[0] = cleaned_col
 
 def make_calc_directory(target_directory)->dir:
     """This function will ask the user for individual parameters that they wish to increment over for every corvus.in file
@@ -414,17 +367,22 @@ def print_job_output(job_id):
 if __name__ == "__main__":
     calc_directory = make_calc_directory(target_directory)
     all_calculation_instances = copy_cifs_to_unique_directories(calc_directory)
+
+    print(all_calculation_instances)
     
     new_instances = []
+    
     for instance in all_calculation_instances:
 
         #instance.clean_cif(instance.cif_file)
-        ox_states = instance.extract_oxidation_numbers()
+        ox_states = instance.extract_elements()
 
         for ox_state in ox_states:
             copied_instance = copy.deepcopy(instance)
             copied_instance.input_file['absorbing_atom_type'] = ox_state
+            print('I am reaching here')
             new_instances.append(copied_instance)
+            print(new_instances)
             new_dir = make_dir_with_suffix(copied_instance.cif_file, ox_state)
             shutil.copy(copied_instance.cif_file, new_dir)
             copied_instance.write_corvus_in_file(new_dir)

@@ -1,0 +1,146 @@
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.10830E+00  1.02848E+00  1.15000E+00
+    1  1.53215E+00  1.46157E+00  1.12700E+00
+    2  1.37926E+00  1.22839E+00  1.15000E+00
+    3  1.11546E+00  1.01759E+00  1.15000E+00
+    4  1.10830E+00  1.02848E+00  1.15000E+00
+    5  1.12743E+00  1.02464E+00  1.15000E+00
+    6  1.13003E+00  1.03617E+00  1.15000E+00
+Core-valence separation energy:  ecv=   -40.000 eV
+Initial Fermi level:              mu=     0.237 eV
+SCF ITERATION NUMBER  1
+     point #   1  energy = -40.000
+FMS for a cluster of   13 atoms around atom type   0
+FMS for a cluster of    8 atoms around atom type   1
+FMS for a cluster of    7 atoms around atom type   2
+FMS for a cluster of   12 atoms around atom type   3
+FMS for a cluster of   13 atoms around atom type   4
+FMS for a cluster of    9 atoms around atom type   5
+FMS for a cluster of   10 atoms around atom type   6
+     point #  20  energy = -28.915
+     point #  40  energy =  -9.678
+     point #  60  energy =  -9.240
+     point #  80  energy =  -9.540
+New Fermi level:    mu=  -9.666 eV  Charge distance=  0.0458 (partial c.d.=  6.4148)
+SCF ITERATION NUMBER  2
+     point #   1  energy = -40.000
+     point #  20  energy = -28.878
+     point #  40  energy =  -9.666
+     point #  60  energy =  -9.735
+New Fermi level:    mu=  -9.907 eV  Charge distance=  0.3232 (partial c.d.=  0.1645)
+SCF ITERATION NUMBER  3
+     point #   1  energy = -40.000
+     point #  20  energy = -28.966
+     point #  40  energy =  -9.907
+     point #  60  energy =  -9.845
+New Fermi level:    mu=  -9.830 eV  Charge distance=  0.0723 (partial c.d.=  0.6215)
+SCF ITERATION NUMBER  4
+     point #   1  energy = -40.000
+     point #  20  energy = -28.938
+     point #  40  energy =  -9.830
+     point #  60  energy =  -9.740
+     point #  80  energy =  -9.086
+New Fermi level:    mu=  -9.261 eV  Charge distance=  0.0294 (partial c.d.=  0.4150)
+SCF ITERATION NUMBER  5
+     point #   1  energy = -40.000
+     point #  20  energy = -28.729
+     point #  40  energy =  -9.261
+     point #  60  energy =  -9.199
+New Fermi level:    mu=  -9.151 eV  Charge distance=  0.0052 (partial c.d.=  0.1383)
+SCF ITERATION NUMBER  6
+     point #   1  energy = -40.000
+     point #  20  energy = -28.689
+     point #  40  energy =  -9.151
+     point #  60  energy =  -9.079
+New Fermi level:    mu=  -9.250 eV  Charge distance=  0.0037 (partial c.d.=  0.0172)
+SCF ITERATION NUMBER  7
+     point #   1  energy = -40.000
+     point #  20  energy = -28.725
+     point #  40  energy =  -9.250
+     point #  60  energy =  -9.246
+New Fermi level:    mu=  -9.413 eV  Charge distance=  0.0017 (partial c.d.=  0.0219)
+SCF ITERATION NUMBER  8
+     point #   1  energy = -40.000
+     point #  20  energy = -28.785
+     point #  40  energy =  -9.413
+     point #  60  energy =  -9.475
+New Fermi level:    mu=  -9.479 eV  Charge distance=  0.0006 (partial c.d.=  0.0069)
+SCF ITERATION NUMBER  9
+     point #   1  energy = -40.000
+     point #  20  energy = -28.809
+     point #  40  energy =  -9.479
+New Fermi level:    mu=  -9.479 eV  Charge distance=  0.0017 (partial c.d.=  0.0016)
+SCF ITERATION NUMBER 10
+     point #   1  energy = -40.000
+     point #  20  energy = -28.809
+     point #  40  energy =  -9.479
+New Fermi level:    mu=  -9.477 eV  Charge distance=  0.0007 (partial c.d.=  0.0054)
+SCF ITERATION NUMBER 11
+     point #   1  energy = -40.000
+     point #  20  energy = -28.808
+     point #  40  energy =  -9.477
+New Fermi level:    mu=  -9.483 eV  Charge distance=  0.0003 (partial c.d.=  0.0032)
+SCF ITERATION NUMBER 12
+     point #   1  energy = -40.000
+     point #  20  energy = -28.810
+     point #  40  energy =  -9.483
+New Fermi level:    mu=  -9.492 eV  Charge distance=  0.0001 (partial c.d.=  0.0012)
+SCF ITERATION NUMBER 13
+     point #   1  energy = -40.000
+     point #  20  energy = -28.814
+     point #  40  energy =  -9.492
+New Fermi level:    mu=  -9.493 eV  Charge distance=  0.0001 (partial c.d.=  0.0005)
+SCF ITERATION NUMBER 14
+     point #   1  energy = -40.000
+     point #  20  energy = -28.814
+     point #  40  energy =  -9.493
+New Fermi level:    mu=  -9.491 eV  Charge distance=  0.0000 (partial c.d.=  0.0008)
+SCF ITERATION NUMBER 15
+     point #   1  energy = -40.000
+     point #  20  energy = -28.813
+     point #  40  energy =  -9.491
+New Fermi level:    mu=  -9.491 eV  Charge distance=  0.0000 (partial c.d.=  0.0001)
+Electronic configuration
+  type     l     N_el
+     0     0    1.944
+     0     1    5.130
+     0     2    0.050
+     0     3    0.000
+     1     0    0.179
+     1     1    6.260
+     1     2    0.226
+     1     3    0.000
+     2     0    0.438
+     2     1    0.710
+     2     2    6.659
+     2     3    0.000
+     3     0    1.948
+     3     1    5.107
+     3     2    0.050
+     3     3    0.000
+     4     0    1.944
+     4     1    5.130
+     4     2    0.050
+     4     3    0.000
+     5     0    1.944
+     5     1    5.158
+     5     2    0.038
+     5     3    0.000
+     6     0    1.944
+     6     1    5.181
+     6     2    0.035
+     6     3    0.000
+Charge transfer:  type  charge
+       0    0.124
+       1   -0.335
+       2   -0.194
+       3    0.104
+       4    0.124
+       5    0.140
+       6    0.161
+Convergence reached in   15 iterations.
+Done with module: potentials.
+

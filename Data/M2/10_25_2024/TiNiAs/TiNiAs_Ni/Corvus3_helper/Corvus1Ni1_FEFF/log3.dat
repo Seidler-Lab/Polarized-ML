@@ -1,0 +1,54 @@
+FMS calculation of full Green's function ...
+FEFF-MPI using     1 parallel threads.
+Using   372 energy points.
+xprep done
+FMS for a cluster of   16 atoms
+Energy point    1/ 372
+Energy point   10/ 372
+Energy point   20/ 372
+Energy point   30/ 372
+Energy point   40/ 372
+Energy point   50/ 372
+Energy point   60/ 372
+Energy point   70/ 372
+Energy point   80/ 372
+Energy point   90/ 372
+Energy point  100/ 372
+Energy point  110/ 372
+Energy point  120/ 372
+Energy point  130/ 372
+Energy point  140/ 372
+Energy point  150/ 372
+Energy point  160/ 372
+Energy point  170/ 372
+Energy point  180/ 372
+Energy point  190/ 372
+Energy point  200/ 372
+Energy point  210/ 372
+Energy point  220/ 372
+Energy point  230/ 372
+Energy point  240/ 372
+Energy point  250/ 372
+Energy point  260/ 372
+Energy point  270/ 372
+Energy point  280/ 372
+Energy point  290/ 372
+Energy point  300/ 372
+Energy point  310/ 372
+Energy point  320/ 372
+Energy point  330/ 372
+Energy point  340/ 372
+Energy point  350/ 372
+Energy point  360/ 372
+Energy point  370/ 372
+Done with module: FMS.
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
