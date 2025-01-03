@@ -14,6 +14,7 @@ import subprocess
 from pathlib import Path
 from pymatgen.io.cif import CifParser
 from pymatgen.core import Structure
+
 import time
 import copy
 
@@ -39,17 +40,16 @@ There is a large commented out section about changing the polarizations. Kept fo
 
 """
 ### Step 1: Global variables
-target_directory = Path(sys.argv[1]).absolute()
-CIF_PATHS = sorted(Path(target_directory).glob('*.cif'))
+TARGET_DIRECTORY = Path(sys.argv[1]).absolute()
+CIF_PATHS = sorted(Path(TARGET_DIRECTORY).glob('*.cif'))
 CIF_FILENAMES = [x.name for x in CIF_PATHS]
 
-print(target_directory)
+print(TARGET_DIRECTORY)
 
 class Calculation:
 
     def __init__(self, cif_file):
         #These are Path objects for every instantiation.
-        #Use this to read_csv in the graphing module
         self.cif_file = cif_file
         self.potential_files = None
         self.scf_files = None
@@ -80,9 +80,9 @@ class Calculation:
         self.calculation_date = time.strftime("%Y-%m-%d", time.localtime())
 
     def __str__(self):
-        print(f"I'm the entire calculation object, I was created from {target_directory}")
-        print(f"I am from the .cif {self.cif_file} in {Path.cwd()}")
-        print(f"This is the input file: {self.input_file}")
+        return (f"I'm the entire calculation object, I was created from {TARGET_DIRECTORY}\n"
+                f"I am from the .cif {self.cif_file} in {Path.cwd()}\n"
+                f"This is the input file: {self.input_file}")
 
 
     def __repr__(self):
@@ -93,17 +93,18 @@ class Calculation:
         and you can draw out as much information from any API of your choice. I want to start using PMG 
         so I am using the 2024.07.08 pymatgen.io namespace https://pymatgen.org/pymatgen.io.html#pymatgen.io.cif.CifFile"""
 
-        if cif_file.endswith('.cif'):
+        if cif_file.suffix == '.cif':
+            
+            try:
+                parser = CifParser(cif_file)
+                self.cif_information = parser.parse_structures()
 
-                #Try your own API here
-                self.cif_information = []
-                Calculation.cif_file()
-                cif_stuff = CifParser(cif_file, occupancy_tolerance= 1.0, site_tolerance = 0.0001, frac_tolerance = 0.0001, check_cif = True, comp_tol = 0.01)
-                cif_stuff.append(self.cif_information)
+            except Exception as e:
+                print(f"Error parsin CIF file {cif_file}: {e}") 
         
         else:
-            print(f"We found {cif_file} in here that isn't a .cif.")
-    
+            TypeError("This file is not a .cif file!", type(cif_file))
+
     def write_corvus_in_file(self, output_directory:Path):
         """Meant to be able to write the instance's constructed .in file and update the specific instance [0] key. 
         I want to get this hooked up with pyparsing and the corvus.config module
@@ -117,9 +118,9 @@ class Calculation:
         
         self.input_file['Output Path'] = in_file_path
 
-    def extract_elements(self) -> list:
+    def extract_elements(self) -> set:
         """
-        Extract elements in string format (e.g., 'O', 'H', 'He') from a CIF file using Pymatgen.
+        Extract elements in string format (e.g., 'O', 'H', 'He') from a CIF file using Pymatgen, and places them in a set.
         """
         # Load the structure from the CIF file
         structure = Structure.from_file(self.cif_file)
@@ -155,7 +156,7 @@ class Calculation:
             #'xmu_files': [str(x) for x in self.xmu_files],
             #'cfg_avg_file': str(self.cfg_avg_file),
             'input_file': {str(key): str(value) for key, value in self.input_file.items()},
-            'cif_information': self.cif_information,
+            #'cif_information': self.cif_information,
             'absorbing_atom': self.absorbing_atom,
             'calculation_time': self.calculation_time,
             'calculation_date': self.calculation_date
@@ -169,11 +170,26 @@ class Calculation:
 
         print(f"Metadata written to hidden JSON file: {metadata_file_path}")
 
-def make_calc_directory(target_directory)->dir:
-    """This function will ask the user for individual parameters that they wish to increment over for every corvus.in file
-    Ex: If you want to change the FMS radius from 2-10 au in increment steps of 2, or radius 3-4 au in increments of 0.2.
-    This will ask for user input and turn into a whitespace separated list. All of this data now will be collected and 
-    then sent through a wrapper function later down the line to write to the given .in file."""
+def make_calc_directory(target_directory)->Path:
+    """
+    This function creates the calculation directory inside of the target directory.
+    First it checks whether the target directory even exists. After that it prompts the user to 
+    create a name for the calculation directory.
+    """
+
+    """
+    INPUT PARAMETERS: 
+    target_directory: system argument from the command line by calling the module 'python Full_Polarization.py {target_directory}
+
+    OUTPUT:
+    creates the calculation direcotry inside of the target directory
+    """
+
+    """
+    RETURN:
+    path of the calculation directory
+    """
+
     if not os.path.exists(target_directory):
         print(f"The target directory '{target_directory}' does not exist in the current working directory.")
         raise SystemExit
@@ -198,49 +214,92 @@ def make_calc_directory(target_directory)->dir:
             shutil.rmtree(Path(target_directory) / calculation_name.replace('"',''))
     
     else:
-        Path.mkdir(Path(target_directory) / calculation_name.replace('"',''))
-
-    calc_directory_path = target_directory / calculation_name.replace('"','')
+        calc_directory_path = target_directory / calculation_name.replace('"','')
+        Path.mkdir(calc_directory_path)
     
+    print("This is the path where all of the calculations will go to:", calc_directory_path)
     return calc_directory_path
 
-def copy_cifs_to_unique_directories(calc_directory:Path)->list:
-    # Copy each .cif file to the newly created calculation directory
-    all_calculation_instances = []
-    for key, filename in enumerate(CIF_FILENAMES):
+def copy_cifs_to_calc_directory(target_directory:Path, calc_directory:Path):
+    """
+    This function should be called when all .cif files have been downloaded into the target_directory.
+    Goes through every single file and ensures it ends in the extension .cif and moves it to the newly
+    created calc_directory (the output from make_calc_directory()). All other files are printed as 
+    errors.
+    """
+
+    """
+    INPUT PARAMETERS:
+    target_directory: a directory Path object with .cif files (or any other file type) inside
+    
+    calc_directory: a directory Path object that all of the .cif files will be moved to
+    
+    OUTPUT: all .cif files will now be inside calc_directory
+    """
+
+    if not isinstance(target_directory, Path):
+        TypeError("The first parameter must be a Path object")
+    
+    if not isinstance(calc_directory, Path):
+        TypeError("The second parameter must be a Path object")
+
+    if not target_directory.is_dir():
+        ValueError("The first parameter must be a directory: ", target_directory)
+
+    if not calc_directory.is_dir():
+        ValueError("The second parameter must be a directory: ", calc_directory)
+
+    for file in target_directory.iterdir():
+        if file.is_file() and file.suffix == '.cif':
+            shutil.copy(file, calc_directory)
+            print(f"Copied {file} to {calc_directory}")
+
+        elif not file.is_file():
+            TypeError("This is not a file. Skipping: ", file)
         
-        compound_directory = calc_directory / filename.replace('.cif', '')
-        os.mkdir(compound_directory)
-        shutil.copy(CIF_PATHS[key], compound_directory)
-        calculation_instance = Calculation(cif_file=Path(compound_directory / filename))
-        all_calculation_instances.append(calculation_instance)
-        print(f"File '{filename}' copied to '{compound_directory}'.")
-
-    return all_calculation_instances
+        elif file.suffix != '.cif':
+            ValueError("This file does not end in the suffix .cif. Skipping: ", file)
+    
+    print("All .cif files copied to the Calculation Directory!")
 
 
+def make_dir_with_suffix(dir_path:Path, endpiece:str)->dir:
+    """
+    Creates a new directory with a new suffix. Intended to increment over a specific parameter multiple times
+    """
 
-def make_dir_with_suffix(dir_path:Path, suffix:str)->dir:
-    """First arg is the name you want to make the directory. Second arg is the path to another directory you want to make the new dir at.
-    *args is meant to be a list or tuple of strings. You use this function to iterate over incremental values.
-    List of strings is intentional for the write_corvus_in_file class method, as it is intended to print values of strings.
-    These strings will also update the self.in_file."""
-    if isinstance(suffix, str):
-        dir_path = Path(dir_path).parent  # Get the parent directory path
-        dir_name = Path(dir_path).name    # Get the filename with .cif extension
+    """
+    INPUT:
+    dir_path: directory path object that you want to nest new directories inside
+    
+    suffix: accepts a string, and adds it as an underscore at the end of the directory path     
+    
+    OUTPUT:
+    new directory inside of dir_path
+    """
 
-    # Remove the .cif suffix and add the new suffix to the directory name
-        new_dir_name = dir_name.replace('.cif', '') + f'_{suffix}'
+    """
+    Return:
+    new directory nested inside of dir_path
+    """
 
-    # Construct the new directory path
-        new_dir = dir_path / new_dir_name
+    if not isinstance(dir_path, Path):
+        raise TypeError("The first parameter must be a Path object: ", dir_path)
+    
+    # if not dir_path.is_dir():
+    #     raise ValueError("The first parameter must be a directory: ", dir_path)
+    
+    if not isinstance(endpiece, str):
+        raise TypeError("The second parameter must be a string: ", endpiece)
+    
+    dir_path = Path(dir_path)
+    
+    new_dir = dir_path / f'{dir_path.stem}_{endpiece}'
 
-    # Create the new directory
-        new_dir.mkdir(parents=True, exist_ok=False)
-        print(f"New directory created at: {new_dir}")
+    new_dir.mkdir(parents=True, exist_ok=True)
 
-    else:
-        print("The list contains non-string elements or is not a list.")
+    print(f"New directory created at: {new_dir}")
+
     return new_dir
 
 def write_qsub_script(instance):
@@ -248,33 +307,36 @@ def write_qsub_script(instance):
     I want this separated as we can change this to match whatever system we want and keep
     it modular."""
 
-    job_directory = instance.input_file['Output Path'].parent
+    """
+    INPUT:
+    A Calculation object
+    """
 
+    """
+    OUTPUT:
+    A qsub.script file is written to the directory that is located at the Calculation
+    object's Output Path value using it's key
+    """
+
+    job_directory = Path(instance.input_file['Output Path']).parent
+    print("This is the job directory", job_directory)
     # Create the qsub.script file inside the job_directory
     script_path = job_directory / "qsub.script"  
 
     with open(script_path, "w") as script_file:
-        script_file.write("#!/bin/bash -l\n") 
+        script_file.write("#!/bin/bash -l\n")
+        script_file.write("set -x \n") 
         script_file.write("\n")
-        script_file.write("# Find all the `.cif` files in the current directory\n")
-        script_file.write("cif_files=(*.cif)\n")
-        script_file.write("\n")
-        script_file.write("# Check if there are any `.cif` files found\n")
-        script_file.write("echo \"Found CIF files: ${cif_files[@]}\"\n")
-        script_file.write("\n")
-        script_file.write("echo $cif_files\n")
-        script_file.write("\n")
-        script_file.write("# Use the first .cif file to set the job name, as PBS only allows one job name\n")
-        script_file.write("cif_basename=$(basename \"${cif_files[0]}\" .cif)\n")
-        script_file.write("# Set the job name dynamically\n")
-        script_file.write("#PBS -N \"$cif_basename\"\n")
+        script_file.write("echo \"JOB_DIRECTORY=${JOB_DIRECTORY}\" >> debug.log \n")
+        script_file.write("# PBS Directives \n")
+        script_file.write(f"#PBS -N {job_directory.name}\n")
         script_file.write("#PBS -l nodes=1:ppn=1\n")
-        script_file.write(f"#PBS -o {job_directory}/job_${{cif_basename}}.sout\n")
-        script_file.write(f"#PBS -e {job_directory}/job_${{cif_basename}}.serr\n")
+        script_file.write(f"#PBS -o {job_directory}/job_${job_directory.name}.sout\n")
+        script_file.write(f"#PBS -e {job_directory}/job_${job_directory.name}.serr\n")
         script_file.write("#PBS -V\n")
         script_file.write("\n")
-        script_file.write("# Use the first argument ($1) as the job directory\n")
-        script_file.write("job_directory=\"$job_directory\"\n")
+        script_file.write("# Use the argument from the subprocess.run as the job directory\n")
+        script_file.write("job_directory=\"${JOB_DIRECTORY}\" \n")
         script_file.write("\n")
         script_file.write("# Change to the job directory\n")
         script_file.write("cd \"$job_directory\" || exit 1  # Exit if the directory change fails\n")
@@ -288,7 +350,7 @@ def write_qsub_script(instance):
         script_file.write("\n")
         script_file.write("# Function to search for all `.in` files and run the `run-corvus` command\n")
         script_file.write("search_and_run() {\n")
-        script_file.write("    local files=$(find . -type f -name \"*.in\")\n")
+        script_file.write("    files=$(find . -type f -name \"*.in\")\n")
         script_file.write("    for file in $files; do\n")
         script_file.write("        # Start time for the job\n")
         script_file.write("        start_time=$(date +%s)\n")
@@ -297,7 +359,9 @@ def write_qsub_script(instance):
         script_file.write("        rm -rf Corvus1_PYMATGEN/ Corvus2_helper/ Corvus.cfavg.out Corvus.nest\n")
         script_file.write("\n")
         script_file.write("        # Run the Corvus command and redirect output\n")
-        script_file.write("        run-corvus -i *.in &> testing.out\n")
+        script_file.write("        echo \"Running Corvus on ${file}\" >> testing.out \n")
+        script_file.write("        run-corvus -i \"${file}\" >> testing.out 2>&1 || echo \"Failed to run-corvus on ${file}\" >> testing.out \n")
+        script_file.write("        echo \"Completed Corvus on ${file}\" >> testing.out \n")
         script_file.write("    done\n")
         script_file.write("}\n")
         script_file.write("\n")
@@ -305,21 +369,49 @@ def write_qsub_script(instance):
 
 def submit_job_with_directory(instance):
     """Submits a job using a central qsub script but specifies different working directories for each job."""
+
+    """
+    INPUT:
+    A Calculation object
+    """
+
+    """
+    OUTPUT:
+    Initiation of the run-corvus command by usage of the qsub.scipt file, and submission
+    to the given job system
+    """
+
     
     job_directory = instance.input_file['Output Path'].parent
+
     script_path = job_directory / "qsub.script"
+    print("This is the script path that is being initiated:", script_path)
+
+    job_name = job_directory.name
+
+    if not job_directory.exists():
+        raise FileNotFoundError(f"Job directory does not existL {job_directory}")
     
-    # Use the qsub `-d` option to specify the directory in which the job should run
-    process = subprocess.Popen(
-        ['qsub', '-v', f'job_directory={job_directory}', str(script_path)],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    stdout, stderr = process.communicate()
+    if not script_path.exists():
+        raise FileNotFoundError(f"Script file does not exist: {script_path}")
+    
+    try:
 
-    if process.returncode != 0:
-        raise RuntimeError(f"Error submitting job: {stderr.decode().strip()}")
+    # Use the qsub `-v` option to specify the directory in which the job should run
+        process = subprocess.run(
+            ['qsub', '-N', job_name, '-v', f'JOB_DIRECTORY={job_directory}', str(script_path)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            text=True
 
-    job_id = stdout.decode().strip().split('.')[0]
+        )
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error submitting job: \nSTDOUT:\n{e.stdout}\nSTDERR:\n{e.stderr}")
+        raise RuntimeError(f"Error submitting jobL {e.stderr.strip()}") from e
+
+    job_id = process.stdout.strip().split('.')[0]
     return job_id
 
 def wait_for_job(job_id):
@@ -348,48 +440,108 @@ def print_job_output(job_id):
             print(f"Contents of job {job_id} output:")
             print(f.read())
     except FileNotFoundError:
-        print(f"Output file for job {job_id} not found.") 
+        print(f"output file for job {job_id} not found.") 
 
-# def search_and_run_qsub_script(directory):
-#     """Meant to hit the customized qsub.script in a directory. Will only hit one time. Meant to be used to walk along
-#     and entire floor of a file tree"""
-#     for root, dirs, files in os.walk(directory):
-#         if 'qsub.script' in files:
-#             qsub_script_path = os.path.join(root, 'qsub.script')
-#             try:
-#                 subprocess.run(['qsub', qsub_script_path], cwd=root, check=True)
-#                 print(f"Successfully ran 'qsub qsub.script' in {root}")
-#             except subprocess.CalledProcessError as e:
-#                 print(f"Error running 'qsub qsub.script' in {root}: {e}")
-#                 # Handle the error as needed
+def reference_cif(mpapi: str, calc_directory: Path)-> list:
+    """
+    Downloads all of the reference CIFs for linear background.
+    """
 
-#This is how the program is called 'python Full_Polarization.py [NAME OF TARGET DIRECTORY OF CIFS]'
+    """
+    INPUT:
+    mpapi: personal mp api key
+    
+
+    calc_directory: the calc_directory already created. should already be made up of entirely .cif files
+    """
+
+    """
+    OUTPUT:
+    download one or more of these unique transition metal .cifs into the calc_directory
+    """
+    from pymatgen.ext.matproj import MPRester
+    
+    #these are all non-symmetrized until further notice 25nov
+    references = [
+        "mp-644481", #Sc
+        "mp-1215", #Ti
+        "mp-18937", #V
+        "mp-19177", #Cr
+        "mp-510408", #Mn
+        "mp-19770", #Fe
+        "mp-22408", #Co
+        "mp-19009", #Ni
+        "mp-704645", #Cu
+        "mp-2133", #Zn
+    ]
+
+    downloaded_files = []
+
+    with MPRester(mpapi) as mpr:
+        for reference in references:
+            try:
+                # get the structure using the material id
+                structure = mpr.get_structure_by_material_id(reference)
+
+                # generate the path where the .cif file will be saved
+                file_path = calc_directory / f"{reference}.cif"
+                            
+                # save the structure as a .cif file
+                structure.to(filename=file_path, fmt="cif")
+                downloaded_files.append(file_path)
+
+                print(f"downloaded and saved {reference} reference at {file_path}")
+                        
+            except Exception as e:
+                print(f"error downloading {reference}: {e}")
+            
+            else:
+                print(f"no reference mp-id found for linear background subtraction {reference}. skipping.")
+
+    return downloaded_files
+
+#this is how the program is called 'python full_polarization.py [name of target directory of cifs]'
 if __name__ == "__main__":
-    calc_directory = make_calc_directory(target_directory)
-    all_calculation_instances = copy_cifs_to_unique_directories(calc_directory)
+    calc_directory = make_calc_directory(TARGET_DIRECTORY)
+    copy_cifs_to_calc_directory(TARGET_DIRECTORY, calc_directory)   
 
-    print(all_calculation_instances)
+   #initial run for control 1 1 1 1 1 1 
+    all_calculation_instances = [] 
+
+    reference_cifs = reference_cif(mpapi= 'Vw5EOA3uyseD8Hi81bsRXYA1XIX2lXiY', calc_directory= calc_directory)
+    for reference in reference_cifs:
+        reference_instance = Calculation(reference)
+        all_calculation_instances.append(reference_instance)
+        Calculation.read_cif_file_custom_API(reference_instance, reference_instance.cif_file)
     
-    new_instances = []
-    
+    for cif_file in CIF_PATHS:
+        calc_instance = Calculation(cif_file)
+        all_calculation_instances.append(calc_instance)
+        Calculation.read_cif_file_custom_API(calc_instance, calc_instance.cif_file)
+        
+    #downloads the reference .cifs for linear background deletion (specifically for xes)
+    #reference_cifs = reference_cif(mpapi= 'Vw5EOA3uyseD8Hi81bsRXYA1XIX2lXiY', calc_directory= calc_directory)
+    #for reference in reference_cifs:
+    #    reference_instance = Calculation(reference)
+    #    all_calculation_instances.append(reference_instance)
+
+    print(f"These are all of the calculation instances: {all_calculation_instances}")
     for instance in all_calculation_instances:
 
-        #instance.clean_cif(instance.cif_file)
-        ox_states = instance.extract_elements()
+        elements = instance.extract_elements()
+        print(f"These are the elements: {elements} from this calculation instance: {instance}")
 
-        for ox_state in ox_states:
+        for element in elements:
             copied_instance = copy.deepcopy(instance)
-            copied_instance.input_file['absorbing_atom_type'] = ox_state
-            print('I am reaching here')
-            new_instances.append(copied_instance)
-            print(new_instances)
-            new_dir = make_dir_with_suffix(copied_instance.cif_file, ox_state)
-            shutil.copy(copied_instance.cif_file, new_dir)
+            copied_instance.input_file['absorbing_atom_type'] = element 
+            cif_file_path = calc_directory / copied_instance.cif_file
+            new_dir = make_dir_with_suffix(cif_file_path.parent / cif_file_path.stem, element)
+            #shutil.copy(copied_instance.cif_file, new_dir)
             copied_instance.write_corvus_in_file(new_dir)
             copied_instance.write_metadata_to_json(new_dir)
             write_qsub_script(copied_instance)
             job_id = submit_job_with_directory(copied_instance)
-            print_job_output(job_id)
+   
 
 if len(sys.argv) != 2:
     print("Usage: python Full_Polarization.py <target_directory>")
