@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1018066",
+    "Material": "CrSnRh2",
+    "steinhart_vector": [
+        [
+            0.00035316894218778103,
+            1.3868662998975277e-20,
+            4.668022876866011e-06,
+            5.883002431567647e-20,
+            7.649835787550392e-05,
+            8.658453304367767e-20,
+            0.00020383813269272464,
+            9.798211499336874e-20,
+            0.00013511118509211407,
+            1.3315090999305516e-19,
+            7.823953511920597e-05
+        ],
+        "CrSnRh2"
+    ],
+    "steinhart_parameter_sum": 0.000851524175844196,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 10.14153055933293,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

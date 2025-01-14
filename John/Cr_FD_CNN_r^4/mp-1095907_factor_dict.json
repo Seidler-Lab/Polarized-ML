@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1095907",
+    "Material": "HfCrAu2",
+    "steinhart_vector": [
+        [
+            0.0002623253116390153,
+            1.6685678885388921e-19,
+            0.0002623253116390153,
+            1.7571136706594135e-19,
+            0.00026232531163901537,
+            1.8999404214932778e-19,
+            0.00026232531163901537,
+            2.0031447442916387e-19,
+            0.00026232531163901537,
+            2.175573520592651e-19,
+            0.00026232531163901537
+        ],
+        "HfCrAu2"
+    ],
+    "steinhart_parameter_sum": 0.001573951869834093,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.052488647679699,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

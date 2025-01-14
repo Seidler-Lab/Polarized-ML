@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1097121",
+    "Material": "CrSiOs2",
+    "steinhart_vector": [
+        [
+            0.0005517194426013571,
+            2.028810490487892e-19,
+            0.0005517194426013571,
+            2.3129331350312515e-19,
+            0.0005517194426013574,
+            2.2531399423392437e-19,
+            0.0005517194426013573,
+            2.654918022308758e-19,
+            0.0005517194426013573,
+            3.041192658749218e-19,
+            0.0005517194426013571
+        ],
+        "CrSiOs2"
+    ],
+    "steinhart_parameter_sum": 0.0033103166556081444,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.171001585802102,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

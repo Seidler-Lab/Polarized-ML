@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1212416",
+    "Material": "HfCrP",
+    "steinhart_vector": [
+        [
+            0.00199819276024799,
+            0.00014616282655496903,
+            0.00028146230529961714,
+            0.0014366771246036034,
+            0.0010063836445295543,
+            0.0005696771669454415,
+            0.0011658357930183975,
+            0.0010950596380223413,
+            0.000845475408616181,
+            0.0010341486020345031,
+            0.0010235035504619504
+        ],
+        "HfCrP"
+    ],
+    "steinhart_parameter_sum": 0.010602578820334548,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 10.040832508204906,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

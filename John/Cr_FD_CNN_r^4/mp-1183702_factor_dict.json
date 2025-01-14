@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1183702",
+    "Material": "CrCl",
+    "steinhart_vector": [
+        [
+            0.0014008196956547638,
+            2.6968979768725403e-05,
+            3.771219566863049e-05,
+            0.0010422090503422318,
+            0.0007133630321456607,
+            8.833348830091085e-05,
+            0.0008766675961991955,
+            0.0008531594903822715,
+            0.00032307536410590453,
+            0.0007240707419557394,
+            0.0008999083914392448
+        ],
+        "CrCl"
+    ],
+    "steinhart_parameter_sum": 0.006986288025963279,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.863116761128369,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

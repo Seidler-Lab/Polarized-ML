@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1205573",
+    "Material": "Ca3CrF6",
+    "steinhart_vector": [
+        [
+            0.006735193714505119,
+            1.7261889783189233e-18,
+            0.003377559032483299,
+            2.8676691758395273e-18,
+            0.005569519179416651,
+            2.49065387135184e-18,
+            0.0039856596434473725,
+            4.7579473761544915e-18,
+            0.005333632731788246,
+            6.620543573977253e-18,
+            0.004206559926533472
+        ],
+        "Ca3CrF6"
+    ],
+    "steinhart_parameter_sum": 0.029208124228174176,
+    "band_gap": 0.062400000000000004,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.641684549739582,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

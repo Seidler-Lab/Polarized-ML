@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1097244",
+    "Material": "TiMn2Cr",
+    "steinhart_vector": [
+        [
+            0.0006432735393437453,
+            2.0663167994847263e-19,
+            0.0006432735393437453,
+            2.194638894679986e-19,
+            0.0006432735393437454,
+            2.3946898538155176e-19,
+            0.0006432735393437454,
+            3.1772384148157723e-19,
+            0.0006432735393437455,
+            3.743599004142084e-19,
+            0.0006432735393437454
+        ],
+        "TiMn2Cr"
+    ],
+    "steinhart_parameter_sum": 0.0038596412360624734,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 0.467091859218816,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

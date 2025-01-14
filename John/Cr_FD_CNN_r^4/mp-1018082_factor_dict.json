@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1018082",
+    "Material": "CrCo2Sb",
+    "steinhart_vector": [
+        [
+            0.0008075218882383329,
+            3.9226502610265514e-20,
+            7.125848071078595e-20,
+            1.085740615590704e-19,
+            0.0004111700197984256,
+            9.831320072729482e-20,
+            0.0005075592916710138,
+            2.054053507443594e-19,
+            0.0001718096324235476,
+            2.367316284086462e-19,
+            0.0005250133174325459
+        ],
+        "CrCo2Sb"
+    ],
+    "steinhart_parameter_sum": 0.0024230741495638664,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 8.923198640813354,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1096656",
+    "Material": "Ta2CrRe",
+    "steinhart_vector": [
+        [
+            0.00028114932514178135,
+            4.9033128262831894e-20,
+            0.00028114932514178135,
+            8.53243325102124e-20,
+            0.0002811493251417814,
+            1.1504090619280686e-19,
+            0.0002811493251417814,
+            1.5618285309771484e-19,
+            0.0002811493251417814,
+            1.92958462547342e-19,
+            0.0002811493251417814
+        ],
+        "Ta2CrRe"
+    ],
+    "steinhart_parameter_sum": 0.0016868959508506889,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.148352003376778,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

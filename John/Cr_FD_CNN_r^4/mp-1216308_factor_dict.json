@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1216308",
+    "Material": "UCrFe",
+    "steinhart_vector": [
+        [
+            0.0006615299681608093,
+            4.925057113998562e-20,
+            0.0002604313151653649,
+            1.2452525363882008e-19,
+            0.0002738364307163988,
+            1.2965827868181363e-19,
+            0.0004764000765060842,
+            2.0550826985056218e-19,
+            0.00026572077632559864,
+            2.1528512881170003e-19,
+            0.0003546946225347646
+        ],
+        "UCrFe"
+    ],
+    "steinhart_parameter_sum": 0.0022926131894090212,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 13.24533248486385,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

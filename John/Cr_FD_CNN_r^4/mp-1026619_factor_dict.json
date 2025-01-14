@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1026619",
+    "Material": "RbMg14Cr",
+    "steinhart_vector": [
+        [
+            0.0008270614054526206,
+            4.2079323981397226e-10,
+            8.120465353696263e-06,
+            7.677164797520703e-05,
+            2.0242564707727906e-05,
+            0.0002573856232380252,
+            0.00036980448150418375,
+            0.0002560999647829343,
+            0.00029109058531589973,
+            4.5321900835413936e-05,
+            7.588550828490929e-05
+        ],
+        "RbMg14Cr"
+    ],
+    "steinhart_parameter_sum": 0.002227784568243858,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.028144873301935,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

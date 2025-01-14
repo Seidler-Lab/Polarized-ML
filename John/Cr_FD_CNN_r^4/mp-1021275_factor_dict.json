@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1021275",
+    "Material": "LiMg6Cr",
+    "steinhart_vector": [
+        [
+            0.0013533721130476555,
+            0.0002651970878459928,
+            0.00027659679163989046,
+            0.00038913031686203104,
+            0.00030691880123550475,
+            0.00046619512747694353,
+            0.0006478245216922468,
+            0.0006091195285919813,
+            0.0004260938979872894,
+            0.00039709785694260657,
+            0.00034802525851480675
+        ],
+        "LiMg6Cr"
+    ],
+    "steinhart_parameter_sum": 0.0054855713018369485,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.988561141625191,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

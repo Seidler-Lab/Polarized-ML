@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1026489",
+    "Material": "Mg14CrSb",
+    "steinhart_vector": [
+        [
+            0.000861183081803094,
+            5.215702059276631e-10,
+            1.004760336215485e-05,
+            7.076078944528964e-05,
+            6.893476849497492e-05,
+            0.0002278825777875338,
+            0.00041004524668579093,
+            0.00027506939266096095,
+            0.00027340759650087125,
+            0.00010927093968697369,
+            2.3638629792016867e-05
+        ],
+        "Mg14CrSb"
+    ],
+    "steinhart_parameter_sum": 0.002330241147789867,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.37700948808349,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

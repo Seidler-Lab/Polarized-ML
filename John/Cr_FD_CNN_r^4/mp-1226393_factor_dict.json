@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1226393",
+    "Material": "CrRe13B6",
+    "steinhart_vector": [
+        [
+            0.00866357121422602,
+            0.004757491940538806,
+            0.00041300967661809916,
+            0.005346376458170686,
+            0.006584695142740349,
+            0.004538041440740811,
+            0.003181725649080806,
+            0.0054891782736383645,
+            0.0061315602752754815,
+            0.004398035127091909,
+            0.0037701619140830395
+        ],
+        "CrRe13B6"
+    ],
+    "steinhart_parameter_sum": 0.05327384711220437,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 17.529836895329797,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

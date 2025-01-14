@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1023490",
+    "Material": "Mg15Cr",
+    "steinhart_vector": [
+        [
+            0.000855426228970322,
+            7.206388652163532e-12,
+            1.3408905080417391e-05,
+            7.045242068312879e-05,
+            6.736077500850577e-05,
+            0.0002275752325206314,
+            0.0004063232214097102,
+            0.00027526177457025137,
+            0.00026982059424455676,
+            0.00011057068716528148,
+            2.533093263170742e-05
+        ],
+        "Mg15Cr"
+    ],
+    "steinhart_parameter_sum": 0.0023215307794909015,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.939101268416316,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

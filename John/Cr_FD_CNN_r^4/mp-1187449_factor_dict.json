@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1187449",
+    "Material": "Th3Cr",
+    "steinhart_vector": [
+        [
+            8.383054918162685e-05,
+            7.652001164998719e-11,
+            4.128340324391198e-06,
+            3.6181935191798258e-06,
+            7.387115685132273e-06,
+            2.3994774442700908e-05,
+            3.927656655894539e-05,
+            2.6828294868210704e-05,
+            2.405293112434197e-05,
+            1.7341476321275725e-05,
+            1.908455409324102e-06
+        ],
+        "Th3Cr"
+    ],
+    "steinhart_parameter_sum": 0.0002323667739551406,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 10.91220243726852,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

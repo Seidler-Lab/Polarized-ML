@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-631502",
+    "Material": "CrNi2Hg",
+    "steinhart_vector": [
+        [
+            0.0004883537037653138,
+            7.054638666285751e-20,
+            1.1422719505488967e-19,
+            0.00017525798793678376,
+            0.00024865753482406573,
+            1.0754439701459151e-19,
+            0.00030694952493335106,
+            0.00014389033819632525,
+            0.00010390290536847116,
+            0.00012178264128201994,
+            0.0003175049516659373
+        ],
+        "CrNi2Hg"
+    ],
+    "steinhart_parameter_sum": 0.001906299587972268,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 10.713280307786086,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

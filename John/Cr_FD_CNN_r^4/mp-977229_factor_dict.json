@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-977229",
+    "Material": "Li3Cr",
+    "steinhart_vector": [
+        [
+            0.004380056089153127,
+            4.448201897479422e-09,
+            2.5546747608680165e-05,
+            0.00029711312567168313,
+            0.0005122603186560281,
+            0.0010437010117108347,
+            0.0021573528155028558,
+            0.0013302073271902947,
+            0.0013670867461217672,
+            0.0006899436063317538,
+            0.00012546965505113016
+        ],
+        "Li3Cr"
+    ],
+    "steinhart_parameter_sum": 0.011928741891200051,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.656355835632958,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

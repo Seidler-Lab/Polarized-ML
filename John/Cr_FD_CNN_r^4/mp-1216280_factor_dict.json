@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1216280",
+    "Material": "UCrCo",
+    "steinhart_vector": [
+        [
+            0.000639672554460865,
+            4.9527774704284286e-20,
+            0.0002519917015275088,
+            8.871368944945124e-20,
+            0.00025678858752931283,
+            1.5597108486195946e-19,
+            0.0004597781907006053,
+            1.643533990173509e-19,
+            0.0002588690173155238,
+            1.8285580115938503e-19,
+            0.0003352673060973917
+        ],
+        "UCrCo"
+    ],
+    "steinhart_parameter_sum": 0.002202367357631208,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 13.392729755731954,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

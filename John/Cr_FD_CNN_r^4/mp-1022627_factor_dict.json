@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1022627",
+    "Material": "YMg6Cr",
+    "steinhart_vector": [
+        [
+            0.0007188259385537053,
+            1.7309169006352417e-05,
+            0.00010521738163265162,
+            6.175763224984177e-05,
+            8.35198338130077e-05,
+            0.00021633533879301993,
+            0.00032799865569874717,
+            0.0002657109725466354,
+            0.0002164906499845362,
+            0.00012559549643070822,
+            9.055332991740161e-05
+        ],
+        "YMg6Cr"
+    ],
+    "steinhart_parameter_sum": 0.0022293143986266075,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.5539452242346483,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

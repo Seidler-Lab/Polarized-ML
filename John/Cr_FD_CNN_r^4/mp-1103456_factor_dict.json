@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1103456",
+    "Material": "Cs2CrCl5O4",
+    "steinhart_vector": [
+        [
+            0.00826733620886348,
+            8.728325324507683e-19,
+            0.003317164774945578,
+            3.133569853250784e-18,
+            0.006482428090226127,
+            3.561327351783568e-18,
+            0.004576952645308609,
+            5.304219352265606e-18,
+            0.005925873695739126,
+            6.413739500105899e-18,
+            0.005152605494046374
+        ],
+        "Cs2CrCl5O4"
+    ],
+    "steinhart_parameter_sum": 0.03372236090912931,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.84107028720531,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

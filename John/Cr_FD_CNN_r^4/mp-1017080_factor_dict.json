@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1017080",
+    "Material": "CsMg6Cr",
+    "steinhart_vector": [
+        [
+            0.0007221209556701603,
+            0.00024180045227952684,
+            6.407732964420247e-05,
+            3.9846398278496525e-05,
+            0.00018480886954006718,
+            0.00028680966249870077,
+            0.00037530913984575265,
+            0.00029322359338441117,
+            0.00018558600464463424,
+            0.00014119516518641489,
+            0.00013651842865945832
+        ],
+        "CsMg6Cr"
+    ],
+    "steinhart_parameter_sum": 0.0026712959996318254,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.455535547817729,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

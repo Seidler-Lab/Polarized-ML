@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-13008",
+    "Material": "NdCrGe3",
+    "steinhart_vector": [
+        [
+            0.0007907971058977247,
+            1.9460105895219656e-19,
+            5.463388868439563e-06,
+            3.0912336024443516e-19,
+            0.0006039194917591935,
+            2.8244150288239283e-19,
+            0.0002798224023020527,
+            4.231125855538259e-19,
+            0.0005676754814282226,
+            4.414613217141108e-19,
+            0.0003257674702258797
+        ],
+        "NdCrGe3"
+    ],
+    "steinhart_parameter_sum": 0.0025734453404815142,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.266653480527608,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

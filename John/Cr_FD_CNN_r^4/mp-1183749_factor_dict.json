@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1183749",
+    "Material": "CrIr3",
+    "steinhart_vector": [
+        [
+            0.00024938617313221303,
+            2.2904683093117825e-10,
+            3.1937811540777558e-06,
+            1.9269524858800764e-05,
+            1.942782360278762e-05,
+            6.732622840689283e-05,
+            0.00011846714956468883,
+            7.909933719092448e-05,
+            7.92339222525539e-05,
+            3.205602235777908e-05,
+            7.556452433824866e-06
+        ],
+        "CrIr3"
+    ],
+    "steinhart_parameter_sum": 0.0006750166440013741,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 18.96324462334351,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

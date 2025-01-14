@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1180005",
+    "Material": "NaCr(SO10)2",
+    "steinhart_vector": [
+        [
+            0.006194266209175026,
+            1.1849030143038134e-18,
+            0.00015556984007923883,
+            5.050114671188956e-18,
+            0.004724554759820228,
+            4.2058456272464515e-18,
+            0.0022140009266030875,
+            7.361730846272235e-18,
+            0.0044300910222702505,
+            7.253635762950095e-18,
+            0.0025907402104650827
+        ],
+        "NaCr(SO10)2"
+    ],
+    "steinhart_parameter_sum": 0.02030922296841294,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.011860902926234,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

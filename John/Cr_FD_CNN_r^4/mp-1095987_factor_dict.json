@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1095987",
+    "Material": "CrMoW2",
+    "steinhart_vector": [
+        [
+            0.0002991442299350396,
+            1.3597302880009107e-19,
+            0.0002991442299350396,
+            1.5522223616164046e-19,
+            0.0002991442299350396,
+            1.2197414308008374e-19,
+            0.0002991442299350396,
+            2.0730040932056526e-19,
+            0.0002991442299350396,
+            2.3352607324177834e-19,
+            0.0002991442299350396
+        ],
+        "CrMoW2"
+    ],
+    "steinhart_parameter_sum": 0.0017948653796102385,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.091136545125937,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

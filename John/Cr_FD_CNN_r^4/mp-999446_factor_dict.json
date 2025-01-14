@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-999446",
+    "Material": "Nb3Cr",
+    "steinhart_vector": [
+        [
+            0.0003332679701524738,
+            7.666191918581011e-21,
+            2.5193677463823764e-20,
+            3.9879796994402064e-20,
+            6.363440416366646e-05,
+            5.3664007199259264e-20,
+            0.00019147053383826077,
+            5.3450984364397497e-20,
+            0.0001346117858877271,
+            9.19157258794499e-20,
+            4.284840538182782e-06
+        ],
+        "Nb3Cr"
+    ],
+    "steinhart_parameter_sum": 0.0007272695345803112,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.759636679372061,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

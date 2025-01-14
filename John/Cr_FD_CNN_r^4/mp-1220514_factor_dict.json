@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1220514",
+    "Material": "Nb5Cr(B2Ru5)2",
+    "steinhart_vector": [
+        [
+            0.0005050239159478972,
+            6.723083826942758e-20,
+            9.534976945365541e-07,
+            1.603861986571739e-19,
+            0.00025714461797061224,
+            2.661362837992136e-19,
+            0.0003174236779731444,
+            2.0926291360653717e-19,
+            0.00010748019897738433,
+            3.4182738641786037e-19,
+            0.00032832962594282126
+        ],
+        "Nb5Cr(B2Ru5)2"
+    ],
+    "steinhart_parameter_sum": 0.001516355534506397,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 9.799567933535133,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

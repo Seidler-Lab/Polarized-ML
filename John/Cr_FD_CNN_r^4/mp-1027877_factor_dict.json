@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1027877",
+    "Material": "Mg14CrFe",
+    "steinhart_vector": [
+        [
+            0.0009802832461407727,
+            8.288268913998302e-06,
+            0.00010126742773835162,
+            0.0001050015243723845,
+            7.877670483110425e-05,
+            0.00034506304953568897,
+            0.0004185875831345946,
+            0.00034578415722312733,
+            0.0003214496545490128,
+            8.616196189449316e-05,
+            0.00016075174010671945
+        ],
+        "Mg14CrFe"
+    ],
+    "steinhart_parameter_sum": 0.002951415318440248,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.286770923036949,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

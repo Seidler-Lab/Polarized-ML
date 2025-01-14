@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1207569",
+    "Material": "Zn10Cr(B4Rh9)2",
+    "steinhart_vector": [
+        [
+            0.0005108934792165008,
+            8.435978363550015e-20,
+            1.6320874552557546e-05,
+            1.5849997310078018e-19,
+            0.0002598941143413721,
+            2.648616849897878e-19,
+            0.00031994968149391825,
+            1.6651647831320934e-19,
+            0.00011735715157907057,
+            4.1862749090098523e-19,
+            0.00032835926692943837
+        ],
+        "Zn10Cr(B4Rh9)2"
+    ],
+    "steinhart_parameter_sum": 0.0015527745681128587,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 9.427473494398372,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1212226",
+    "Material": "Hf4Cr",
+    "steinhart_vector": [
+        [
+            0.0004429772459325655,
+            1.3868662998975277e-20,
+            7.727969465145732e-20,
+            0.00033017574479695294,
+            0.00022555297340322785,
+            1.6475713155429606e-19,
+            0.00027842863512022946,
+            0.00027108093697956787,
+            9.424853852779654e-05,
+            0.0002294313358380839,
+            0.00028800328117613625
+        ],
+        "Hf4Cr"
+    ],
+    "steinhart_parameter_sum": 0.0021598986917745603,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 11.312187555322138,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

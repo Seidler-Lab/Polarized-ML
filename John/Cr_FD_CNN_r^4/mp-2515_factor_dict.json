@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-2515",
+    "Material": "CrPt3",
+    "steinhart_vector": [
+        [
+            0.00022259266617126873,
+            1.1786097209869525e-20,
+            9.712847620295841e-12,
+            3.0805538903674814e-20,
+            4.250198924468136e-05,
+            3.6318460642962525e-20,
+            0.0001278848867498305,
+            4.410019739640817e-20,
+            8.9908419057221e-05,
+            6.192338777714604e-20,
+            2.861883425891607e-06
+        ],
+        "CrPt3"
+    ],
+    "steinhart_parameter_sum": 0.00048574985436174097,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 17.894383631706567,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

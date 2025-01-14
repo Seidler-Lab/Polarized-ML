@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1096119",
+    "Material": "Al2CrFe",
+    "steinhart_vector": [
+        [
+            0.0016165539856109847,
+            1.2889679710147623e-19,
+            0.0016165539856109845,
+            4.183641457275539e-19,
+            0.0016165539856109845,
+            5.887059376210627e-19,
+            0.0016165539856109843,
+            7.267563659059809e-19,
+            0.0016165539856109845,
+            1.0725418984652098e-18,
+            0.0016165539856109845
+        ],
+        "Al2CrFe"
+    ],
+    "steinhart_parameter_sum": 0.00969932391366591,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 0.37004261149917606,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

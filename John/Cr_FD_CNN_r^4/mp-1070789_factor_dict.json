@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1070789",
+    "Material": "CrAu4",
+    "steinhart_vector": [
+        [
+            0.00018242695194968297,
+            1.998430012263179e-20,
+            6.915291962061444e-07,
+            2.4712967948965742e-20,
+            3.493301063205714e-05,
+            3.152790812694943e-20,
+            0.00010474989063608417,
+            4.547741878303322e-20,
+            7.37155472471943e-05,
+            5.778483887276586e-20,
+            5.124369989220306e-06
+        ],
+        "CrAu4"
+    ],
+    "steinhart_parameter_sum": 0.0004016412996504452,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 16.26337825928696,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

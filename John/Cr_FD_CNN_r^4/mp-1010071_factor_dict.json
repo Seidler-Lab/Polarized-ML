@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1010071",
+    "Material": "CrCo",
+    "steinhart_vector": [
+        [
+            0.0009963224887883054,
+            1.519235913395201e-19,
+            1.820434203945824e-19,
+            1.0809553026274081e-19,
+            0.0005073025801621333,
+            3.3416608607523274e-19,
+            0.0006262279005074387,
+            5.136866703394534e-19,
+            0.00021197914640737412,
+            3.83449070487488e-19,
+            0.0006477627203549133
+        ],
+        "CrCo"
+    ],
+    "steinhart_parameter_sum": 0.0029895948362201664,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.947124531735106,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-631429",
+    "Material": "ZrCrFe",
+    "steinhart_vector": [
+        [
+            0.0007679103590507043,
+            2.837150188114344e-19,
+            2.3548156657625616e-19,
+            0.00012141109438631819,
+            0.0003910008163656189,
+            4.436499816700434e-19,
+            0.00048266188642502193,
+            9.968095399072333e-05,
+            0.0001633818209071216,
+            8.436570526325875e-05,
+            0.0004992597364457293
+        ],
+        "ZrCrFe"
+    ],
+    "steinhart_parameter_sum": 0.002609672372834497,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 6.586862045228424,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

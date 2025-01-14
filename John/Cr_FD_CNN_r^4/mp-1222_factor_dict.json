@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1222",
+    "Material": "CrSi2",
+    "steinhart_vector": [
+        [
+            0.0017783188595155847,
+            1.3255796652710497e-09,
+            0.00010575662868120906,
+            0.0002883027153668706,
+            0.0004363956775029553,
+            0.0004679799889194943,
+            0.0009680872563087928,
+            0.0004238300626710527,
+            0.0004572969582729817,
+            0.000374347761498736,
+            0.0006551834660396031
+        ],
+        "CrSi2"
+    ],
+    "steinhart_parameter_sum": 0.005955500700356945,
+    "band_gap": 0.363899999999999,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 5.020764901649191,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

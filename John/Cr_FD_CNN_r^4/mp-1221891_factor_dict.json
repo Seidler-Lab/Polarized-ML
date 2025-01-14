@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1221891",
+    "Material": "Mn2CrNiSb2",
+    "steinhart_vector": [
+        [
+            0.0004530505550105848,
+            2.089464575066825e-06,
+            1.6593378292691477e-06,
+            0.00012002389507872257,
+            0.00014104751806734496,
+            9.780782360179756e-06,
+            0.0002041142189698093,
+            9.876101526609903e-05,
+            0.00024376060309115038,
+            8.314493203612187e-05,
+            1.959071073632399e-05
+        ],
+        "Mn2CrNiSb2"
+    ],
+    "steinhart_parameter_sum": 0.0013770230330206724,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 6.976382965714588,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1008280",
+    "Material": "CrCo3",
+    "steinhart_vector": [
+        [
+            0.0009434025517509113,
+            4.7538753995674626e-20,
+            1.9385413164068257e-07,
+            8.041501562052386e-20,
+            0.00018013576936940949,
+            1.479170867209473e-19,
+            0.0005420077683006429,
+            1.8392899550814518e-19,
+            0.00038105202520189276,
+            2.4423044563648884e-19,
+            1.2310518726037892e-05
+        ],
+        "CrCo3"
+    ],
+    "steinhart_parameter_sum": 0.0020591024874805357,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 8.564413978547847,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

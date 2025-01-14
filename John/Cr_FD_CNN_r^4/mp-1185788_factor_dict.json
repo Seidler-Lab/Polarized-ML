@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1185788",
+    "Material": "Mg3Cr",
+    "steinhart_vector": [
+        [
+            0.0009429002488659681,
+            8.919916969745657e-10,
+            2.031194213909901e-05,
+            5.7166790695958105e-05,
+            8.753778108185248e-05,
+            0.0002524801522085025,
+            0.0004509912987525,
+            0.0002964746356244552,
+            0.00028707727780339346,
+            0.00015634117146392086,
+            1.1973523003389727e-05
+        ],
+        "Mg3Cr"
+    ],
+    "steinhart_parameter_sum": 0.0025632557136307365,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.5117083602050183,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

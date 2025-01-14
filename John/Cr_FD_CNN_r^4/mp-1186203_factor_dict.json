@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1186203",
+    "Material": "Nb2CrOs",
+    "steinhart_vector": [
+        [
+            0.00030982822128153097,
+            5.824770891569661e-20,
+            5.005340666949393e-20,
+            7.675238579596165e-20,
+            8.463807335691504e-05,
+            1.462325966618894e-19,
+            0.0001789437801534666,
+            1.6941524720449406e-19,
+            9.494495040275708e-05,
+            1.9439943675420377e-19,
+            0.00014045785884436214
+        ],
+        "Nb2CrOs"
+    ],
+    "steinhart_parameter_sum": 0.0008088128840390326,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 11.394918574248639,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

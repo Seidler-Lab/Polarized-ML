@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1026563",
+    "Material": "BaMg14Cr",
+    "steinhart_vector": [
+        [
+            0.0006341692019298573,
+            1.679918790207879e-05,
+            0.00011365971167673743,
+            6.172555803018559e-05,
+            7.440596704981654e-05,
+            0.00018955446992179056,
+            0.0002943926160094891,
+            0.00022769923267150125,
+            0.00020545450354870289,
+            0.00011980998894027711,
+            7.9619524889565e-05
+        ],
+        "BaMg14Cr"
+    ],
+    "steinhart_parameter_sum": 0.0020172899625700014,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.235621076122744,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

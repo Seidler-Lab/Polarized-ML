@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1017317",
+    "Material": "NaMg6Cr",
+    "steinhart_vector": [
+        [
+            0.0008372205862249523,
+            1.2083183500070278e-05,
+            2.098913595029579e-05,
+            6.285989273341682e-05,
+            8.50399378237126e-05,
+            0.00021482052812889322,
+            0.0004019355924235278,
+            0.00026933927288992686,
+            0.00025279475896150555,
+            0.000137460923081241,
+            6.402910189502325e-06
+        ],
+        "NaMg6Cr"
+    ],
+    "steinhart_parameter_sum": 0.0023009467219070445,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.004893323669719,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

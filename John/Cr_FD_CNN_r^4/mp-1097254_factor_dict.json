@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1097254",
+    "Material": "Al2CrTc",
+    "steinhart_vector": [
+        [
+            0.0014783949053943216,
+            1.358845910484261e-19,
+            0.0014783949053943214,
+            4.2051854960866696e-19,
+            0.0014783949053943216,
+            6.047740409260518e-19,
+            0.0014783949053943219,
+            8.25031014000561e-19,
+            0.0014783949053943219,
+            1.0218852886929855e-18,
+            0.001478394905394322
+        ],
+        "Al2CrTc"
+    ],
+    "steinhart_parameter_sum": 0.008870369432365932,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 0.430197050685983,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

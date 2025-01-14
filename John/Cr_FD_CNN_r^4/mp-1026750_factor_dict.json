@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1026750",
+    "Material": "LaMg14Cr",
+    "steinhart_vector": [
+        [
+            0.000803146293206856,
+            4.2089535561109715e-10,
+            1.6297026466848736e-05,
+            7.786036000378017e-05,
+            2.4313792080520113e-05,
+            0.00024359623979326248,
+            0.0003620415915961365,
+            0.00025859868567465396,
+            0.00027289649521178305,
+            5.420222432500093e-05,
+            7.125180910896302e-05
+        ],
+        "LaMg14Cr"
+    ],
+    "steinhart_parameter_sum": 0.0021842049383631605,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.296978220758894,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

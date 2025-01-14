@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1097129",
+    "Material": "LiCrRh2",
+    "steinhart_vector": [
+        [
+            0.0012841886906458935,
+            8.865623983378215e-20,
+            0.0012841886906458932,
+            2.366438997844273e-19,
+            0.0012841886906458935,
+            4.541314386559736e-19,
+            0.0012841886906458935,
+            6.018178070352389e-19,
+            0.0012841886906458935,
+            7.651655344604439e-19,
+            0.0012841886906458935
+        ],
+        "LiCrRh2"
+    ],
+    "steinhart_parameter_sum": 0.007705132143875362,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 0.756093566931453,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

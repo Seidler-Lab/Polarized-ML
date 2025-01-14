@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1016625",
+    "Material": "HfMg6Cr",
+    "steinhart_vector": [
+        [
+            0.0007748760528032357,
+            1.099427030639037e-05,
+            0.00013275380021099626,
+            6.774817191957552e-05,
+            0.00011200547292624743,
+            0.00023302143141707942,
+            0.00035593146985658764,
+            0.0002908259101364374,
+            0.00023701551287616675,
+            0.00013981570415927367,
+            0.00011822989437382405
+        ],
+        "HfMg6Cr"
+    ],
+    "steinhart_parameter_sum": 0.002473217690985814,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 3.6552267747414273,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

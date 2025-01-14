@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1184925",
+    "Material": "K3Cr",
+    "steinhart_vector": [
+        [
+            0.00018563260028616732,
+            1.4709938478849567e-20,
+            3.5876427703869e-05,
+            4.080895538363865e-20,
+            8.809601955310095e-05,
+            4.6085420075612276e-20,
+            0.00010934337878587799,
+            4.347803731042741e-20,
+            8.712130185375448e-05,
+            6.884344683415966e-20,
+            7.506378843362372e-05
+        ],
+        "K3Cr"
+    ],
+    "steinhart_parameter_sum": 0.0005811335166163937,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.390930383223927,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

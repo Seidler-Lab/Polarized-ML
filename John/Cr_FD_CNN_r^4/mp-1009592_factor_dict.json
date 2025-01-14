@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1009592",
+    "Material": "CrFeTe",
+    "steinhart_vector": [
+        [
+            0.0005263333815405582,
+            5.512684510644977e-20,
+            7.569546248332694e-20,
+            0.0002759073336151258,
+            6.920771697161714e-05,
+            1.7051486743125046e-19,
+            0.00028787810465232347,
+            0.00022652547830828042,
+            0.00019089498668502786,
+            0.00019172149716136983,
+            0.00017641624817332595
+        ],
+        "CrFeTe"
+    ],
+    "steinhart_parameter_sum": 0.0019448847471076288,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.756716457396785,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

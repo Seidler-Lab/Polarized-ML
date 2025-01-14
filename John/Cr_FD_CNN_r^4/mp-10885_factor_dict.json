@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-10885",
+    "Material": "AlCrNi2",
+    "steinhart_vector": [
+        [
+            0.0009054702999271223,
+            2.192828158903166e-19,
+            3.9584951902499885e-19,
+            2.317190533566529e-19,
+            0.0004610429098833783,
+            3.626642981790259e-19,
+            0.0005691237237702091,
+            3.284499111834626e-19,
+            0.00019264929120410855,
+            4.785269029465001e-19,
+            0.0005886948365430258
+        ],
+        "AlCrNi2"
+    ],
+    "steinhart_parameter_sum": 0.0027169810613278463,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 6.728186426589112,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

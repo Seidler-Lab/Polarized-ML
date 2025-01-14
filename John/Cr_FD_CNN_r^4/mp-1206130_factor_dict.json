@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1206130",
+    "Material": "CrFe3N",
+    "steinhart_vector": [
+        [
+            0.0007306365200997957,
+            2.6955835597615264e-20,
+            1.2222271545194451e-19,
+            6.719395231281313e-20,
+            0.0001395082149523516,
+            1.2126515607250771e-19,
+            0.00041976840583039923,
+            9.097859852686419e-20,
+            0.00029511472932856534,
+            2.0067789820541137e-19,
+            9.393824970842815e-06
+        ],
+        "CrFe3N"
+    ],
+    "steinhart_parameter_sum": 0.0015944216951819554,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.015640584768632,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

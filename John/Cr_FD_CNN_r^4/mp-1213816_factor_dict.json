@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1213816",
+    "Material": "CrAsRu",
+    "steinhart_vector": [
+        [
+            0.00043401844964340437,
+            1.2559705258243467e-05,
+            2.8962982632363178e-05,
+            0.00011027908710357651,
+            0.00014439569312384374,
+            6.30968695842536e-05,
+            0.00011218129557867388,
+            0.00020071544375300314,
+            0.00016166110985874844,
+            0.00013521769378837018,
+            0.00010373687087524794
+        ],
+        "CrAsRu"
+    ],
+    "steinhart_parameter_sum": 0.0015068252011997284,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 8.565896391279434,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

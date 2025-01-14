@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-864953",
+    "Material": "MnV2Cr",
+    "steinhart_vector": [
+        [
+            0.0008165348415839627,
+            7.842865152843965e-10,
+            2.352903466698296e-09,
+            1.8300445698124237e-09,
+            0.00012513958540462218,
+            2.875775340030013e-09,
+            0.00045044327740504536,
+            1.6458169815333337e-09,
+            0.0002890923785718035,
+            4.207372902470475e-09,
+            0.00028850801469511506
+        ],
+        "MnV2Cr"
+    ],
+    "steinhart_parameter_sum": 0.001969731793860325,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 6.796904552629198,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

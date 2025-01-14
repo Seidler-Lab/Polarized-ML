@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-867780",
+    "Material": "Al3Cr",
+    "steinhart_vector": [
+        [
+            0.0013685882881011048,
+            4.194609558217995e-09,
+            1.0159480692701342e-05,
+            4.365338477721077e-09,
+            0.0002678280757778921,
+            6.408822718391056e-09,
+            0.0007864931840978971,
+            8.150502510420514e-09,
+            0.000546897353849826,
+            5.9925792350078975e-09,
+            0.00013983906333323707
+        ],
+        "Al3Cr"
+    ],
+    "steinhart_parameter_sum": 0.0031198345577051582,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 3.80386617646166,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

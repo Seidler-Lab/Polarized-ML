@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-13007",
+    "Material": "PrCrGe3",
+    "steinhart_vector": [
+        [
+            0.0007872193133285375,
+            9.522682600738945e-20,
+            5.2769842070947335e-06,
+            1.84501699829606e-19,
+            0.0006011907890453364,
+            2.682678617725647e-19,
+            0.00027854280314630077,
+            2.830352279983605e-19,
+            0.0005651172098535174,
+            4.681132452725691e-19,
+            0.00032426951893397627
+        ],
+        "PrCrGe3"
+    ],
+    "steinhart_parameter_sum": 0.002561616618514764,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.155418655935946,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

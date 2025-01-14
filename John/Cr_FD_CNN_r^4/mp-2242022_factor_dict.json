@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-2242022",
+    "Material": "MgCrPtO2",
+    "steinhart_vector": [
+        [
+            0.007351329806484913,
+            0.0002760344331343377,
+            0.0005764619785489511,
+            0.0013893560840420858,
+            0.005402723286709562,
+            0.0010601852691385983,
+            0.002726714116055651,
+            0.0018562310859050427,
+            0.004628216506092709,
+            0.0020290593534837186,
+            0.003063485572563732
+        ],
+        "MgCrPtO2"
+    ],
+    "steinhart_parameter_sum": 0.030359797492159304,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 8.146181691042704,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

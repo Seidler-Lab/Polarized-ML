@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1093769",
+    "Material": "TiCrTc2",
+    "steinhart_vector": [
+        [
+            0.00048346854448540894,
+            1.3623799760378004e-19,
+            0.00048346854448540894,
+            1.9983383328995513e-19,
+            0.00048346854448540904,
+            2.3959821175860656e-19,
+            0.0004834685444854089,
+            2.986253910414016e-19,
+            0.00048346854448540904,
+            3.0324596832115915e-19,
+            0.00048346854448540894
+        ],
+        "TiCrTc2"
+    ],
+    "steinhart_parameter_sum": 0.0029008112669124545,
+    "band_gap": 0.004599999999999001,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 0.649235648621805,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

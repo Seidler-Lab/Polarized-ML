@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1097410",
+    "Material": "AlCrOs2",
+    "steinhart_vector": [
+        [
+            0.0006481470863641699,
+            3.9226502610265514e-20,
+            0.0006481470863641698,
+            1.1563949045807498e-19,
+            0.0006481470863641698,
+            1.8331618954394964e-19,
+            0.0006481470863641697,
+            2.8047635135973706e-19,
+            0.0006481470863641699,
+            3.4849100972496267e-19,
+            0.0006481470863641697
+        ],
+        "AlCrOs2"
+    ],
+    "steinhart_parameter_sum": 0.003888882518185019,
+    "band_gap": 0.14979999999999902,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.097358277789736,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

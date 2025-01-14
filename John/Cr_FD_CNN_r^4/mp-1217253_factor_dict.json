@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1217253",
+    "Material": "Ti10CrSb5",
+    "steinhart_vector": [
+        [
+            0.0007751917745172305,
+            1.357831485033088e-07,
+            4.568785555460556e-05,
+            1.8855183582213724e-07,
+            0.00010188472213024701,
+            0.00042771656606175977,
+            0.0003184615470746728,
+            4.895739212004482e-05,
+            0.000169371565192699,
+            0.00026642490903137873,
+            0.000311943876505638
+        ],
+        "Ti10CrSb5"
+    ],
+    "steinhart_parameter_sum": 0.0024659645431726017,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 6.564456208930183,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

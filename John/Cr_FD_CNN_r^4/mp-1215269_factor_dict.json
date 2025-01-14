@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1215269",
+    "Material": "ZrCrMo",
+    "steinhart_vector": [
+        [
+            0.0004620301617569915,
+            1.3075500870088504e-20,
+            0.00011249521031381012,
+            4.584298205293017e-20,
+            9.223374015297227e-05,
+            8.080920684671725e-20,
+            0.00031422955629544153,
+            7.971031108766774e-20,
+            0.00012207800742970262,
+            1.1709654032460395e-19,
+            0.0001840314755132557
+        ],
+        "ZrCrMo"
+    ],
+    "steinhart_parameter_sum": 0.001287098151462174,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.820169333293518,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

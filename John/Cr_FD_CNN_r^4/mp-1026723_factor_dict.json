@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1026723",
+    "Material": "CeMg14Cr",
+    "steinhart_vector": [
+        [
+            0.000840370842680117,
+            4.550301150677061e-10,
+            2.287211945341686e-05,
+            7.588699046708499e-05,
+            3.327558164083011e-05,
+            0.0002512842259670867,
+            0.00038288030357411213,
+            0.00027407251484722663,
+            0.0002761010421261121,
+            7.621915514419138e-05,
+            6.724849916530386e-05
+        ],
+        "CeMg14Cr"
+    ],
+    "steinhart_parameter_sum": 0.0023002117300955967,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.36738861596886,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1028251",
+    "Material": "Mg14AlCr",
+    "steinhart_vector": [
+        [
+            0.0008863037250907667,
+            1.0097205552013657e-06,
+            1.742114406683912e-05,
+            7.208485259378414e-05,
+            7.098207726836034e-05,
+            0.0002378024569072735,
+            0.00042007920916237586,
+            0.0002860635985441273,
+            0.00027823790411998686,
+            0.00011776369070310826,
+            3.121774267528156e-05
+        ],
+        "Mg14AlCr"
+    ],
+    "steinhart_parameter_sum": 0.0024189661216871055,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 1.9922895227426722,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

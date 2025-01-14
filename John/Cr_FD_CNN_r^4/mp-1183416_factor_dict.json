@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1183416",
+    "Material": "BeCrFe2",
+    "steinhart_vector": [
+        [
+            0.0013130046652603746,
+            7.071658325921717e-20,
+            4.526583736028796e-19,
+            2.125500670129022e-19,
+            0.000668549251820647,
+            2.7418324747361695e-19,
+            0.000825275113364608,
+            4.00622713205511e-19,
+            0.00027935694647351553,
+            3.5131283710836313e-19,
+            0.0008536547989016303
+        ],
+        "BeCrFe2"
+    ],
+    "steinhart_parameter_sum": 0.003939840775820777,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.396541988852198,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

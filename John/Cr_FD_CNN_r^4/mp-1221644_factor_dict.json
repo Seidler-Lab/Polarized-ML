@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1221644",
+    "Material": "MnCrAs",
+    "steinhart_vector": [
+        [
+            0.0007449673869709917,
+            9.477767828892931e-05,
+            8.375483865230485e-05,
+            0.00030234011877642474,
+            0.0005277806313319401,
+            0.00018377560485781835,
+            0.0002171222470641066,
+            0.000390094037887641,
+            0.0004054058674540749,
+            0.0002926940189743632,
+            0.00022272365597118455
+        ],
+        "MnCrAs"
+    ],
+    "steinhart_parameter_sum": 0.003465436086229779,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 7.700720600380403,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

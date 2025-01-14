@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1184391",
+    "Material": "Eu3Cr",
+    "steinhart_vector": [
+        [
+            8.712547742452795e-05,
+            7.403222439363186e-13,
+            3.1950002063446014e-06,
+            5.232643047717879e-06,
+            6.530517574130685e-06,
+            2.4925464399905476e-05,
+            4.083967822131869e-05,
+            2.8031490025156814e-05,
+            2.63106790893807e-05,
+            1.437327320163717e-05,
+            3.3273395656400204e-06
+        ],
+        "Eu3Cr"
+    ],
+    "steinhart_parameter_sum": 0.00023989156349608226,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 5.895797575345902,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}

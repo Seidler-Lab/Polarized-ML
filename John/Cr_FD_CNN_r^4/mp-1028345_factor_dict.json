@@ -1,0 +1,27 @@
+{
+    "MP-ID": "mp-1028345",
+    "Material": "Mg14CrNi",
+    "steinhart_vector": [
+        [
+            0.00091250065018961,
+            6.052964082244876e-10,
+            2.5988206759859412e-05,
+            7.029888369871136e-05,
+            0.00010055106113584856,
+            0.00022055081925817784,
+            0.0004402381144571173,
+            0.00029827266868646366,
+            0.0002688589875540329,
+            0.0001620888494871669,
+            1.2824212852621657e-05
+        ],
+        "Mg14CrNi"
+    ],
+    "steinhart_parameter_sum": 0.0025121730593760175,
+    "band_gap": 0.0,
+    "oxidation_state": "Oxidation state not available",
+    "possible_species": [],
+    "density": 2.244699326946159,
+    "quadrupole moment": "Could not compute",
+    "quadrupole moment normalized": "Could not compute"
+}
