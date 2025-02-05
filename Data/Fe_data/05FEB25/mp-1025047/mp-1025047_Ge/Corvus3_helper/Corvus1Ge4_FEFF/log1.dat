@@ -1,0 +1,96 @@
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.42129E+00  1.36581E+00  1.10469E+00
+    1  1.42784E+00  1.39225E+00  1.06344E+00
+    2  1.37921E+00  1.32352E+00  1.10888E+00
+    3  1.42129E+00  1.36581E+00  1.10469E+00
+Core-valence separation energy:  ecv=   -40.000 eV
+Initial Fermi level:              mu=    -8.157 eV
+SCF ITERATION NUMBER  1
+     point #   1  energy = -40.000
+FMS for a cluster of   12 atoms around atom type   0
+FMS for a cluster of   15 atoms around atom type   1
+FMS for a cluster of   12 atoms around atom type   2
+FMS for a cluster of   12 atoms around atom type   3
+     point #  20  energy = -28.745
+     point #  40  energy = -12.648
+     point #  60  energy = -13.623
+New Fermi level:    mu= -13.872 eV  Charge distance=  0.0472 (partial c.d.= 10.3618)
+SCF ITERATION NUMBER  2
+     point #   1  energy = -40.000
+     point #  20  energy = -28.946
+     point #  40  energy = -13.872
+     point #  60  energy = -14.081
+New Fermi level:    mu= -14.197 eV  Charge distance=  0.0770 (partial c.d.=  0.4386)
+SCF ITERATION NUMBER  3
+     point #   1  energy = -40.000
+     point #  20  energy = -28.647
+     point #  40  energy = -14.197
+New Fermi level:    mu= -14.219 eV  Charge distance=  0.1059 (partial c.d.=  0.9603)
+SCF ITERATION NUMBER  4
+     point #   1  energy = -40.000
+     point #  20  energy = -28.657
+     point #  40  energy = -14.219
+     point #  60  energy = -14.560
+New Fermi level:    mu= -14.701 eV  Charge distance=  0.1589 (partial c.d.=  0.4245)
+SCF ITERATION NUMBER  5
+     point #   1  energy = -40.000
+     point #  20  energy = -28.869
+     point #  40  energy = -14.701
+     point #  60  energy = -14.420
+     point #  80  energy =  -8.623
+     point # 100  energy =  -7.011
+New Fermi level:    mu=  -6.996 eV  Charge distance=  0.0510 (partial c.d.=  9.4683)
+SCF ITERATION NUMBER  6
+     point #   1  energy = -40.000
+     point #  20  energy = -28.999
+     point #  40  energy =  -8.996
+     point #  60  energy =  -7.021
+New Fermi level:    mu=  -7.104 eV  Charge distance=  0.9597 (partial c.d.=  0.0579)
+SCF ITERATION NUMBER  7
+     point #   1  energy = -40.000
+     point #  20  energy = -28.692
+     point #  40  energy =  -8.132
+     point #  60  energy =  -7.145
+     point #  80  energy =  -8.079
+New Fermi level:    mu=  -8.078 eV  Charge distance=  0.1796 (partial c.d.=  1.6078)
+SCF ITERATION NUMBER  8
+     point #   1  energy = -40.000
+     point #  20  energy = -29.027
+     point #  40  energy =  -9.075
+     point #  60  energy =  -8.118
+New Fermi level:    mu=  -8.836 eV  Charge distance=  0.3171 (partial c.d.=  0.7582)
+SCF ITERATION NUMBER  9
+     point #   1  energy = -40.000
+     point #  20  energy = -28.942
+     point #  40  energy =  -8.836
+     point #  60  energy =  -8.877
+     point #  80  energy = -11.223
+New Fermi level:    mu= -11.340 eV  Charge distance=  0.2035 (partial c.d.=  0.9709)
+SCF ITERATION NUMBER 10
+     point #   1  energy = -40.000
+     point #  20  energy = -28.741
+     point #  40  energy = -11.340
+     point #  60  energy = -11.509
+     point #  80  energy = -12.793
+New Fermi level:    mu= -12.897 eV  Charge distance=  0.2698 (partial c.d.=  2.8126)
+SCF ITERATION NUMBER 11
+     point #   1  energy = -40.000
+     point #  20  energy = -28.958
+     point #  40  energy = -12.897
+     point #  60  energy = -12.728
+     point #  80  energy = -10.972
+     point # 100  energy = -11.463
+New Fermi level:    mu= -11.564 eV  Charge distance=  0.2503 (partial c.d.=  5.4874)
+SCF ITERATION NUMBER 12
+     point #   1  energy = -40.000
+     point #  20  energy = -28.829
+     point #  40  energy = -11.564
+     point #  60  energy = -11.395
+     point #  80  energy = -10.551
+ FRNRM Could not integrate enough charge to reach required z.
+ Atom type Z=           32  charge found=    31.846350964051410       r=   40.447304179253848
+Cannot determine Norman radius -- quitting.
+FRNRM-1

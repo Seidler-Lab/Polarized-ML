@@ -1,0 +1,307 @@
+Running Corvus on ./mp-1025047_Ge.in
+/home/sethshj/.conda/envs/Corvus2/lib/python3.12/site-packages/pymatgen/io/cif.py:1276: UserWarning: The default value of primitive was changed from True to False in https://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell in the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.
+  warnings.warn(
+/home/sethshj/.conda/envs/Corvus2/lib/python3.12/site-packages/pymatgen/io/cif.py:1304: UserWarning: Issues encountered while parsing CIF: 8 fractional coordinates rounded to ideal values to avoid issues with finite precision.
+  warnings.warn("Issues encountered while parsing CIF: " + "\n".join(self.warnings))
+
+
+#########################
+    WORKFLOW
+#########################
+Calculate cfavg
+1) Get cif file from material project id.
+   input: ['mp_id|cif_input']
+  output: ['mp.structure']
+2) Calculate cluster from cif using pymatgen.
+   input: ['mp.structure']
+  output: ['cluster_array']
+3) Average over an array of clusters and absorbing atoms.
+   input: ['cluster_array']
+  output: ['cfavg']
+Required User Input: ['mp_id|cif_input']
+#########################
+  END WORKFLOW
+#########################
+
+
+Number of cpu for multiprocessing:  2
+Number of absorbers: 1
+Using  1  processors.
+processes left to run:  1
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   2.284 eV.
+Your calculation:
+ Once upon a time ...
+Ge K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+Calculating atomic potentials ...
+    overlapped atomic potential and density for unique potential    0
+    overlapped atomic potential and density for unique potential    1
+    overlapped atomic potential and density for unique potential    2
+    overlapped atomic potential and density for unique potential    3
+Done with module: atomic potentials.
+
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.42129E+00  1.36581E+00  1.10469E+00
+    1  1.42784E+00  1.39225E+00  1.06344E+00
+    2  1.37921E+00  1.32352E+00  1.10888E+00
+    3  1.42129E+00  1.36581E+00  1.10469E+00
+Core-valence separation energy:  ecv=   -40.000 eV
+Initial Fermi level:              mu=    -8.157 eV
+ Zero temperature single thread
+SCF ITERATION NUMBER  1
+     point #   1  energy = -40.000
+FMS for a cluster of   12 atoms around atom type   0
+FMS for a cluster of   15 atoms around atom type   1
+FMS for a cluster of   12 atoms around atom type   2
+FMS for a cluster of   12 atoms around atom type   3
+     point #  20  energy = -28.745
+     point #  40  energy = -12.648
+     point #  60  energy = -13.623
+New Fermi level:    mu= -13.872 eV  Charge distance=  0.0472 (partial c.d.= 10.3618)
+ Zero temperature single thread
+SCF ITERATION NUMBER  2
+     point #   1  energy = -40.000
+     point #  20  energy = -28.946
+     point #  40  energy = -13.872
+     point #  60  energy = -14.081
+New Fermi level:    mu= -14.197 eV  Charge distance=  0.0770 (partial c.d.=  0.4386)
+ Zero temperature single thread
+SCF ITERATION NUMBER  3
+     point #   1  energy = -40.000
+     point #  20  energy = -28.647
+     point #  40  energy = -14.197
+New Fermi level:    mu= -14.219 eV  Charge distance=  0.1059 (partial c.d.=  0.9603)
+ Zero temperature single thread
+SCF ITERATION NUMBER  4
+     point #   1  energy = -40.000
+     point #  20  energy = -28.657
+     point #  40  energy = -14.219
+     point #  60  energy = -14.560
+New Fermi level:    mu= -14.701 eV  Charge distance=  0.1589 (partial c.d.=  0.4245)
+ Zero temperature single thread
+SCF ITERATION NUMBER  5
+     point #   1  energy = -40.000
+     point #  20  energy = -28.869
+     point #  40  energy = -14.701
+     point #  60  energy = -14.420
+     point #  80  energy =  -8.623
+     point # 100  energy =  -7.011
+New Fermi level:    mu=  -6.996 eV  Charge distance=  0.0510 (partial c.d.=  9.4683)
+ Zero temperature single thread
+SCF ITERATION NUMBER  6
+     point #   1  energy = -40.000
+     point #  20  energy = -28.999
+     point #  40  energy =  -8.996
+     point #  60  energy =  -7.021
+New Fermi level:    mu=  -7.104 eV  Charge distance=  0.9597 (partial c.d.=  0.0579)
+ Zero temperature single thread
+SCF ITERATION NUMBER  7
+     point #   1  energy = -40.000
+     point #  20  energy = -28.692
+     point #  40  energy =  -8.132
+     point #  60  energy =  -7.145
+     point #  80  energy =  -8.079
+New Fermi level:    mu=  -8.078 eV  Charge distance=  0.1796 (partial c.d.=  1.6078)
+ Zero temperature single thread
+SCF ITERATION NUMBER  8
+     point #   1  energy = -40.000
+     point #  20  energy = -29.027
+     point #  40  energy =  -9.075
+     point #  60  energy =  -8.118
+New Fermi level:    mu=  -8.836 eV  Charge distance=  0.3171 (partial c.d.=  0.7582)
+ Zero temperature single thread
+SCF ITERATION NUMBER  9
+     point #   1  energy = -40.000
+     point #  20  energy = -28.942
+     point #  40  energy =  -8.836
+     point #  60  energy =  -8.877
+     point #  80  energy = -11.223
+New Fermi level:    mu= -11.340 eV  Charge distance=  0.2035 (partial c.d.=  0.9709)
+ Zero temperature single thread
+SCF ITERATION NUMBER 10
+     point #   1  energy = -40.000
+     point #  20  energy = -28.741
+     point #  40  energy = -11.340
+     point #  60  energy = -11.509
+     point #  80  energy = -12.793
+New Fermi level:    mu= -12.897 eV  Charge distance=  0.2698 (partial c.d.=  2.8126)
+ Zero temperature single thread
+SCF ITERATION NUMBER 11
+     point #   1  energy = -40.000
+     point #  20  energy = -28.958
+     point #  40  energy = -12.897
+     point #  60  energy = -12.728
+     point #  80  energy = -10.972
+     point # 100  energy = -11.463
+New Fermi level:    mu= -11.564 eV  Charge distance=  0.2503 (partial c.d.=  5.4874)
+ Zero temperature single thread
+SCF ITERATION NUMBER 12
+     point #   1  energy = -40.000
+     point #  20  energy = -28.829
+     point #  40  energy = -11.564
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+with errorcode -351449323.
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------
+At line 37 of file m_nrixs.f90 (unit = 99)
+Fortran runtime error: Cannot open file 'pot.bin': No such file or directory
+
+Error termination. Backtrace:
+#0  0x14a74e84b171 in ???
+#1  0x14a74e84bd19 in ???
+#2  0x14a74e84c521 in ???
+#3  0x14a74ea50288 in ???
+#4  0x14a74ea5058c in ???
+#5  0x414fe4 in __nrixs_inp_MOD_nrixs_init
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/COMMON/m_nrixs.f90:37
+#6  0x45c054 in rexsph_
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/XSPH/rexsph.f90:38
+#7  0x45943c in ffmod2
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/XSPH/xsph.f90:45
+#8  0x4023ac in main
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/XSPH/xsph.f90:15
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+with errorcode 538976288.
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+with errorcode 538976288.
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------
+At line 37 of file m_nrixs.f90 (unit = 99)
+Fortran runtime error: Cannot open file 'pot.bin': No such file or directory
+
+Error termination. Backtrace:
+#0  0x14c1ac6e3171 in ???
+#1  0x14c1ac6e3d19 in ???
+#2  0x14c1ac6e4521 in ???
+#3  0x14c1ac8e8288 in ???
+#4  0x14c1ac8e858c in ???
+#5  0x413954 in __nrixs_inp_MOD_nrixs_init
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/COMMON/m_nrixs.f90:37
+#6  0x414369 in ffmod4
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/PATH/path.f90:59
+#7  0x401b7c in main
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/PATH/path.f90:28
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+with errorcode 538976288.
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------
+At line 27 of file rdhead.f90 (unit = 8, file = 'fort.8')
+Fortran runtime error: End of file
+
+Error termination. Backtrace:
+#0  0x14b734dad171 in ???
+#1  0x14b734dadd19 in ???
+#2  0x14b734dae521 in ???
+#3  0x14b734fb612b in ???
+#4  0x14b734fb6722 in ???
+#5  0x14b734fb329b in ???
+#6  0x14b734fb7e34 in ???
+#7  0x14b734fb8ca4 in ???
+#8  0x44259d in rdhead_
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/COMMON/rdhead.f90:27
+#9  0x448ec6 in rdxbin_
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/FF2X/ff2gen.f90:28
+#10  0x46c701 in ff2xmu_
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/FF2X/ff2xmu.f90:115
+#11  0x43f97e in ffmod6
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/FF2X/ff2x.f90:65
+#12  0x40223c in main
+	at /home/ccardot3/FEFF/FEFF_versions/feff10/src/FF2X/ff2x.f90:20
+Calculating XAS spectra ...
+equi =  1
+Running feff to obtain: {'xes': None}
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/rdinp 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/atomic 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/pot 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/screen 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/opconsat 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/xsph 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/fms 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/mkgtr 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/path 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/genfmt 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/ff2x 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/sfconv 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/sethshj/.conda/envs/Corvus2/lib/python3.12/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/sethshj/.conda/envs/Corvus2/lib/python3.12/multiprocessing/pool.py", line 51, in starmapstar
+    return list(itertools.starmap(args[0], args[1]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sethshj/bin/Corvus/corvus/helper.py", line 313, in multiproc_genAndRun
+    generateAndRunWorkflow(conf, inp, tList)
+  File "/home/sethshj/bin/Corvus/corvus/controls.py", line 658, in generateAndRunWorkflow
+    workflow.sequence[i].go(config, system)
+  File "/home/sethshj/bin/Corvus/corvus/structures.py", line 100, in go
+    self.handler.exchange(config, system, returnedOutput)
+  File "/home/sethshj/bin/Corvus/corvus/structures.py", line 248, in exchange
+    self.run(config, input, output)
+  File "/home/sethshj/bin/Corvus/corvus/feff.py", line 565, in run
+    shutil.copyfile(outFile, savedfl)
+  File "/home/sethshj/.conda/envs/Corvus2/lib/python3.12/shutil.py", line 260, in copyfile
+    with open(src, 'rb') as fsrc:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF/xmu.dat'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/sethshj/.conda/envs/Corvus2/bin/run-corvus", line 33, in <module>
+    sys.exit(load_entry_point('corvus', 'console_scripts', 'run-corvus')())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sethshj/bin/Corvus/corvus/controls.py", line 924, in oneshot
+    workflow.sequence[i].go(config, system)
+  File "/home/sethshj/bin/Corvus/corvus/structures.py", line 100, in go
+    self.handler.exchange(config, system, returnedOutput)
+  File "/home/sethshj/bin/Corvus/corvus/structures.py", line 248, in exchange
+    self.run(config, input, output)
+  File "/home/sethshj/bin/Corvus/corvus/helper.py", line 168, in run
+    outputs = outputs + poolout.get()
+                        ^^^^^^^^^^^^^
+  File "/home/sethshj/.conda/envs/Corvus2/lib/python3.12/multiprocessing/pool.py", line 774, in get
+    raise self._value
+FileNotFoundError: [Errno 2] No such file or directory: '/home/sethshj/Programs/Fe_data/05FEB25/mp-1025047/mp-1025047_Ge/Corvus3_helper/Corvus1Ge4_FEFF/xmu.dat'
+Failed to run-corvus on ./mp-1025047_Ge.in
+Completed Corvus on ./mp-1025047_Ge.in

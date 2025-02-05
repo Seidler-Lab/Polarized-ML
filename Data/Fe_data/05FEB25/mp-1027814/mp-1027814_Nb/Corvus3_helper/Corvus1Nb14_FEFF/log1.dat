@@ -1,0 +1,172 @@
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.70214E+00  1.64357E+00  1.09070E+00
+    1  1.72652E+00  1.67751E+00  1.07315E+00
+    2  1.72191E+00  1.67084E+00  1.07679E+00
+    3  1.67087E+00  1.61888E+00  1.08101E+00
+    4  1.73021E+00  1.67852E+00  1.07742E+00
+    5  1.68389E+00  1.62983E+00  1.08388E+00
+    6  1.69442E+00  1.63804E+00  1.08732E+00
+    7  1.69183E+00  1.64238E+00  1.07556E+00
+    8  1.70218E+00  1.64360E+00  1.09071E+00
+    9  1.65501E+00  1.59355E+00  1.09889E+00
+Core-valence separation energy:  ecv=   -43.000 eV
+Initial Fermi level:              mu=    -7.701 eV
+SCF ITERATION NUMBER  1
+     point #   1  energy = -43.000
+FMS for a cluster of    7 atoms around atom type   0
+FMS for a cluster of    6 atoms around atom type   3
+FMS for a cluster of    4 atoms around atom type   5
+FMS for a cluster of    4 atoms around atom type   6
+FMS for a cluster of    2 atoms around atom type   7
+FMS for a cluster of    7 atoms around atom type   8
+FMS for a cluster of    7 atoms around atom type   9
+     point #  20  energy = -31.894
+     point #  40  energy = -13.991
+     point #  60  energy = -10.532
+     point #  80  energy =  -9.919
+New Fermi level:    mu=  -9.870 eV  Charge distance=  0.3490 (partial c.d.=  9.4409)
+SCF ITERATION NUMBER  2
+     point #   1  energy = -43.000
+     point #  20  energy = -31.957
+     point #  40  energy = -11.878
+     point #  60  energy =  -9.858
+New Fermi level:    mu=  -9.527 eV  Charge distance=  0.1116 (partial c.d.=  4.6456)
+SCF ITERATION NUMBER  3
+     point #   1  energy = -43.000
+     point #  20  energy = -31.842
+     point #  40  energy = -11.556
+     point #  60  energy =  -9.539
+     point #  80  energy = -10.114
+New Fermi level:    mu= -10.017 eV  Charge distance=  0.1023 (partial c.d.=  3.9899)
+SCF ITERATION NUMBER  4
+     point #   1  energy = -43.000
+     point #  20  energy = -32.006
+     point #  40  energy = -12.016
+New Fermi level:    mu= -10.017 eV  Charge distance=  0.1894 (partial c.d.=  0.5939)
+SCF ITERATION NUMBER  5
+     point #   1  energy = -43.000
+     point #  20  energy = -32.006
+     point #  40  energy = -12.016
+     point #  60  energy =  -9.992
+New Fermi level:    mu=  -9.919 eV  Charge distance=  0.0237 (partial c.d.=  1.3462)
+SCF ITERATION NUMBER  6
+     point #   1  energy = -43.000
+     point #  20  energy = -31.973
+     point #  40  energy = -11.924
+     point #  60  energy =  -9.944
+New Fermi level:    mu=  -9.993 eV  Charge distance=  0.0786 (partial c.d.=  0.7865)
+SCF ITERATION NUMBER  7
+     point #   1  energy = -43.000
+     point #  20  energy = -31.998
+     point #  40  energy = -11.993
+New Fermi level:    mu=  -9.993 eV  Charge distance=  0.5091 (partial c.d.=  0.0884)
+SCF ITERATION NUMBER  8
+     point #   1  energy = -43.000
+     point #  20  energy = -31.998
+     point #  40  energy = -11.994
+     point #  60  energy = -10.018
+New Fermi level:    mu= -10.057 eV  Charge distance=  0.0891 (partial c.d.=  0.0770)
+SCF ITERATION NUMBER  9
+     point #   1  energy = -43.000
+     point #  20  energy = -32.019
+     point #  40  energy = -12.054
+New Fermi level:    mu= -10.051 eV  Charge distance=  0.0159 (partial c.d.=  0.1766)
+SCF ITERATION NUMBER 10
+     point #   1  energy = -43.000
+     point #  20  energy = -32.017
+     point #  40  energy = -12.048
+New Fermi level:    mu= -10.047 eV  Charge distance=  0.0049 (partial c.d.=  0.0107)
+SCF ITERATION NUMBER 11
+     point #   1  energy = -43.000
+     point #  20  energy = -32.016
+     point #  40  energy = -12.044
+New Fermi level:    mu= -10.047 eV  Charge distance=  0.0039 (partial c.d.=  0.0146)
+SCF ITERATION NUMBER 12
+     point #   1  energy = -43.000
+     point #  20  energy = -32.016
+     point #  40  energy = -12.044
+New Fermi level:    mu= -10.048 eV  Charge distance=  0.0044 (partial c.d.=  0.0236)
+SCF ITERATION NUMBER 13
+     point #   1  energy = -43.000
+     point #  20  energy = -32.016
+     point #  40  energy = -12.046
+New Fermi level:    mu= -10.050 eV  Charge distance=  0.0013 (partial c.d.=  0.0374)
+SCF ITERATION NUMBER 14
+     point #   1  energy = -43.000
+     point #  20  energy = -32.017
+     point #  40  energy = -12.047
+New Fermi level:    mu= -10.049 eV  Charge distance=  0.0008 (partial c.d.=  0.0066)
+SCF ITERATION NUMBER 15
+     point #   1  energy = -43.000
+     point #  20  energy = -32.016
+     point #  40  energy = -12.046
+New Fermi level:    mu= -10.049 eV  Charge distance=  0.0058 (partial c.d.=  0.0009)
+SCF ITERATION NUMBER 16
+     point #   1  energy = -43.000
+     point #  20  energy = -32.016
+     point #  40  energy = -12.046
+New Fermi level:    mu= -10.048 eV  Charge distance=  0.0000 (partial c.d.=  0.0061)
+SCF ITERATION NUMBER 17
+     point #   1  energy = -43.000
+     point #  20  energy = -32.016
+     point #  40  energy = -12.045
+New Fermi level:    mu= -10.048 eV  Charge distance=  0.0002 (partial c.d.=  0.0002)
+Electronic configuration
+  type     l     N_el
+     0     0    0.583
+     0     1    6.484
+     0     2    3.797
+     0     3    0.000
+     1     0    0.885
+     1     1    0.788
+     1     2    0.149
+     1     3    0.000
+     2     0    0.890
+     2     1    0.801
+     2     2    0.151
+     2     3    0.000
+     3     0    0.878
+     3     1    0.888
+     3     2    0.165
+     3     3    0.000
+     4     0    0.883
+     4     1    0.785
+     4     2    0.150
+     4     3    0.000
+     5     0    0.869
+     5     1    0.907
+     5     2    0.215
+     5     3    0.000
+     6     0    0.874
+     6     1    0.903
+     6     2    0.204
+     6     3    0.000
+     7     0    0.891
+     7     1    0.856
+     7     2    0.177
+     7     3    0.000
+     8     0    0.583
+     8     1    6.484
+     8     2    3.797
+     8     3    0.000
+     9     0    0.910
+     9     1    0.945
+     9     2    7.341
+     9     3    0.000
+Charge transfer:  type  charge
+       0   -0.136
+       1   -0.178
+       2   -0.158
+       3   -0.069
+       4   -0.182
+       5   -0.008
+       6   -0.019
+       7   -0.076
+       8   -0.136
+       9    1.195
+Convergence reached in   17 iterations.
+Done with module: potentials.
+

@@ -1,0 +1,264 @@
+Running Corvus on ./mp-1027814_Fe.in
+/home/sethshj/.conda/envs/Corvus2/lib/python3.12/site-packages/pymatgen/io/cif.py:1276: UserWarning: The default value of primitive was changed from True to False in https://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell in the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.
+  warnings.warn(
+
+
+#########################
+    WORKFLOW
+#########################
+Calculate cfavg
+1) Get cif file from material project id.
+   input: ['mp_id|cif_input']
+  output: ['mp.structure']
+2) Calculate cluster from cif using pymatgen.
+   input: ['mp.structure']
+  output: ['cluster_array']
+3) Average over an array of clusters and absorbing atoms.
+   input: ['cluster_array']
+  output: ['cfavg']
+Required User Input: ['mp_id|cif_input']
+#########################
+  END WORKFLOW
+#########################
+
+
+Number of cpu for multiprocessing:  2
+Number of absorbers: 1
+Using  1  processors.
+processes left to run:  1
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   1.309 eV.
+Your calculation:
+ Once upon a time ...
+Fe K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+Calculating atomic potentials ...
+    overlapped atomic potential and density for unique potential    0
+    overlapped atomic potential and density for unique potential    1
+    overlapped atomic potential and density for unique potential    2
+    overlapped atomic potential and density for unique potential    3
+    overlapped atomic potential and density for unique potential    4
+    overlapped atomic potential and density for unique potential    5
+    overlapped atomic potential and density for unique potential    6
+    overlapped atomic potential and density for unique potential    7
+    overlapped atomic potential and density for unique potential    8
+    overlapped atomic potential and density for unique potential    9
+Done with module: atomic potentials.
+
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.65501E+00  1.59355E+00  1.09889E+00
+    1  1.72651E+00  1.67751E+00  1.07315E+00
+    2  1.72191E+00  1.67084E+00  1.07679E+00
+    3  1.67087E+00  1.61888E+00  1.08101E+00
+    4  1.73021E+00  1.67852E+00  1.07742E+00
+    5  1.68389E+00  1.62983E+00  1.08388E+00
+    6  1.69442E+00  1.63804E+00  1.08732E+00
+    7  1.69183E+00  1.64238E+00  1.07556E+00
+    8  1.70214E+00  1.64357E+00  1.09070E+00
+    9  1.65510E+00  1.59363E+00  1.09891E+00
+Core-valence separation energy:  ecv=   -43.000 eV
+Initial Fermi level:              mu=    -7.702 eV
+ Zero temperature single thread
+SCF ITERATION NUMBER  1
+     point #   1  energy = -43.000
+FMS for a cluster of    7 atoms around atom type   0
+FMS for a cluster of    6 atoms around atom type   3
+FMS for a cluster of    4 atoms around atom type   5
+FMS for a cluster of    4 atoms around atom type   6
+FMS for a cluster of    2 atoms around atom type   7
+FMS for a cluster of    7 atoms around atom type   8
+FMS for a cluster of    7 atoms around atom type   9
+     point #  20  energy = -31.894
+     point #  40  energy = -13.991
+     point #  60  energy = -10.532
+     point #  80  energy =  -9.919
+New Fermi level:    mu=  -9.878 eV  Charge distance=  0.3486 (partial c.d.=  9.4394)
+ Zero temperature single thread
+SCF ITERATION NUMBER  2
+     point #   1  energy = -43.000
+     point #  20  energy = -31.959
+     point #  40  energy = -11.885
+     point #  60  energy =  -9.865
+New Fermi level:    mu=  -9.527 eV  Charge distance=  0.0980 (partial c.d.=  4.6377)
+ Zero temperature single thread
+SCF ITERATION NUMBER  3
+     point #   1  energy = -43.000
+     point #  20  energy = -31.842
+     point #  40  energy = -11.556
+     point #  60  energy =  -9.540
+     point #  80  energy = -10.093
+New Fermi level:    mu=  -9.994 eV  Charge distance=  0.1012 (partial c.d.=  3.7669)
+ Zero temperature single thread
+SCF ITERATION NUMBER  4
+     point #   1  energy = -43.000
+     point #  20  energy = -31.998
+     point #  40  energy = -11.994
+New Fermi level:    mu=  -9.997 eV  Charge distance=  0.1798 (partial c.d.=  0.5974)
+ Zero temperature single thread
+SCF ITERATION NUMBER  5
+     point #   1  energy = -43.000
+     point #  20  energy = -31.999
+     point #  40  energy = -11.997
+     point #  60  energy =  -9.972
+New Fermi level:    mu=  -9.968 eV  Charge distance=  0.0959 (partial c.d.=  0.7223)
+ Zero temperature single thread
+SCF ITERATION NUMBER  6
+     point #   1  energy = -43.000
+     point #  20  energy = -31.989
+     point #  40  energy = -11.970
+     point #  60  energy =  -9.993
+New Fermi level:    mu= -10.009 eV  Charge distance=  0.2609 (partial c.d.=  0.3978)
+ Zero temperature single thread
+SCF ITERATION NUMBER  7
+     point #   1  energy = -43.000
+     point #  20  energy = -32.003
+     point #  40  energy = -12.008
+     point #  60  energy = -10.034
+New Fermi level:    mu= -10.030 eV  Charge distance=  0.3006 (partial c.d.=  0.1455)
+ Zero temperature single thread
+SCF ITERATION NUMBER  8
+     point #   1  energy = -43.000
+     point #  20  energy = -32.010
+     point #  40  energy = -12.028
+     point #  60  energy = -10.055
+New Fermi level:    mu= -10.058 eV  Charge distance=  0.0138 (partial c.d.=  0.2090)
+ Zero temperature single thread
+SCF ITERATION NUMBER  9
+     point #   1  energy = -43.000
+     point #  20  energy = -32.019
+     point #  40  energy = -12.055
+     point #  60  energy = -10.033
+New Fermi level:    mu= -10.043 eV  Charge distance=  0.0027 (partial c.d.=  0.1396)
+ Zero temperature single thread
+SCF ITERATION NUMBER 10
+     point #   1  energy = -43.000
+     point #  20  energy = -32.014
+     point #  40  energy = -12.040
+New Fermi level:    mu= -10.047 eV  Charge distance=  0.0020 (partial c.d.=  0.0654)
+ Zero temperature single thread
+SCF ITERATION NUMBER 11
+     point #   1  energy = -43.000
+     point #  20  energy = -32.016
+     point #  40  energy = -12.044
+New Fermi level:    mu= -10.044 eV  Charge distance=  0.0013 (partial c.d.=  0.0747)
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+ Zero temperature single thread
+SCF ITERATION NUMBER 12
+     point #   1  energy = -43.000
+     point #  20  energy = -32.015
+     point #  40  energy = -12.042
+New Fermi level:    mu= -10.045 eV  Charge distance=  0.0100 (partial c.d.=  0.0111)
+ Zero temperature single thread
+SCF ITERATION NUMBER 13
+     point #   1  energy = -43.000
+     point #  20  energy = -32.015
+     point #  40  energy = -12.042
+New Fermi level:    mu= -10.051 eV  Charge distance=  0.0010 (partial c.d.=  0.0916)
+ Zero temperature single thread
+SCF ITERATION NUMBER 14
+     point #   1  energy = -43.000
+     point #  20  energy = -32.017
+     point #  40  energy = -12.048
+New Fermi level:    mu= -10.052 eV  Charge distance=  0.0005 (partial c.d.=  0.0127)
+ Zero temperature single thread
+SCF ITERATION NUMBER 15
+     point #   1  energy = -43.000
+     point #  20  energy = -32.017
+     point #  40  energy = -12.048
+New Fermi level:    mu= -10.051 eV  Charge distance=  0.0024 (partial c.d.=  0.0014)
+ Zero temperature single thread
+SCF ITERATION NUMBER 16
+     point #   1  energy = -43.000
+     point #  20  energy = -32.017
+     point #  40  energy = -12.048
+New Fermi level:    mu= -10.050 eV  Charge distance=  0.0011 (partial c.d.=  0.0036)
+ Zero temperature single thread
+SCF ITERATION NUMBER 17
+     point #   1  energy = -43.000
+     point #  20  energy = -32.017
+     point #  40  energy = -12.047
+New Fermi level:    mu= -10.050 eV  Charge distance=  0.0003 (partial c.d.=  0.0020)
+ Zero temperature single thread
+SCF ITERATION NUMBER 18
+     point #   1  energy = -43.000
+     point #  20  energy = -32.017
+     point #  40  energy = -12.047
+New Fermi level:    mu= -10.050 eV  Charge distance=  0.0001 (partial c.d.=  0.0001)
+Electronic configuration
+  type     l     N_el
+     0     0    0.909
+     0     1    0.944
+     0     2    7.341
+     0     3    0.000
+     1     0    0.885
+     1     1    0.787
+     1     2    0.149
+     1     3    0.000
+     2     0    0.890
+     2     1    0.801
+     2     2    0.150
+     2     3    0.000
+     3     0    0.878
+     3     1    0.887
+     3     2    0.165
+     3     3    0.000
+     4     0    0.883
+     4     1    0.785
+     4     2    0.150
+     4     3    0.000
+     5     0    0.869
+     5     1    0.907
+     5     2    0.215
+     5     3    0.000
+     6     0    0.874
+     6     1    0.903
+     6     2    0.204
+     6     3    0.000
+     7     0    0.891
+     7     1    0.856
+     7     2    0.177
+     7     3    0.000
+     8     0    0.583
+     8     1    6.484
+     8     2    3.796
+     8     3    0.000
+     9     0    0.909
+     9     1    0.944
+     9     2    7.340
+     9     3    0.000
+Charge transfer:  type  charge
+       0    1.193
+       1   -0.179
+       2   -0.159
+       3   -0.070
+       4   -0.182
+       5   -0.009
+       6   -0.019
+       7   -0.076
+       8   -0.137
+       9    1.193
+Convergence reached in   18 iterations.
+total time         36.1294s          (communication time     0.0000E+00s)
+Done with module: potentials.
+
+Calculating cross-section and phases ...
+    absorption cross section
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+    phase shifts for unique potential    4
+    phase shifts for unique potential    5
+    phase shifts for unique potential    6
+    phase shifts for unique potential    7
+    phase shifts for unique potential    8
+    phase shifts for unique potential    9
+Done with module: cross-section and phases (XSPH).
+

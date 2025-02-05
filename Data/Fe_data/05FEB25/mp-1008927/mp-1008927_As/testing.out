@@ -1,0 +1,356 @@
+Running Corvus on ./mp-1008927_As.in
+/home/sethshj/.conda/envs/Corvus2/lib/python3.12/site-packages/pymatgen/io/cif.py:1276: UserWarning: The default value of primitive was changed from True to False in https://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell in the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.
+  warnings.warn(
+
+
+#########################
+    WORKFLOW
+#########################
+Calculate cfavg
+1) Get cif file from material project id.
+   input: ['mp_id|cif_input']
+  output: ['mp.structure']
+2) Calculate cluster from cif using pymatgen.
+   input: ['mp.structure']
+  output: ['cluster_array']
+3) Average over an array of clusters and absorbing atoms.
+   input: ['cluster_array']
+  output: ['cfavg']
+Required User Input: ['mp_id|cif_input']
+#########################
+  END WORKFLOW
+#########################
+
+
+Number of cpu for multiprocessing:  2
+Number of absorbers: 1
+Using  1  processors.
+processes left to run:  1
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   2.507 eV.
+Your calculation:
+ Once upon a time ...
+As K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+Calculating atomic potentials ...
+    overlapped atomic potential and density for unique potential    0
+    overlapped atomic potential and density for unique potential    1
+    overlapped atomic potential and density for unique potential    2
+    overlapped atomic potential and density for unique potential    3
+Done with module: atomic potentials.
+
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.47241E+00  1.40474E+00  1.12663E+00
+    1  1.25351E+00  1.23263E+00  1.04115E+00
+    2  1.44907E+00  1.38130E+00  1.12928E+00
+    3  1.47241E+00  1.40474E+00  1.12663E+00
+Core-valence separation energy:  ecv=   -40.000 eV
+Initial Fermi level:              mu=    -5.755 eV
+ Zero temperature single thread
+SCF ITERATION NUMBER  1
+     point #   1  energy = -40.000
+FMS for a cluster of   11 atoms around atom type   0
+FMS for a cluster of   11 atoms around atom type   1
+FMS for a cluster of   11 atoms around atom type   2
+FMS for a cluster of   11 atoms around atom type   3
+     point #  20  energy = -28.905
+     point #  40  energy = -12.808
+     point #  60  energy = -12.317
+New Fermi level:    mu= -12.424 eV  Charge distance=  0.0759 (partial c.d.=  7.3820)
+ Zero temperature single thread
+SCF ITERATION NUMBER  2
+     point #   1  energy = -40.000
+     point #  20  energy = -28.765
+     point #  40  energy = -12.424
+     point #  60  energy = -12.183
+New Fermi level:    mu= -12.010 eV  Charge distance=  0.1759 (partial c.d.=  0.2635)
+ Zero temperature single thread
+SCF ITERATION NUMBER  3
+     point #   1  energy = -40.000
+     point #  20  energy = -29.004
+     point #  40  energy = -12.010
+     point #  60  energy = -11.857
+New Fermi level:    mu= -11.743 eV  Charge distance=  0.1428 (partial c.d.=  0.2242)
+ Zero temperature single thread
+SCF ITERATION NUMBER  4
+     point #   1  energy = -40.000
+     point #  20  energy = -28.899
+     point #  40  energy = -11.743
+     point #  60  energy = -11.896
+New Fermi level:    mu= -12.027 eV  Charge distance=  0.0705 (partial c.d.=  0.0914)
+ Zero temperature single thread
+SCF ITERATION NUMBER  5
+     point #   1  energy = -40.000
+     point #  20  energy = -29.011
+     point #  40  energy = -12.027
+     point #  60  energy = -12.114
+New Fermi level:    mu= -12.131 eV  Charge distance=  0.0131 (partial c.d.=  0.0332)
+ Zero temperature single thread
+SCF ITERATION NUMBER  6
+     point #   1  energy = -40.000
+     point #  20  energy = -29.052
+     point #  40  energy = -12.131
+New Fermi level:    mu= -12.100 eV  Charge distance=  0.0366 (partial c.d.=  0.0060)
+ Zero temperature single thread
+SCF ITERATION NUMBER  7
+     point #   1  energy = -40.000
+     point #  20  energy = -29.039
+     point #  40  energy = -12.100
+New Fermi level:    mu= -12.030 eV  Charge distance=  0.0103 (partial c.d.=  0.0238)
+ Zero temperature single thread
+SCF ITERATION NUMBER  8
+     point #   1  energy = -40.000
+     point #  20  energy = -29.012
+     point #  40  energy = -12.030
+New Fermi level:    mu= -12.012 eV  Charge distance=  0.0020 (partial c.d.=  0.0073)
+ Zero temperature single thread
+SCF ITERATION NUMBER  9
+     point #   1  energy = -40.000
+     point #  20  energy = -29.005
+     point #  40  energy = -12.012
+New Fermi level:    mu= -12.008 eV  Charge distance=  0.0003 (partial c.d.=  0.0013)
+ Zero temperature single thread
+SCF ITERATION NUMBER 10
+     point #   1  energy = -40.000
+     point #  20  energy = -29.003
+     point #  40  energy = -12.008
+New Fermi level:    mu= -12.009 eV  Charge distance=  0.0004 (partial c.d.=  0.0002)
+Electronic configuration
+  type     l     N_el
+     0     0    1.643
+     0     1    2.809
+     0     2    0.357
+     0     3    0.000
+     1     0    0.247
+     1     1    0.537
+     1     2    0.000
+     1     3    0.000
+     2     0    0.609
+     2     1    0.772
+     2     2    7.027
+     2     3    0.000
+     3     0    1.643
+     3     1    2.809
+     3     2    0.357
+     3     3    0.000
+Charge transfer:  type  charge
+       0   -0.190
+       1   -0.216
+       2    0.408
+       3   -0.190
+Convergence reached in   10 iterations.
+total time         29.9640s          (communication time     0.0000E+00s)
+Done with module: potentials.
+
+Calculating cross-section and phases ...
+    absorption cross section
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+Done with module: cross-section and phases (XSPH).
+
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+FMS calculation of full Green's function ...
+FEFF-MPI using     1 parallel threads.
+Using   373 energy points.
+xprep done
+FMS for a cluster of   19 atoms
+Energy point    1/ 373
+Energy point   10/ 373
+Energy point   20/ 373
+Energy point   30/ 373
+Energy point   40/ 373
+Energy point   50/ 373
+Energy point   60/ 373
+Energy point   70/ 373
+Energy point   80/ 373
+Energy point   90/ 373
+Energy point  100/ 373
+Energy point  110/ 373
+Energy point  120/ 373
+Energy point  130/ 373
+Energy point  140/ 373
+Energy point  150/ 373
+Energy point  160/ 373
+Energy point  170/ 373
+Energy point  180/ 373
+Energy point  190/ 373
+Energy point  200/ 373
+Energy point  210/ 373
+Energy point  220/ 373
+Energy point  230/ 373
+Energy point  240/ 373
+Energy point  250/ 373
+Energy point  260/ 373
+Energy point  270/ 373
+Energy point  280/ 373
+Energy point  290/ 373
+Energy point  300/ 373
+Energy point  310/ 373
+Energy point  320/ 373
+Energy point  330/ 373
+Energy point  340/ 373
+Energy point  350/ 373
+Energy point  360/ 373
+Energy point  370/ 373
+total time          8.5478s          (communication time     0.0000E+00s)
+Done with module: FMS.
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+Pathfinder: finding scattering paths...
+Preparing plane wave scattering amplitudes
+Searching for paths
+    Rmax  0.1000  keep and heap limits   0.0000000   0.0000000
+    Preparing neighbor table
+    Paths found        0   (maxheap, maxscatt       1   0)
+Eliminating path degeneracies
+0 paths retained.
+Done with module: pathfinder.
+
+Calculating EXAFS parameters ...
+Done with module: EXAFS parameters (GENFMT).
+
+Calculating XAS spectra ...
+electronic_temperature =    0.00000 (eV)
+Done with module: XAS spectra (FF2X: DW + final sum over paths).
+
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   2.507 eV.
+Your calculation:
+ Once upon a time ...
+As K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Calculating cross-section and phases ...
+    absorption cross section
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+Done with module: cross-section and phases (XSPH).
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+Pathfinder: finding scattering paths...
+Preparing plane wave scattering amplitudes
+Searching for paths
+    Rmax  0.1000  keep and heap limits   0.0000000   0.0000000
+    Preparing neighbor table
+    Paths found        0   (maxheap, maxscatt       1   0)
+Eliminating path degeneracies
+0 paths retained.
+Done with module: pathfinder.
+
+Calculating EXAFS parameters ...
+Done with module: EXAFS parameters (GENFMT).
+
+Calculating XAS spectra ...
+electronic_temperature =    0.00000 (eV)
+Done with module: XAS spectra (FF2X: DW + final sum over paths).
+
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   2.507 eV.
+Your calculation:
+ Once upon a time ...
+As K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Calculating cross-section and phases ...
+    absorption cross section
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+Done with module: cross-section and phases (XSPH).
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+Pathfinder: finding scattering paths...
+Preparing plane wave scattering amplitudes
+Searching for paths
+    Rmax  0.1000  keep and heap limits   0.0000000   0.0000000
+    Preparing neighbor table
+    Paths found        0   (maxheap, maxscatt       1   0)
+Eliminating path degeneracies
+0 paths retained.
+Done with module: pathfinder.
+
+Calculating EXAFS parameters ...
+Done with module: EXAFS parameters (GENFMT).
+
+Calculating XAS spectra ...
+electronic_temperature =    0.00000 (eV)
+Done with module: XAS spectra (FF2X: DW + final sum over paths).
+
+equi =  1
+Running feff to obtain: {'xes': None}
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/rdinp 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/atomic 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/pot 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/screen 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/opconsat 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/xsph 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/fms 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/mkgtr 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/path 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/genfmt 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/ff2x 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/sfconv 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/rdinp 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/xsph 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/mkgtr 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/path 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/genfmt 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/ff2x 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/sfconv 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/rdinp 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/xsph 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/mkgtr 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/path 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/genfmt 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/ff2x 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Running exectuable: /home/sethshj/bin/feff10/bin/MPI/sfconv 
+Working in directory: /home/sethshj/Programs/Fe_data/05FEB25/mp-1008927/mp-1008927_As/Corvus3_helper/Corvus1As2_FEFF
+Completed Corvus on ./mp-1008927_As.in

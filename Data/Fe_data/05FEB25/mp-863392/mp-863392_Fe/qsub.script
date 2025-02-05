@@ -1,0 +1,42 @@
+#!/bin/bash -l
+set -x 
+
+echo "JOB_DIRECTORY=${JOB_DIRECTORY}" >> debug.log 
+# PBS Directives 
+#PBS -N mp-863392_Fe
+#PBS -l nodes=1:ppn=1
+#PBS -o /home/sethshj/Programs/Fe_data/05FEB25/mp-863392/mp-863392_Fe/job_$mp-863392_Fe.sout
+#PBS -e /home/sethshj/Programs/Fe_data/05FEB25/mp-863392/mp-863392_Fe/job_$mp-863392_Fe.serr
+#PBS -V
+
+# Use the argument from the subprocess.run as the job directory
+job_directory="${JOB_DIRECTORY}" 
+
+# Change to the job directory
+cd "$job_directory" || exit 1  # Exit if the directory change fails
+
+# Activate conda environment
+conda activate Corvus2
+if [ $? -ne 0 ]; then
+    echo "Failed to activate conda environment"
+    exit 1
+fi
+
+# Function to search for all `.in` files and run the `run-corvus` command
+search_and_run() {
+    files=$(find . -type f -name "*.in")
+    for file in $files; do
+        # Start time for the job
+        start_time=$(date +%s)
+
+        # Clean up old files (if any)
+        rm -rf Corvus1_PYMATGEN/ Corvus2_helper/ Corvus.cfavg.out Corvus.nest
+
+        # Run the Corvus command and redirect output
+        echo "Running Corvus on ${file}" >> testing.out 
+        run-corvus -i "${file}" >> testing.out 2>&1 || echo "Failed to run-corvus on ${file}" >> testing.out 
+        echo "Completed Corvus on ${file}" >> testing.out 
+    done
+}
+
+search_and_run

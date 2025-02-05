@@ -1,0 +1,9 @@
+FMS calculation of full Green's function ...
+FEFF-MPI using     1 parallel threads.
+ Error opening file, phase.bin in module rdxsph
+ Fatal error
+CHOPEN
+MKGTR: Tracing over Green's function ...
+ Error opening file, phase.bin in module rdxsph
+ Fatal error
+CHOPEN

@@ -1,0 +1,21 @@
+{
+    "cif_file": "/home/sethshj/Programs/Fe_data/mp-1245541.cif",
+    "input_file": {
+        "Output Path": "/home/sethshj/Programs/Fe_data/05FEB25/mp-1245541/mp-1245541_Si/mp-1245541_Si.in",
+        "cif_input": "mp-1245541.cif",
+        "absorbing_atom_type": "Si",
+        "feff.edge": "K",
+        "target_list": "cfavg",
+        "cfavg_target": "xes",
+        "feff.scf": "3.0 0 30 0.1 0",
+        "feff.fms": "4.0 0 0 0.0 0.0 40",
+        "feff.corehole": "None",
+        "Usehandlers": "Feff",
+        "feff.control": "1 1 1 1 1 1",
+        "feff.egrid": "e_grid -30 5 0.1",
+        "multiprocessing_ncpu": "2"
+    },
+    "absorbing_atom": null,
+    "calculation_time": "11:12:56",
+    "calculation_date": "2025-02-05"
+}

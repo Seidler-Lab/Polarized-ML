@@ -1,0 +1,159 @@
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.45638E+00  1.42262E+00  1.05862E+00
+    1  1.66899E+00  1.61549E+00  1.08375E+00
+    2  1.65828E+00  1.60801E+00  1.07869E+00
+    3  1.66217E+00  1.60703E+00  1.08702E+00
+    4  1.67220E+00  1.61984E+00  1.08157E+00
+    5  1.66309E+00  1.60514E+00  1.09199E+00
+    6  1.45638E+00  1.42262E+00  1.05862E+00
+Core-valence separation energy:  ecv=   -40.000 eV
+Initial Fermi level:              mu=    -7.912 eV
+SCF ITERATION NUMBER  1
+     point #   1  energy = -40.000
+FMS for a cluster of    9 atoms around atom type   0
+FMS for a cluster of    8 atoms around atom type   1
+FMS for a cluster of    9 atoms around atom type   2
+FMS for a cluster of    8 atoms around atom type   3
+FMS for a cluster of    9 atoms around atom type   4
+FMS for a cluster of    9 atoms around atom type   5
+FMS for a cluster of    9 atoms around atom type   6
+     point #  20  energy = -28.940
+     point #  40  energy = -11.037
+     point #  60  energy =  -9.519
+     point #  80  energy =  -8.569
+New Fermi level:    mu=  -8.488 eV  Charge distance=  0.8194 (partial c.d.=  9.6990)
+SCF ITERATION NUMBER  2
+     point #   1  energy = -40.000
+     point #  20  energy = -28.818
+     point #  40  energy =  -8.488
+     point #  60  energy =  -8.528
+     point #  80  energy =  -9.659
+New Fermi level:    mu=  -9.472 eV  Charge distance=  0.2628 (partial c.d.=  8.5797)
+SCF ITERATION NUMBER  3
+     point #   1  energy = -40.000
+     point #  20  energy = -28.806
+     point #  40  energy =  -9.472
+     point #  60  energy =  -9.563
+     point #  80  energy = -11.953
+New Fermi level:    mu= -11.465 eV  Charge distance=  0.1456 (partial c.d.=  5.8008)
+SCF ITERATION NUMBER  4
+     point #   1  energy = -40.000
+     point #  20  energy = -28.790
+     point #  40  energy = -11.465
+     point #  60  energy = -11.275
+New Fermi level:    mu= -10.810 eV  Charge distance=  0.0965 (partial c.d.=  1.7614)
+SCF ITERATION NUMBER  5
+     point #   1  energy = -40.000
+     point #  20  energy = -28.928
+     point #  40  energy = -10.810
+     point #  60  energy = -10.735
+New Fermi level:    mu= -10.667 eV  Charge distance=  0.1442 (partial c.d.=  0.2329)
+SCF ITERATION NUMBER  6
+     point #   1  energy = -40.000
+     point #  20  energy = -28.874
+     point #  40  energy = -10.667
+New Fermi level:    mu= -10.700 eV  Charge distance=  0.0738 (partial c.d.=  0.4614)
+SCF ITERATION NUMBER  7
+     point #   1  energy = -40.000
+     point #  20  energy = -28.886
+     point #  40  energy = -10.700
+New Fermi level:    mu= -10.646 eV  Charge distance=  0.0563 (partial c.d.=  0.1014)
+SCF ITERATION NUMBER  8
+     point #   1  energy = -40.000
+     point #  20  energy = -28.866
+     point #  40  energy = -10.646
+New Fermi level:    mu= -10.704 eV  Charge distance=  0.1620 (partial c.d.=  0.2172)
+SCF ITERATION NUMBER  9
+     point #   1  energy = -40.000
+     point #  20  energy = -28.888
+     point #  40  energy = -10.704
+New Fermi level:    mu= -10.725 eV  Charge distance=  0.1278 (partial c.d.=  0.0299)
+SCF ITERATION NUMBER 10
+     point #   1  energy = -40.000
+     point #  20  energy = -28.896
+     point #  40  energy = -10.725
+New Fermi level:    mu= -10.720 eV  Charge distance=  0.0022 (partial c.d.=  0.0572)
+SCF ITERATION NUMBER 11
+     point #   1  energy = -40.000
+     point #  20  energy = -28.894
+     point #  40  energy = -10.720
+New Fermi level:    mu= -10.716 eV  Charge distance=  0.0049 (partial c.d.=  0.0120)
+SCF ITERATION NUMBER 12
+     point #   1  energy = -40.000
+     point #  20  energy = -28.892
+     point #  40  energy = -10.716
+New Fermi level:    mu= -10.718 eV  Charge distance=  0.0045 (partial c.d.=  0.0070)
+SCF ITERATION NUMBER 13
+     point #   1  energy = -40.000
+     point #  20  energy = -28.893
+     point #  40  energy = -10.718
+New Fermi level:    mu= -10.722 eV  Charge distance=  0.0018 (partial c.d.=  0.0163)
+SCF ITERATION NUMBER 14
+     point #   1  energy = -40.000
+     point #  20  energy = -28.895
+     point #  40  energy = -10.722
+New Fermi level:    mu= -10.722 eV  Charge distance=  0.0009 (partial c.d.=  0.0008)
+SCF ITERATION NUMBER 15
+     point #   1  energy = -40.000
+     point #  20  energy = -28.894
+     point #  40  energy = -10.722
+New Fermi level:    mu= -10.721 eV  Charge distance=  0.0013 (partial c.d.=  0.0007)
+SCF ITERATION NUMBER 16
+     point #   1  energy = -40.000
+     point #  20  energy = -28.894
+     point #  40  energy = -10.721
+New Fermi level:    mu= -10.721 eV  Charge distance=  0.0013 (partial c.d.=  0.0022)
+SCF ITERATION NUMBER 17
+     point #   1  energy = -40.000
+     point #  20  energy = -28.894
+     point #  40  energy = -10.721
+New Fermi level:    mu= -10.720 eV  Charge distance=  0.0001 (partial c.d.=  0.0021)
+SCF ITERATION NUMBER 18
+     point #   1  energy = -40.000
+     point #  20  energy = -28.894
+     point #  40  energy = -10.720
+New Fermi level:    mu= -10.720 eV  Charge distance=  0.0001 (partial c.d.=  0.0002)
+Electronic configuration
+  type     l     N_el
+     0     0    0.706
+     0     1    0.554
+     0     2    9.502
+     0     3    0.000
+     1     0    0.803
+     1     1    0.849
+     1     2    0.201
+     1     3    0.000
+     2     0    0.849
+     2     1    0.879
+     2     2    0.163
+     2     3    0.000
+     3     0    0.809
+     3     1    0.897
+     3     2    0.226
+     3     3    0.000
+     4     0    0.834
+     4     1    0.858
+     4     2    0.166
+     4     3    0.000
+     5     0    0.841
+     5     1    0.856
+     5     2    7.222
+     5     3    0.000
+     6     0    0.706
+     6     1    0.554
+     6     2    9.502
+     6     3    0.000
+Charge transfer:  type  charge
+       0   -0.238
+       1   -0.147
+       2   -0.108
+       3   -0.068
+       4   -0.142
+       5    0.919
+       6   -0.238
+Convergence reached in   18 iterations.
+Done with module: potentials.
+

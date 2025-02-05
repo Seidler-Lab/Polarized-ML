@@ -1,0 +1,413 @@
+Running Corvus on ./mp-1022242_Fe.in
+/home/sethshj/.conda/envs/Corvus2/lib/python3.12/site-packages/pymatgen/io/cif.py:1276: UserWarning: The default value of primitive was changed from True to False in https://github.com/materialsproject/pymatgen/pull/3419. CifParser now returns the cell in the CIF file as is. If you want the primitive cell, please set primitive=True explicitly.
+  warnings.warn(
+
+
+#########################
+    WORKFLOW
+#########################
+Calculate cfavg
+1) Get cif file from material project id.
+   input: ['mp_id|cif_input']
+  output: ['mp.structure']
+2) Calculate cluster from cif using pymatgen.
+   input: ['mp.structure']
+  output: ['cluster_array']
+3) Average over an array of clusters and absorbing atoms.
+   input: ['cluster_array']
+  output: ['cfavg']
+Required User Input: ['mp_id|cif_input']
+#########################
+  END WORKFLOW
+#########################
+
+
+Number of cpu for multiprocessing:  2
+Number of absorbers: 1
+Using  1  processors.
+processes left to run:  1
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   1.309 eV.
+Your calculation:
+ Once upon a time ...
+Fe K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+Calculating atomic potentials ...
+    overlapped atomic potential and density for unique potential    0
+    overlapped atomic potential and density for unique potential    1
+    overlapped atomic potential and density for unique potential    2
+    overlapped atomic potential and density for unique potential    3
+    overlapped atomic potential and density for unique potential    4
+    overlapped atomic potential and density for unique potential    5
+    overlapped atomic potential and density for unique potential    6
+Done with module: atomic potentials.
+
+Calculating SCF potentials ...
+FEFF-MPI using     1 parallel threads.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.72928E+00  1.66759E+00  1.09447E+00
+    1  1.58244E+00  1.55446E+00  1.04384E+00
+    2  1.74295E+00  1.69005E+00  1.07879E+00
+    3  1.73186E+00  1.67106E+00  1.09277E+00
+    4  1.72504E+00  1.66772E+00  1.08719E+00
+    5  1.74473E+00  1.68920E+00  1.08308E+00
+    6  1.72928E+00  1.66759E+00  1.09447E+00
+Core-valence separation energy:  ecv=   -40.000 eV
+Initial Fermi level:              mu=    -7.239 eV
+ Zero temperature single thread
+SCF ITERATION NUMBER  1
+     point #   1  energy = -40.000
+     point #  20  energy = -28.772
+     point #  40  energy = -13.203
+     point #  60  energy = -10.497
+New Fermi level:    mu= -10.116 eV  Charge distance=  0.3154 (partial c.d.=  9.4690)
+ Zero temperature single thread
+SCF ITERATION NUMBER  2
+     point #   1  energy = -40.000
+     point #  20  energy = -29.043
+     point #  40  energy = -10.116
+     point #  60  energy = -10.026
+     point #  80  energy =  -8.757
+New Fermi level:    mu=  -8.683 eV  Charge distance=  0.0733 (partial c.d.=  4.2051)
+ Zero temperature single thread
+SCF ITERATION NUMBER  3
+     point #   1  energy = -40.000
+     point #  20  energy = -28.887
+     point #  40  energy =  -8.683
+     point #  60  energy =  -8.723
+     point #  80  energy =  -9.708
+New Fermi level:    mu=  -9.677 eV  Charge distance=  0.0800 (partial c.d.=  3.0423)
+ Zero temperature single thread
+SCF ITERATION NUMBER  4
+     point #   1  energy = -40.000
+     point #  20  energy = -28.882
+     point #  40  energy =  -9.677
+     point #  60  energy =  -9.580
+New Fermi level:    mu=  -9.517 eV  Charge distance=  0.1874 (partial c.d.=  0.4655)
+ Zero temperature single thread
+SCF ITERATION NUMBER  5
+     point #   1  energy = -40.000
+     point #  20  energy = -28.823
+     point #  40  energy =  -9.517
+     point #  60  energy =  -9.455
+New Fermi level:    mu=  -9.401 eV  Charge distance=  0.2973 (partial c.d.=  0.3460)
+ Zero temperature single thread
+SCF ITERATION NUMBER  6
+     point #   1  energy = -40.000
+     point #  20  energy = -28.781
+     point #  40  energy =  -9.401
+New Fermi level:    mu=  -9.425 eV  Charge distance=  0.2907 (partial c.d.=  0.0565)
+ Zero temperature single thread
+SCF ITERATION NUMBER  7
+     point #   1  energy = -40.000
+     point #  20  energy = -28.789
+     point #  40  energy =  -9.425
+New Fermi level:    mu=  -9.378 eV  Charge distance=  0.0514 (partial c.d.=  0.2390)
+ Zero temperature single thread
+SCF ITERATION NUMBER  8
+     point #   1  energy = -40.000
+     point #  20  energy = -28.772
+     point #  40  energy =  -9.378
+New Fermi level:    mu=  -9.337 eV  Charge distance=  0.0272 (partial c.d.=  0.1097)
+ Zero temperature single thread
+SCF ITERATION NUMBER  9
+     point #   1  energy = -40.000
+     point #  20  energy = -28.757
+     point #  40  energy =  -9.337
+New Fermi level:    mu=  -9.367 eV  Charge distance=  0.0070 (partial c.d.=  0.5618)
+ Zero temperature single thread
+SCF ITERATION NUMBER 10
+     point #   1  energy = -40.000
+     point #  20  energy = -28.768
+     point #  40  energy =  -9.367
+New Fermi level:    mu=  -9.362 eV  Charge distance=  0.0083 (partial c.d.=  0.1713)
+ Zero temperature single thread
+SCF ITERATION NUMBER 11
+     point #   1  energy = -40.000
+     point #  20  energy = -28.766
+     point #  40  energy =  -9.362
+New Fermi level:    mu=  -9.348 eV  Charge distance=  0.0082 (partial c.d.=  0.2186)
+ Zero temperature single thread
+SCF ITERATION NUMBER 12
+     point #   1  energy = -40.000
+     point #  20  energy = -28.761
+     point #  40  energy =  -9.348
+New Fermi level:    mu=  -9.354 eV  Charge distance=  0.0013 (partial c.d.=  0.0787)
+ Zero temperature single thread
+SCF ITERATION NUMBER 13
+     point #   1  energy = -40.000
+     point #  20  energy = -28.763
+     point #  40  energy =  -9.354
+New Fermi level:    mu=  -9.357 eV  Charge distance=  0.0065 (partial c.d.=  0.0534)
+ Zero temperature single thread
+SCF ITERATION NUMBER 14
+     point #   1  energy = -40.000
+     point #  20  energy = -28.764
+     point #  40  energy =  -9.357
+New Fermi level:    mu=  -9.343 eV  Charge distance=  0.0008 (partial c.d.=  0.2290)
+ Zero temperature single thread
+SCF ITERATION NUMBER 15
+     point #   1  energy = -40.000
+     point #  20  energy = -28.759
+     point #  40  energy =  -9.343
+New Fermi level:    mu=  -9.342 eV  Charge distance=  0.0004 (partial c.d.=  0.0120)
+ Zero temperature single thread
+SCF ITERATION NUMBER 16
+     point #   1  energy = -40.000
+     point #  20  energy = -28.759
+     point #  40  energy =  -9.342
+New Fermi level:    mu=  -9.342 eV  Charge distance=  0.0008 (partial c.d.=  0.0030)
+ Zero temperature single thread
+SCF ITERATION NUMBER 17
+     point #   1  energy = -40.000
+     point #  20  energy = -28.759
+     point #  40  energy =  -9.342
+New Fermi level:    mu=  -9.341 eV  Charge distance=  0.0006 (partial c.d.=  0.0031)
+ Zero temperature single thread
+SCF ITERATION NUMBER 18
+     point #   1  energy = -40.000
+     point #  20  energy = -28.758
+     point #  40  energy =  -9.341
+New Fermi level:    mu=  -9.340 eV  Charge distance=  0.0001 (partial c.d.=  0.0045)
+ Zero temperature single thread
+SCF ITERATION NUMBER 19
+     point #   1  energy = -40.000
+     point #  20  energy = -28.758
+     point #  40  energy =  -9.340
+New Fermi level:    mu=  -9.340 eV  Charge distance=  0.0002 (partial c.d.=  0.0014)
+ Zero temperature single thread
+SCF ITERATION NUMBER 20
+     point #   1  energy = -40.000
+     point #  20  energy = -28.758
+     point #  40  energy =  -9.340
+New Fermi level:    mu=  -9.339 eV  Charge distance=  0.0001 (partial c.d.=  0.0012)
+ Zero temperature single thread
+SCF ITERATION NUMBER 21
+     point #   1  energy = -40.000
+     point #  20  energy = -28.758
+     point #  40  energy =  -9.339
+New Fermi level:    mu=  -9.339 eV  Charge distance=  0.0002 (partial c.d.=  0.0004)
+ Zero temperature single thread
+SCF ITERATION NUMBER 22
+     point #   1  energy = -40.000
+     point #  20  energy = -28.758
+     point #  40  energy =  -9.339
+New Fermi level:    mu=  -9.339 eV  Charge distance=  0.0000 (partial c.d.=  0.0006)
+ Zero temperature single thread
+SCF ITERATION NUMBER 23
+     point #   1  energy = -40.000
+     point #  20  energy = -28.758
+     point #  40  energy =  -9.339
+New Fermi level:    mu=  -9.339 eV  Charge distance=  0.0000 (partial c.d.=  0.0002)
+ Zero temperature single thread
+SCF ITERATION NUMBER 24
+     point #   1  energy = -40.000
+     point #  20  energy = -28.758
+     point #  40  energy =  -9.339
+New Fermi level:    mu=  -9.339 eV  Charge distance=  0.0000 (partial c.d.=  0.0000)
+Electronic configuration
+  type     l     N_el
+     0     0    0.941
+     0     1    0.771
+     0     2    7.304
+     0     3    0.000
+     1     0    0.331
+     1     1    6.247
+     1     2    0.057
+     1     3    0.000
+     2     0    0.950
+     2     1    0.810
+     2     2    0.128
+     2     3    0.000
+     3     0    0.952
+     3     1    0.808
+     3     2    0.125
+     3     3    0.000
+     4     0    0.953
+     4     1    0.812
+     4     2    0.124
+     4     3    0.000
+     5     0    0.956
+     5     1    0.822
+     5     2    0.130
+     5     3    0.000
+     6     0    0.941
+     6     1    0.771
+     6     2    7.304
+     6     3    0.000
+Charge transfer:  type  charge
+       0    1.016
+       1   -0.365
+       2   -0.112
+       3   -0.115
+       4   -0.112
+       5   -0.091
+       6    1.016
+Convergence reached in   24 iterations.
+total time         14.1052s          (communication time     0.0000E+00s)
+Done with module: potentials.
+
+Calculating cross-section and phases ...
+    absorption cross section
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+    phase shifts for unique potential    4
+    phase shifts for unique potential    5
+    phase shifts for unique potential    6
+Done with module: cross-section and phases (XSPH).
+
+Note: The following floating-point exceptions are signalling: IEEE_UNDERFLOW_FLAG IEEE_DENORMAL
+FMS calculation of full Green's function ...
+FEFF-MPI using     1 parallel threads.
+Using   371 energy points.
+xprep done
+FMS for a cluster of   13 atoms
+Energy point    1/ 371
+Energy point   10/ 371
+Energy point   20/ 371
+Energy point   30/ 371
+Energy point   40/ 371
+Energy point   50/ 371
+Energy point   60/ 371
+Energy point   70/ 371
+Energy point   80/ 371
+Energy point   90/ 371
+Energy point  100/ 371
+Energy point  110/ 371
+Energy point  120/ 371
+Energy point  130/ 371
+Energy point  140/ 371
+Energy point  150/ 371
+Energy point  160/ 371
+Energy point  170/ 371
+Energy point  180/ 371
+Energy point  190/ 371
+Energy point  200/ 371
+Energy point  210/ 371
+Energy point  220/ 371
+Energy point  230/ 371
+Energy point  240/ 371
+Energy point  250/ 371
+Energy point  260/ 371
+Energy point  270/ 371
+Energy point  280/ 371
+Energy point  290/ 371
+Energy point  300/ 371
+Energy point  310/ 371
+Energy point  320/ 371
+Energy point  330/ 371
+Energy point  340/ 371
+Energy point  350/ 371
+Energy point  360/ 371
+Energy point  370/ 371
+total time          8.6268s          (communication time     0.0000E+00s)
+Done with module: FMS.
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+Pathfinder: finding scattering paths...
+Preparing plane wave scattering amplitudes
+Searching for paths
+    Rmax  0.1000  keep and heap limits   0.0000000   0.0000000
+    Preparing neighbor table
+    Paths found        0   (maxheap, maxscatt       1   0)
+Eliminating path degeneracies
+0 paths retained.
+Done with module: pathfinder.
+
+Calculating EXAFS parameters ...
+Done with module: EXAFS parameters (GENFMT).
+
+Calculating XAS spectra ...
+electronic_temperature =    0.00000 (eV)
+Done with module: XAS spectra (FF2X: DW + final sum over paths).
+
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   1.309 eV.
+Your calculation:
+ Once upon a time ...
+Fe K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Calculating cross-section and phases ...
+    absorption cross section
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+    phase shifts for unique potential    4
+    phase shifts for unique potential    5
+    phase shifts for unique potential    6
+Done with module: cross-section and phases (XSPH).
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+Pathfinder: finding scattering paths...
+Preparing plane wave scattering amplitudes
+Searching for paths
+    Rmax  0.1000  keep and heap limits   0.0000000   0.0000000
+    Preparing neighbor table
+    Paths found        0   (maxheap, maxscatt       1   0)
+Eliminating path degeneracies
+0 paths retained.
+Done with module: pathfinder.
+
+Calculating EXAFS parameters ...
+Done with module: EXAFS parameters (GENFMT).
+
+Calculating XAS spectra ...
+electronic_temperature =    0.00000 (eV)
+Done with module: XAS spectra (FF2X: DW + final sum over paths).
+
+Launching FEFF version FEFF 10.0.0
+  XES:
+Core hole lifetime is   1.309 eV.
+Your calculation:
+ Once upon a time ...
+Fe K edge XES using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS POLARIZATION EDGE SCF FMS XES ABSOLUTE COREHOLE EGRID
+
+Calculating cross-section and phases ...
+    absorption cross section
+    phase shifts for unique potential    0
+    phase shifts for unique potential    1
+    phase shifts for unique potential    2
+    phase shifts for unique potential    3
+    phase shifts for unique potential    4
+    phase shifts for unique potential    5
+    phase shifts for unique potential    6
+Done with module: cross-section and phases (XSPH).
+
+MKGTR: Tracing over Green's function ...
+Done with module: MKGTR.
+
+Pathfinder: finding scattering paths...
+Preparing plane wave scattering amplitudes
+Searching for paths
+    Rmax  0.1000  keep and heap limits   0.0000000   0.0000000
+    Preparing neighbor table
+    Paths found        0   (maxheap, maxscatt       1   0)
+Eliminating path degeneracies
+0 paths retained.
+Done with module: pathfinder.
+
+Calculating EXAFS parameters ...
+Done with module: EXAFS parameters (GENFMT).
+
+Calculating XAS spectra ...
+electronic_temperature =    0.00000 (eV)
+Done with module: XAS spectra (FF2X: DW + final sum over paths).
+
+Completed Corvus on ./mp-1022242_Fe.in
