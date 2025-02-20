@@ -9,9 +9,16 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.analysis.local_env import VoronoiNN
 from pymatgen.analysis.local_env import CrystalNN
 from pymatgen.core import Element
+import pyscal.core as pc
+import json
+from pymatgen.core import Composition
+from pathlib import Path
+import pandas as pd
 
 parity = True  # Include parity or not for the plot
 degree_l = 40
+
+api_key = "M244rOwcXhVorQLQwwH6s2GXVO88BCIJ"
 
 # List of 3d transition metals based on their atomic numbers
 transition_metals_3d = [Element(sym).symbol for sym in [
@@ -131,37 +138,47 @@ def extract_cluster_cif_symbol(cif_file, atomic_symbol, cluster_radius=3):
 def extract_cluster_structure(structure, atomic_symbol, cluster_radius=3):
     """
     Extracts a cluster of atoms around the first occurrence of the specified atomic symbol in a crystal structure.
-    The central atom (specified by atomic_symbol) will be the first in the returned arrays.
+    Ensures the specified atomic symbol is treated as the central atom and appears first in the returned arrays.
     """
-
     # Find the first atom matching the atomic symbol
+    central_atom_index = None
     for i, site in enumerate(structure):
         if site.specie.symbol == atomic_symbol:
-            chosen_atom_index = i
+            central_atom_index = i
             break
-    else:
+    if central_atom_index is None:
         raise ValueError(f"No atoms with symbol '{atomic_symbol}' found in structure.")
 
-    # Find all sites within the specified radius around the chosen atom
-    sites = structure.get_sites_in_sphere(structure[chosen_atom_index].coords, cluster_radius)
+    # Get the coordinates of the central atom
+    central_coords = structure[central_atom_index].coords
 
-    cluster_structure = Structure.from_sites(sites)
+    # Find all sites within the specified radius around the central atom
+    sites = structure.get_sites_in_sphere(central_coords, cluster_radius)
+
+    # Explicitly ensure the central atom is added first
+    central_site = structure[central_atom_index]
+    sorted_sites = [central_site] + [
+        site[0] for site in sites if not np.allclose(site[0].coords, central_coords)
+    ]
+
+    # Create the cluster structure from sorted sites
+    cluster_structure = Structure.from_sites(sorted_sites)
 
     coords = []
     atomic_symbols = []
     atomic_numbers = []
 
-    for site in reversed(cluster_structure):
+    for site in cluster_structure:
         coords.append(site.coords)
         atomic_symbols.append(site.specie.symbol)
         atomic_numbers.append(site.specie.Z)
 
+    # Translate coordinates to center the cluster
     coords = np.array(translate_coords(coords))
     atomic_symbols = np.array(atomic_symbols)
     atomic_numbers = np.array(atomic_numbers)
 
     return coords, atomic_symbols, atomic_numbers
-
 
 
 def crystalnn_extract_cluster_cif(cif_file, atomic_symbol):
@@ -229,7 +246,7 @@ def crystalnn_extract_cluster_cif(cif_file, atomic_symbol):
     atomic_numbers = np.array(atomic_numbers)
 
     # Return the coordinates, atomic symbols, and atomic numbers
-    return coords, atomic_symbols, atomic_numbers
+    return coords, atomic_symbols, atomic_numbers, neighbors
 
 
 def crystalnn_extract_cluster_structure(structure, atomic_symbol):
@@ -283,7 +300,7 @@ def crystalnn_extract_cluster_structure(structure, atomic_symbol):
     atomic_numbers = np.array(atomic_numbers)
 
     # Return the coordinates, atomic symbols, and atomic numbers
-    return coords, atomic_symbols, atomic_numbers
+    return coords, atomic_symbols, atomic_numbers, neighbors
 
 
 def voronoi_extract_cluster_cif(cif_file, atomic_symbol):
@@ -435,7 +452,6 @@ def translate_coords(coords):
     return translated_coords
 
 
-
 def detect_3d_transition_metal(structure):
     """
     Detect the first occurrence of a transition metal in the given structure.
@@ -517,12 +533,6 @@ def cartesian_to_spherical(coords):
     # Extract x, y, and z coordinates from the input array
     x, y, z = coords[:, 0], coords[:, 1], coords[:, 2]
     
-    # print(np.round(x, 6))
-    # print(np.round(y, 6))
-    # print(np.round(z, 6))
-    # print("blah")
-
-
     # Compute the radial distance for each point
     r = np.sqrt(x**2 + y**2 + z**2)
 
@@ -574,7 +584,7 @@ def calculate_lbop_r(sph_coords, atomic_numbers, degree_l, order_m, parity=True)
 
     Returns:
     - float: The local bond order paramater calculated for the given spherical coordinates
-      and spherical harmonic parameters. Weighted by a factor of 1/r
+      and spherical harmonic parameters. Weighted by a factor of 1/r^4
     """
     # Get number of nearest neighbors to central atom at (0,0,0)
     
@@ -593,19 +603,18 @@ def calculate_lbop_r(sph_coords, atomic_numbers, degree_l, order_m, parity=True)
     # Compute considering parity
     if parity == True:
         # Sum over all neighbors
-        Ylm_sum = np.sum(
-            calculate_real_sph_harm(order_m, degree_l, theta, phi)*1/r*1/atomic_numbers)
+        Ylm_sum = np.sum(sph_harm(order_m, degree_l, theta, phi)*(1/r**6)*1/atomic_numbers)
 
     # Compute without considering parity
     else:
         # Sum over all neighbors
         Ylm_sum = np.sum(
-            np.abs(calculate_real_sph_harm(order_m, degree_l, theta, phi))*1/r*1/atomic_numbers)
+            np.abs(calculate_real_sph_harm(order_m, degree_l, theta, phi))*(1/r**6)*1/atomic_numbers)
 
     # Calculate the local bond order paramater
     local_bond_order_paramater = 1 / n_neighbors * Ylm_sum
 
-    return local_bond_order_paramater.real
+    return local_bond_order_paramater
 
 
 def calculate_steinhart(spherical_coords, atomic_numbers, degree_l):
@@ -790,6 +799,52 @@ def compute_steinhart_vector_from_filepath(file_path, degree_l):
     return ql_list, cluster_name
 
 
+def compute_steinhart_vector_from_structure(structure, degree_l, central_atom):
+    """
+    Compute the Steinhardt parameters for all degrees from 0 up to the specified degree_l
+    based on atomic coordinates and types extracted from a pymatgen.Structure object.
+    The function calculates the Steinhardt parameters for each degree using spherical coordinates.
+
+    Parameters:
+    - structure (pymatgen.Structure): The structure object containing atomic coordinates and element symbols.
+    - degree_l (int): The highest degree (l) of Steinhardt parameters to compute.
+    - central_atom_index (int): The index of the central atom for the cluster (default is 0).
+    - neighbor_cutoff (float): The cutoff distance or number of neighbors for the cluster extraction.
+
+    Returns:
+    - tuple: A tuple containing:
+      - list: A list of Steinhardt parameters ql for each degree from 0 to degree_l.
+      - str: A name for the cluster extracted from the structure.
+
+    Note:
+    - This function assumes the availability of helper functions `helpers.crystalnn_extract_cluster_structure`,
+      `cartesian_to_spherical`, and `calculate_steinhart`.
+    """
+
+    # Extract the cluster using the central atom and neighbor cutoff
+    cluster_data = crystalnn_extract_cluster_structure(structure, central_atom)
+    coords, atomic_symbols, atomic_numbers = cluster_data
+
+    # Exclude the center atom's coordinates and symbols
+    coords = coords[1:]  # Skip the central atom at [0, 0, 0]
+    atomic_symbols = atomic_symbols[1:]  # Skip the central atom's symbol
+    atomic_numbers = atomic_numbers[1:]  # Skip the central atom's atomic number
+
+    # Convert coordinates to spherical coordinates
+    spherical_coords = cartesian_to_spherical(coords)
+
+    # Generate a cluster name from the structure
+    cluster_name = f"Cluster from {structure.composition}"
+
+    # Compute Steinhardt parameters
+    ql_list = []
+    for l in range(degree_l + 1):  # Compute ql for each degree from 0 to degree_l
+        ql = calculate_steinhart(spherical_coords, atomic_numbers, l)
+        ql_list.append(ql)
+
+    return ql_list, cluster_name
+
+
 def compute_steinhart_vector(spherical_coords, atomic_numbers, degree_l, cluster_name="Cluster"):
     """
     Compute the Steinhardt parameters for all degrees from 0 up to the specified degree_l
@@ -817,6 +872,227 @@ def compute_steinhart_vector(spherical_coords, atomic_numbers, degree_l, cluster
         ql_list.append(ql)
 
     return ql_list, cluster_name
+
+
+def compute_steinhart_vector_from_pyscal(cluster_data, central_atom_number):
+    
+    #Unpack custer data
+    coords, atomic_symbols, atomic_numbers = cluster_data
+
+    # Convert symbols to atomic numbers
+    atomic_numbers = [Element(symbol).number for symbol in atomic_symbols]
+
+    # Prepare data for pyscal
+    atoms_data = []
+    for i, (coord, symbol, number) in enumerate(zip(coords, atomic_symbols, atomic_numbers)):
+        atoms_data.append({"id": i + 1, "pos": coord, "type": symbol})
+
+
+    # Create pyscal System
+    system = pc.System()
+
+    # Set the simulation box for the cluster (3x3 matrix format)
+    x_min, x_max = min(c[0] for c in coords), max(c[0] for c in coords)
+    y_min, y_max = min(c[1] for c in coords), max(c[1] for c in coords)
+    z_min, z_max = min(c[2] for c in coords), max(c[2] for c in coords)
+    padding = 5  # Add some padding to avoid boundary issues
+    system.box = [
+        [x_max - x_min + 2 * padding, 0, 0],  # x-dimension
+        [0, y_max - y_min + 2 * padding, 0],  # y-dimension
+        [0, 0, z_max - z_min + 2 * padding],  # z-dimension
+    ]
+
+
+    # Create atoms with atomic numbers
+    atoms = []
+    for coord, atomic_number in zip(coords, atomic_numbers):
+        atom = pc.Atom(pos=coord, type=atomic_number)  # Use atomic number as 'type'
+        atoms.append(atom)
+
+    # Add atoms to the system
+    system.add_atoms(atoms)
+
+    # Perform neighbor finding
+    system.find_neighbors(method="cutoff", cutoff=3.0)
+
+    # Loop through all atoms to inspect their neighbors
+    for i, atom in enumerate(system.atoms):
+        neighbors = atom.neighbors  # Get neighbors of the current atom (as indices)
+        print(f"Atom {i+1} (Type: {atom.type}) has {len(neighbors)} neighbors:")
+        for neighbor_index in neighbors:
+            neighbor_atom = system.atoms[neighbor_index]  # Get the neighbor atom using its index
+            print(f"    Neighbor Index: {neighbor_index+1}, Type: {neighbor_atom.type}, Position: {neighbor_atom.pos}")
+            
+    # Calculate bond order parameters for l = 2 to 12
+    system.calculate_q(range(2, 13))  # Calculates q2 through q12
+
+    # Get q values for all atoms for l = 2 to 12
+    qvals = system.get_qvals(range(2, 13))
+
+    # Extract q values only for atoms of central atom
+    ni_qvals = [qvals[i] for i, atom in enumerate(system.atoms) if atom.type == central_atom_number] 
+
+    return ni_qvals
+
+
+def compute_minkowski_strucutre_metric(degree_l, relative_areas, spherical_coords):
+    """
+    Computes the q'_l(a) value based on the relative areas and spherical coordinates with (r, theta, phi).
+
+    Parameters:
+        l (int): The degree of the spherical harmonics.
+        relative_areas (list of float): The relative areas A(f)/A for each facet.
+        spherical_coords (list of tuples): Spherical coordinates (r, theta, phi) for each facet.
+
+    Returns:
+        float: The computed q'_l(a) value.
+    """
+    ql_squared = 0.0
+
+    # Loop over m from -l to +l
+    for degree_m in range(-degree_l, degree_l + 1):
+        # Compute the summation over all facets
+        sum_facets = 0.0
+        for i, (r, theta, phi) in enumerate(spherical_coords):
+            # Get the relative area for this facet
+            relative_area = relative_areas[i]
+
+            # Compute the spherical harmonic Y_lm(theta, phi)
+            Ylm = calculate_real_sph_harm(degree_m, degree_l, theta, phi)
+
+            # Accumulate the weighted contribution
+            sum_facets += relative_area * Ylm
+
+        # Add the square of the modulus of the sum to ql_squared
+        ql_squared += np.abs(sum_facets) ** 2
+
+    # Apply the normalization factor
+    q_prime_l = np.sqrt((4 * np.pi) / (2 * degree_l + 1) * ql_squared)
+
+    return q_prime_l
+
+
+def compute_minkowski_structure_vector(max_l, relative_areas, spherical_coords):
+    """
+    Computes a vector of q'_l(a) values for degrees l = 0, 1, ..., max_l.
+
+    Parameters:
+        max_l (int): The maximum degree of the spherical harmonics (inclusive).
+        relative_areas (list of float): The relative areas A(f)/A for each facet.
+        spherical_coords (list of tuples): Spherical coordinates (r, theta, phi) for each facet.
+
+    Returns:
+        list: A vector where each entry corresponds to q'_l(a) for degrees l = 0 to max_l.
+    """
+    q_prime_vector = []
+    
+    # Loop over all degrees l from 0 to max_l
+    for degree_l in range(max_l + 1):
+        # Compute q'_l(a) for the current degree l
+        q_prime_l = compute_minkowski_strucutre_metric(degree_l, relative_areas, spherical_coords)
+        q_prime_vector.append(q_prime_l)
+    
+    return q_prime_vector
+
+
+def compute_voronoi_metrics(structure, site_index, spherical_coords, neighbor_indices):
+    """
+    Computes Voronoi-based metrics (relative areas and facet angles) using precomputed spherical coordinates.
+
+    Distribute Facet Areas:
+    If a facet is shared among multiple neighbors, the area is distributed equally.
+
+    Handle Missing Neighbors:
+    Neighbors without a corresponding facet are assigned a small default area.
+
+    Normalization:
+    Ensures ∑A(f)/A=1, even if some neighbors are missing or grouped.
+
+    Parameters:
+        structure (pymatgen.Structure): The atomic structure.
+        site_index (int): Index of the site in the structure for which to compute the metrics.
+        spherical_coords (list of tuples): Precomputed spherical coordinates (r, theta, phi) for each neighbor.
+        neighbor_indices (list of int): Indices of neighbors corresponding to the spherical coordinates.
+
+    Returns:
+        tuple: A tuple containing:
+            - relative_areas (list of float): Relative areas A(f)/A for each neighbor.
+            - facet_angles (list of tuples): Spherical angles (theta, phi) for each Voronoi facet normal vector.
+    """
+    from collections import defaultdict
+
+    # Initialize VoronoiNN for Voronoi tessellation
+    voronoi_nn = VoronoiNN()
+    voronoi_polyhedron = voronoi_nn.get_voronoi_polyhedra(structure, site_index)
+
+    # Dictionary to map neighbors to shared facet areas
+    neighbor_facet_areas = defaultdict(float)
+
+    # Step 1: Distribute facet areas among neighbors
+    for neighbor_index, properties in voronoi_polyhedron.items():
+        if neighbor_index in neighbor_indices:
+            # Distribute facet area equally among all matching neighbors
+            neighbor_facet_areas[neighbor_index] += properties["area"]
+
+    # Step 2: Initialize relative areas and facet angles
+    relative_areas = []
+    facet_angles = []
+    total_area = 0.0
+
+    for i, neighbor_index in enumerate(neighbor_indices):
+        # Get facet area or assign a small default value if the neighbor is missing
+        facet_area = neighbor_facet_areas.get(neighbor_index, 0.0)
+
+        # Use precomputed spherical coordinates
+        r, theta, phi = spherical_coords[i]
+        facet_angles.append((theta, phi))
+
+        # Add facet area to the list and accumulate the total area
+        relative_areas.append(facet_area)
+        total_area += facet_area
+
+    # Step 3: Normalize relative areas
+    if total_area > 0:
+        relative_areas = [area / total_area for area in relative_areas]
+    else:
+        # Assign equal areas if no valid facets were found
+        relative_areas = [1.0 / len(neighbor_indices)] * len(neighbor_indices)
+
+    return relative_areas, facet_angles
+    
+
+def site_index_by_symbol(structure, symbol):
+    """
+    Get the site index of the first occurrence of a specified atom by its chemical symbol.
+
+    Parameters:
+        structure (pymatgen.Structure): The atomic structure.
+        symbol (str): The chemical symbol of the atom to search for (e.g., "Na").
+
+    Returns:
+        int: The index of the first site with the specified symbol, or -1 if not found.
+    """
+    for site_index, site in enumerate(structure):
+        if symbol in site.species_string:
+            return site_index  # Return the first matching index
+    return -1  # Return -1 if no matching site is found
+
+
+def get_neighbor_indices_crystalnn(structure, site_index):
+    """
+    Get the neighbor indices for a specific site using CrystalNN.
+
+    Parameters:
+        structure (pymatgen.Structure): The atomic structure.
+        site_index (int): Index of the target site.
+
+    Returns:
+        list: A list of site indices of the neighbors.
+    """
+    crystal_nn = CrystalNN()
+    neighbors = crystal_nn.get_nn_info(structure, site_index)
+    neighbor_indices = [neighbor["site_index"] for neighbor in neighbors]
+    return neighbor_indices
 
 
 def extract_filename(file_path):
@@ -873,6 +1149,32 @@ def flatten_data(data):
     return flattened_data
 
 
+def get_oxidation_state_formula(formula):
+    """
+    Determines the oxidation states of each element in a given formula.
+    
+    Args:
+        formula (str): Chemical formula (e.g., "Fe2O3").
+    
+    Returns:
+        dict: A dictionary mapping each element to its oxidation state(s).
+    """
+    try:
+        # Use pymatgen's Composition to parse the formula
+        composition = Composition(formula)
+        
+        # Try oxidation state guessing
+        oxidation_states = composition.oxi_state_guesses()
+
+        if oxidation_states:
+            # Return the first guess (most probable based on pymatgen's algorithm)
+            return oxidation_states[0]
+        else:
+            return "Oxidation states could not be determined."
+    except Exception as e:
+        return f"An error occurred: {e}"
+
+
 def get_oxidation_state(possible_species, atom):
     """
     Given a list of possible species, this function returns the oxidation state of the specified atom.
@@ -889,7 +1191,7 @@ def get_oxidation_state(possible_species, atom):
         if species.startswith(atom):
             # Extract the oxidation state, including the sign
             oxidation_state_str = species[len(atom):]
-
+        
             # Handle cases like '2+' or '3-' (sign at the end)
             if oxidation_state_str.endswith('+'):
                 # If no number, assume it's 1
@@ -928,7 +1230,7 @@ def get_oxidation_state(possible_species, atom):
     return None
 
 
-def get_cluster_properties(mp_id, central_atom, api_key="VS3hLdCF3oL9aiuzPSH03BXjW5QNSmBj"):
+def get_cluster_properties_old(mp_id, central_atom, api_key=api_key):
     """
     This function retrieves the band gap, oxidation state of the central atom, and density of a material.
 
@@ -960,6 +1262,7 @@ def get_cluster_properties(mp_id, central_atom, api_key="VS3hLdCF3oL9aiuzPSH03BX
 
         # Get the oxidation state of the central atom
         possible_species = material.possible_species
+    
         oxidation_state = get_oxidation_state(possible_species, central_atom)
         if oxidation_state is not None:
             properties['oxidation_state'] = oxidation_state
@@ -976,6 +1279,74 @@ def get_cluster_properties(mp_id, central_atom, api_key="VS3hLdCF3oL9aiuzPSH03BX
             properties['density'] = "Density not available"
 
         return properties
+
+
+def get_cluster_properties(mp_id, api_key=api_key):
+    """
+    This function retrieves the band gap, oxidation state of the central atom, and density of a material.
+
+    Args:
+    - mp_id (str): The Materials Project ID of the material.
+    - central_atom (str): The symbol of the central atom (e.g., 'V' for vanadium).
+    - api_key (str): Your Materials Project API key.
+
+    Returns:
+    - dict: A dictionary containing band gap, oxidation state, and density.
+    """
+    with MPRester(api_key) as mpr:
+        # Search for the material using its MP-ID
+        materials = mpr.materials.summary.search(
+            material_ids=[mp_id]
+        )
+
+        # Select the first material from the returned materials list
+        material = materials[0]
+
+        # Initialize a dictionary to store the properties
+        properties = {}
+
+        # Get the band gap of the material
+        if hasattr(material, 'band_gap'):
+            properties['band_gap'] = material.band_gap
+        else:
+            properties['band_gap'] = "Band gap not available"
+
+        # Get density
+        if hasattr(material, 'density'):
+            properties['density'] = material.density
+        else:
+            properties['density'] = "Density not available"
+
+        '''
+        # Get possible species
+        if hasattr(material, 'possible_species'):
+            properties['possible_species'] = material.possible_species
+        else:
+            properties['possible_species'] = "Possible species not available"
+        '''
+
+
+        return properties
+
+
+def compute_number_of_ligands(neighbors):
+    """
+    Returns the number of neighbors in the provided list.
+    """
+    return len(neighbors)
+
+
+def compute_average_bond_distance(neighbors):
+    """
+    Returns the average distance to each neighbor in the provided list.
+    Assumes each neighbor dict has a 'distance' key.
+    If neighbors is empty, returns 0.0.
+    """
+    if not neighbors:
+        return 0.0
+
+    distances = [n["distance"] for n in neighbors]
+    return sum(distances) / len(distances)
 
 
 def read_mp_id_file(file_path):
@@ -1055,14 +1426,13 @@ def quadrupole_moment(positions, charges):
     return Q
 
 
-def quadrupole_moment_normalized(positions, charges, atomic_numbers):
+def quadrupole_moment_normalized(positions, charges):
     """
     Calculate the non traceless form of the quadrupole moment tensor for a system of point charges, normalized by the atomic number.
 
     Args:
     - positions: Nx3 array, where N is the number of particles, and each row is the (x, y, z) coordinates of a particle.
     - charges: 1D array of length N, where each element is the charge of the corresponding particle.
-    - atomic_numbers: 1D array of length N, containing the atomic number of each particle.
 
     Returns:
     - Q: 3x3 numpy array representing the normalized quadrupole moment tensor.
@@ -1072,11 +1442,12 @@ def quadrupole_moment_normalized(positions, charges, atomic_numbers):
         (3, 3))
 
     # Loop through each position, charge, and atomic number
-    for pos, charge, atomic_number in zip(positions, charges, atomic_numbers):
+    for pos, charge in zip(positions, charges):
         r_x, r_y, r_z = pos
+        dist = np.sqrt(r_x**2+r_y**2+r_z**2)
 
         # Update the Q matrix using the normalized formula.
-        normalization_factor = charge / (atomic_number * (r_x**2+r_y**2+r_z**2)**2)
+        normalization_factor = charge / (dist)**6
 
         Q[0, 0] += normalization_factor * (r_x * r_x)
         Q[0, 1] += normalization_factor * (r_x * r_y)
@@ -1093,7 +1464,156 @@ def quadrupole_moment_normalized(positions, charges, atomic_numbers):
     return Q
 
 
-def get_charges(possible_species, atomic_symbols):
+def quadrupole_anisotropy_matrix(qxx, qyy, qzz):
+    """
+    Calculate the quadrupole anisotropy matrix.
+
+    Parameters:
+        qxx (float): Quadrupole component along xx.
+        qyy (float): Quadrupole component along yy.
+        qzz (float): Quadrupole component along zz.
+
+    Returns:
+        np.ndarray: 3x3 quadrupole anisotropy matrix.
+    """
+    # Normalization factor
+    normalization = 1
+    #(qxx + qyy + qzz) / 3.0
+
+    if normalization == 0:
+        raise ValueError("Normalization factor is zero; qxx, qyy, and qzz cannot all be zero.")
+
+    # Initialize the anisotropy matrix with absolute differences normalized
+    q_anisotropy_matrix = np.array([
+    [0, (np.abs(qxx - qyy)) / normalization, (np.abs(qxx - qzz)) / normalization],
+    [(np.abs(qyy - qxx)) / normalization, 0, (np.abs(qyy - qzz)) / normalization],
+    [(np.abs(qzz - qxx)) / normalization, (np.abs(qzz - qyy)) / normalization, 0]
+])
+
+
+    return q_anisotropy_matrix
+
+
+def q_anisotropy_matrix_sum(q_anisotropy_matrix):
+    """
+    Compute the sum of select off-diagonal elements of an anisotropy matrix.
+
+    This function calculates the sum of the elements located at indices (0, 1), (0, 2),
+    and (1, 2) of the input matrix. It assumes that the provided matrix is a 2D array-like
+    object with at least 3 rows and 3 columns.
+
+    Parameters:
+        q_anisotropy_matrix (array-like): A two-dimensional array or matrix representing
+            anisotropy values. The matrix must be indexable with two indices and have dimensions
+            that allow access to the elements at (0, 1), (0, 2), and (1, 2).
+
+    Returns:
+        float: The sum of the matrix elements at positions (0, 1), (0, 2), and (1, 2).
+    """
+
+    sum = q_anisotropy_matrix[0,1] + q_anisotropy_matrix[0,2] + q_anisotropy_matrix[1,2] 
+
+    return sum
+
+
+def dipole_moment_normalized(positions, charges):
+    """
+    Compute the normalized dipole moment vector for a system of charges.
+
+    Parameters:
+    positions : list of tuples
+        A list of 3D position vectors (x, y, z) for the charges.
+    charges : list of floats
+        A list of charges corresponding to the position vectors.
+
+    Returns:
+    numpy.ndarray
+        A 3D vector representing the normalized dipole moment.
+
+    Notes:
+    ------
+    - Positions with a distance of zero are skipped to avoid division by zero.
+    - The normalization factor is calculated as charge / (distance^5).
+    """
+
+    # Initialize the dipole moment vector as a 3D vector
+    P = np.zeros(3)
+    
+    for pos, charge in zip(positions, charges):
+        r_x, r_y, r_z = pos
+        dist = np.sqrt(r_x**2 + r_y**2 + r_z**2)
+        
+        # Avoid division by zero in normalization
+        if dist == 0:
+            continue
+
+        # Normalize the position vector
+        normalization_factor = charge / dist**5
+        P[0] += normalization_factor * r_x
+        P[1] += normalization_factor * r_y
+        P[2] += normalization_factor * r_z
+
+    return P
+
+
+def dipole_anisotropy_matrix(dipole_vector):
+    """
+    Create a matrix where the components are the difference squared 
+    of the components of the vector normalized by the mean of the components.
+
+    Parameters:
+    dipole_vector (array-like): A 3D vector representing the dipole moment.
+
+    Returns:
+    numpy.ndarray: A 3x3 matrix as described.
+    """
+    # Convert the input vector to a NumPy array
+    dipole_vector = np.array(dipole_vector)
+    
+    # Compute the mean of the components
+    #mean_value = np.mean(dipole_vector)
+    
+    # Check for zero mean to avoid division by zero
+    #if mean_value == 0:
+        #raise ValueError("The mean of the dipole vector components is zero, normalization not possible.")
+    
+    # Declare the normalization variable
+    normalization = 1
+
+    # Initialize the matrix using absolute differences normalized by the mean
+    dipole_matrix = np.array([
+        [0, np.abs(dipole_vector[0] - dipole_vector[1]) / normalization, np.abs(dipole_vector[0] - dipole_vector[2]) / normalization],
+        [np.abs(dipole_vector[1] - dipole_vector[0]) / normalization, 0, np.abs(dipole_vector[1] - dipole_vector[2]) / normalization],
+        [np.abs(dipole_vector[2] - dipole_vector[0]) / normalization, np.abs(dipole_vector[2] - dipole_vector[1]) / normalization, 0]
+    ])
+    
+    return dipole_matrix
+
+
+def p_anisotropy_matrix_sum(dipole_anisotropy_matrix):
+    """
+    Compute the sum of select off-diagonal elements of a dipole anisotropy matrix.
+
+    This function calculates the sum of the elements located at indices (0, 1), (0, 2),
+    and (1, 2) of the input matrix. It assumes that the provided matrix is a 2D array-like
+    object with at least 3 rows and 3 columns.
+
+    Parameters:
+        dipole_anisotropy_matrix (array-like): A two-dimensional array or matrix representing
+            anisotropy values. The matrix must be indexable with two indices and have dimensions
+            that allow access to the elements at (0, 1), (0, 2), and (1, 2).
+
+    Returns:
+        float: The sum of the matrix elements at positions (0, 1), (0, 2), and (1, 2).
+    """
+
+    # Compute the sum of the specific off-diagonal elements
+    sum = dipole_anisotropy_matrix[0, 1] + dipole_anisotropy_matrix[0, 2] + dipole_anisotropy_matrix[1, 2]
+
+    return sum
+
+
+def get_charges_old(possible_species, atomic_symbols):
     """
     Given a list of possible species and atomic symbols, this function returns a list of charges
     (oxidation states) corresponding to each atomic symbol.
@@ -1125,6 +1645,28 @@ def get_charges(possible_species, atomic_symbols):
         charges.append(charge)
 
     return charges
+ 
+
+def get_charges(atomic_symbols, oxidation_states):
+    """
+    Given a list of atomic symbols and a dictionary mapping
+    symbols to oxidation states, return a list of charges for
+    each atomic symbol in atom_list.
+    
+    :param atom_list: List of atomic symbols (e.g. ["Nb","Se","Cr"]).
+    :param oxidation_states: Dictionary mapping atomic symbols to charges 
+                             (e.g. {"Nb": 2.5, "Cr": 3.0, "Se": -2.0}).
+    :return: List of charges corresponding to the symbols in atom_list.
+    :raises ValueError: if a symbol in atom_list is not found in oxidation_states.
+    """
+    charge_array = []
+    
+    for atom in atomic_symbols:
+        if atom not in oxidation_states:
+            raise ValueError(f"Unknown atomic symbol '{atom}' in the oxidation states dictionary.")
+        charge_array.append(oxidation_states[atom])
+    
+    return charge_array
 
 
 def get_eigs_of_qm(quadrupole_moment):
@@ -1145,6 +1687,25 @@ def get_unique_output_folder(base_folder):
         counter += 1
     os.makedirs(folder)
     return folder
+
+
+def write_factor_dictionary_to_file(factor_dict, filename):
+    """
+    Writes the factor dictionary to a JSON file.
+
+    Args:
+    - factor_dict: Dictionary containing data (including numpy arrays).
+    - filename: The name of the file to write the dictionary to.
+    """
+    print(f"Started writing dictionary to {filename}")
+    # Convert the dictionary to a JSON-serializable format
+    serializable_dict = convert_to_json_serializable(factor_dict)
+
+    with open(filename, "w") as fp:
+        json.dump(serializable_dict, fp, indent=4)  # Use JSON to serialize the dictionary
+        fp.flush()  # Ensure the buffer is flushed
+        os.fsync(fp.fileno())  # Ensure file is written to disk
+    print(f"Done writing dict to {filename}")
 
 
 class DualWriter:
@@ -1177,4 +1738,329 @@ def convert_to_json_serializable(data):
         return tuple(convert_to_json_serializable(element) for element in data)
     else:
         return data    
+
+
+def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quadrupole=False):
+    # Initialize an empty list to store rows of data
+    data_list = []
+
+    # Iterate through each JSON file in the directory
+    for file_path in Path(factor_dict_dir_path).glob("*.json"):
+        with open(file_path, "r") as file:
+            material_dict = json.load(file)
+
+            # Extract MP-ID and Material Name
+            mp_id = material_dict.get("MP-ID", file_path.stem.replace("_factor_dict", ""))
+            material = material_dict.get("Material", "Unknown")
+
+            # Extract Space Group Number
+            space_group_number = material_dict.get("Space Group Number", np.nan)  # Default to NaN if missing
+
+            # Initialize row with mandatory fields
+            data_row = [mp_id, material, space_group_number]
+
+            # Define column headers
+            columns = ["MP-ID", "Material", "Space Group Number"]
+
+            if mat_props:
+                # Extract band gap, density, oxidation states
+                band_gap = material_dict.get("band_gap", 0.0)
+                density = material_dict.get("density", 0.0)
+                oxidation_states = material_dict.get("oxidation_states", {})
+                oxidation_states_str = str(oxidation_states)
+
+                data_row.extend([band_gap, density, oxidation_states_str])
+                columns.extend(["Band Gap", "Density", "Oxidation States"])
+
+            if dipole:
+                # Extract Dipole Moments
+                dipole_moment_norm = np.array(material_dict.get("dipole moment normalized", [0, 0, 0])).flatten()
+                normalized_d_anisotropy_matrix = np.array(
+                    material_dict.get("normalized dipole anisotropy matrix", [[0] * 3] * 3)
+                ).flatten()
+                normalized_d_anisotropy_matrix_sum = material_dict.get("normalized dipole anisotropy matrix sum", 0.0)
+
+                data_row.extend([*dipole_moment_norm, *normalized_d_anisotropy_matrix, normalized_d_anisotropy_matrix_sum])
+                columns.extend([f"DM Norm {i}" for i in range(3)])
+                columns.extend([f"Aniso DM {i}" for i in range(9)])
+                columns.append("Aniso Sum DM")
+
+            if quadrupole:
+                # Extract Quadrupole Moments
+                quadrupole_moment_norm = np.array(material_dict.get("quadrupole moment normalized", [[0] * 3] * 3)).flatten()
+                normalized_q_anisotropy_matrix = np.array(
+                    material_dict.get("normalized quadrupole anisotropy matrix", [[0] * 3] * 3)
+                ).flatten()
+                normalized_q_anisotropy_matrix_sum = material_dict.get("normalized quadrupole anisotropy matrix sum", 0.0)
+
+                data_row.extend([*quadrupole_moment_norm, *normalized_q_anisotropy_matrix, normalized_q_anisotropy_matrix_sum])
+                columns.extend([f"QM Norm {i}" for i in range(9)])
+                columns.extend([f"Aniso QM {i}" for i in range(9)])
+                columns.append("Aniso Sum QM")
+
+            # Append row to data list
+            data_list.append(data_row)
+
+    # Create DataFrame
+    factor_df = pd.DataFrame(data_list, columns=columns)
+
+    # Set 'MP-ID' as the index
+    factor_df.set_index("MP-ID", inplace=True)
+
+    return factor_df
+
+
+def load_anisotropy_matrix(csv_path, center_atom):
+    """
+    Reads an anisotropy matrix CSV file, filters rows based on the specified center atom, 
+    and formats the dataframe.
+
+    Parameters:
+        csv_path (str or Path): Path to the CSV file.
+        center_atom (str): The central atom to filter by.
+
+    Returns:
+        pd.DataFrame: A formatted dataframe containing only the entries with the specified center atom.
+    """
+    csv_path = Path(csv_path)
+
+    # Read the CSV file, assuming tab-separated values
+    anisotropy_matrix_df = pd.read_csv(csv_path, sep='\t')
+
+    # Set the first column as the index
+    anisotropy_matrix_df.set_index(anisotropy_matrix_df.columns[0], inplace=True)
+
+    # Filter rows that contain the specified center atom
+    anisotropy_matrix_df = anisotropy_matrix_df.loc[anisotropy_matrix_df.index.str.contains(center_atom)]
+
+    # Extract only the first part of the index (before '_')
+    anisotropy_matrix_df.index = [name.split('_')[0] for name in anisotropy_matrix_df.index]
+    anisotropy_matrix_df.index.name = 'Material'
+
+    return anisotropy_matrix_df
+
+
+def load_anisotropy_matrix_json(json_file_path):
+    """
+    Load a JSON file where each key maps to a 3x3 matrix
+    (as a list of lists), and return a DataFrame of the
+    flattened values (m00..m22).
+    """
+    with open(json_file_path, 'r') as file:
+        data = json.load(file)
+
+    rows = []
+    for material, mat3x3 in data.items():
+        # mat3x3 is something like:
+        # [
+        #   [0.0,     0.0,     0.002096],
+        #   [0.0,     0.0,     0.002096],
+        #   [0.002096,0.002096,0.0     ]
+        # ]
+        # Unpack or just index:
+        m00, m01, m02 = mat3x3[0]
+        m10, m11, m12 = mat3x3[1]
+        m20, m21, m22 = mat3x3[2]
+
+        rows.append({
+            'Material': material,
+            'm00': m00, 'm01': m01, 'm02': m02,
+            'm10': m10, 'm11': m11, 'm12': m12,
+            'm20': m20, 'm21': m21, 'm22': m22
+        })
+
+    df = pd.DataFrame(rows)
+    return df.set_index('Material')
+
+
+def print_factor_dict(factor_dict_path):
+    """
+    Reads a JSON factor dictionary from a given path and prints its contents.
+
+    Parameters:
+        factor_dict_path (str or Path): Path to the JSON file.
+
+    Returns:
+        dict: The loaded dictionary.
+    """
+    factor_dict_path = Path(factor_dict_path)
+
+    if not factor_dict_path.exists():
+        print(f"Error: File '{factor_dict_path}' not found.")
+        return None
+
+    # Load the JSON file
+    with open(factor_dict_path, 'r') as file:
+        factor_dict = json.load(file)
+
+    # Print the keys and values
+    print(f"\nContents of {factor_dict_path.name}:")
+    print("-" * 50)
     
+    for key, val in factor_dict.items():
+        print(f"{key}: {val}")
+
+    return factor_dict
+
+
+def compute_normed_off_diagonal_sum(anisotropy_spectra_matrix):
+    """
+    Compute the normalized sum of off-diagonal entries for each row in the given anisotropy spectra matrix.
+
+    Parameters:
+    anisotropy_spectra_matrix (pd.DataFrame): A pandas DataFrame containing anisotropy matrix data.
+
+    Returns:
+    pd.DataFrame: The original DataFrame with additional columns for off-diagonal sums and their normalized values.
+    """
+
+    # Identify the off-diagonal columns
+    off_diagonal_cols = ["m01", "m02", "m10"]
+
+    # Sum the off-diagonal entries (row-wise)
+    anisotropy_spectra_matrix["off_diagonal_sum"] = anisotropy_spectra_matrix[off_diagonal_cols].sum(axis=1)
+
+    # Determine the largest off-diagonal entry in each row
+    largest_off_diagonal = anisotropy_spectra_matrix["off_diagonal_sum"].max()
+
+    # Compute the ratio (handling zero-division issues)
+    if largest_off_diagonal != 0:
+        anisotropy_spectra_matrix["normed_sum"] = anisotropy_spectra_matrix["off_diagonal_sum"] / largest_off_diagonal
+    else:
+        anisotropy_spectra_matrix["normed_sum"] = 0  # Avoid division by zero
+
+    return anisotropy_spectra_matrix
+
+
+def compute_off_diagonal_sum(anisotropy_spectra_matrix):
+    """
+    Compute the sum of off-diagonal entries for each row in the given anisotropy spectra matrix.
+
+    Parameters:
+    anisotropy_spectra_matrix (pd.DataFrame): A pandas DataFrame containing anisotropy matrix data.
+
+    Returns:
+    pd.DataFrame: The original DataFrame with an additional column for off-diagonal sums.
+    """
+
+    # Identify the off-diagonal columns
+    off_diagonal_cols = ["m01", "m02", "m10"]
+
+    # Sum the off-diagonal entries (row-wise)
+    anisotropy_spectra_matrix["anisotropy_matrix_sum"] = anisotropy_spectra_matrix[off_diagonal_cols].sum(axis=1)
+
+    return anisotropy_spectra_matrix
+
+
+def compute_normed_spacegroup_number(factor_df):
+    """
+    Computes the normalized space group number by dividing 
+    each space group number by 230.
+
+    Parameters:
+    factor_df (pd.DataFrame): A pandas DataFrame containing a column 
+                              "Space Group Number" with integer values.
+
+    Returns:
+    pd.DataFrame: The input DataFrame with an added column 
+                  "Normed Spacegroup Number" containing the 
+                  normalized values.
+    """
+
+    if "Space Group Number" not in factor_df.columns:
+        raise KeyError("The input DataFrame must contain a 'Space Group Number' column.")
+
+    normalization = 1 / 230
+    factor_df["Normed Spacegroup Number"] = normalization * factor_df["Space Group Number"]
+
+    return factor_df
+
+
+def filter_matching_mpids(factor_df, anisotropy_df):
+    """
+    Filters two DataFrames to keep only rows with matching MP-IDs.
+
+    Parameters:
+        factor_df (pd.DataFrame): The factor DataFrame indexed by MP-ID.
+        anisotropy_df (pd.DataFrame): The anisotropy DataFrame indexed by MP-ID.
+
+    Returns:
+        tuple: Filtered DataFrames containing only matching MP-IDs.
+    """
+    # Find common MP-IDs in both DataFrames
+    common_mp_ids = factor_df.index.intersection(anisotropy_df.index)
+    
+    # Filter both DataFrames to keep only the rows with matching MP-IDs
+    filtered_factor_df = factor_df.loc[common_mp_ids]
+    filtered_anisotropy_df = anisotropy_df.loc[common_mp_ids]
+    
+    return filtered_factor_df, filtered_anisotropy_df
+
+
+def remove_nan_entries(factor_df, anisotropy_df):
+    """
+    Removes rows with NaN values from the factor DataFrame and filters the anisotropy DataFrame accordingly.
+
+    Parameters:
+        factor_df (pd.DataFrame): The factor DataFrame indexed by MP-ID.
+        anisotropy_df (pd.DataFrame): The anisotropy DataFrame indexed by MP-ID.
+
+    Returns:
+        tuple: Cleaned factor DataFrame and corresponding anisotropy DataFrame.
+    """
+    # Drop rows with NaN values from the factor DataFrame
+    cleaned_factor_df = factor_df.dropna()
+    
+    # Extract the MP-IDs of the valid rows
+    valid_mp_ids = cleaned_factor_df.index
+    
+    # Filter the anisotropy DataFrame to keep only rows matching the valid MP-IDs
+    cleaned_anisotropy_df = anisotropy_df.loc[anisotropy_df.index.isin(valid_mp_ids)]
+    
+    return cleaned_factor_df, cleaned_anisotropy_df
+
+
+def align_dataframes_by_index(factor_df, anisotropy_df):
+    """
+    Align two DataFrames by their indices, ensuring they have the same set of
+    rows in the same order.
+
+    Args:
+        df1 (pd.DataFrame): First DataFrame (indexed by Material).
+        df2 (pd.DataFrame): Second DataFrame (indexed by Material).
+
+    Returns:
+        (pd.DataFrame, pd.DataFrame): The aligned DataFrames, filtered to the
+        intersection of their indices and sorted row-by-row.
+    """
+    # Find the common indices (intersection of MPIDs)
+    common_indices = factor_df.index.intersection(anisotropy_df.index)
+    
+    if common_indices.empty:
+        print("Warning: No common indices. Returning empty DataFrames.")
+    
+    # Filter and sort both DataFrames by the common indices
+    factor_df_aligned = factor_df.loc[common_indices].sort_index()
+    anisotropy_df_aligned = anisotropy_df.loc[common_indices].sort_index()
+    
+    return factor_df_aligned, anisotropy_df_aligned
+
+
+def align_dataframes(factor_df, anisotropy_spectra_matrix):
+    """
+    Cleans and aligns the factor DataFrame and anisotropy spectra DataFrame by:
+    1. Filtering only the rows with matching MP-IDs.
+    2. Removing rows with NaN values in the factor DataFrame and filtering anisotropy accordingly.
+    3. Ensuring both DataFrames have the same indices in the same order.
+
+    Parameters:
+        factor_df (pd.DataFrame): The factor dictionary DataFrame indexed by MP-ID.
+        anisotropy_spectra_matrix (pd.DataFrame): The anisotropy spectra DataFrame indexed by MP-ID.
+
+    Returns:
+        tuple: Cleaned and aligned (factor_df, anisotropy_spectra_matrix).
+    """
+    factor_df, anisotropy_spectra_matrix = filter_matching_mpids(factor_df, anisotropy_spectra_matrix)
+    factor_df, anisotropy_spectra_matrix = remove_nan_entries(factor_df, anisotropy_spectra_matrix)
+    factor_df, anisotropy_spectra_matrix = align_dataframes_by_index(factor_df, anisotropy_spectra_matrix)
+    return factor_df, anisotropy_spectra_matrix
