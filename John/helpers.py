@@ -9,6 +9,7 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.analysis.local_env import VoronoiNN
 from pymatgen.analysis.local_env import CrystalNN
 from pymatgen.core import Element
+from pymatgen.core.periodic_table import Element
 import pyscal.core as pc
 import json
 from pymatgen.core import Composition
@@ -1329,24 +1330,121 @@ def get_cluster_properties(mp_id, api_key=api_key):
         return properties
 
 
-def compute_number_of_ligands(neighbors):
+def compute_number_of_unique_ligands(neighbors):
     """
-    Returns the number of neighbors in the provided list.
+    Returns the number of unique ligand elements in the provided list of neighbors.
+    
+    Parameters:
+    -----------
+    neighbors : list of dict
+        Each dict is typically returned by something like CrystalNN.get_nn_info(structure, site_index).
+        It should have at least a "site" key storing the neighbor site, e.g., neighbor_info["site"].
+
+    Returns:
+    --------
+    int
+        The number of unique ligand elements.
     """
-    return len(neighbors)
+    if not neighbors:
+        return 0  # Return 0 if no neighbors
+    
+    # Extract unique atomic species from neighbors
+    unique_ligands = {n["site"].specie.symbol for n in neighbors}  # Set comprehension for unique elements
+    
+    return len(unique_ligands)
 
 
-def compute_average_bond_distance(neighbors):
+def compute_average_bond_distance(neighbors, center_site):
     """
-    Returns the average distance to each neighbor in the provided list.
-    Assumes each neighbor dict has a 'distance' key.
-    If neighbors is empty, returns 0.0.
+    Returns the average distance from `center_site` to each neighbor site.
+
+    Parameters
+    ----------
+    neighbors : list of dict
+        Each dict is typically returned by something like CrystalNN.get_nn_info(structure, site_index).
+        It should have at least a "site" key storing the neighbor site, e.g. neighbor_info["site"].
+
+    center_site : pymatgen.core.sites.Site or PeriodicSite
+        The site (usually the central atom) from which to compute distances.
+
+    Returns
+    -------
+    float
+        The average distance. If neighbors is empty, returns 0.0.
     """
     if not neighbors:
         return 0.0
 
-    distances = [n["distance"] for n in neighbors]
+    # Calculate distance from center_site to each neighbor's site
+    distances = [center_site.distance(n["site"]) for n in neighbors]
     return sum(distances) / len(distances)
+
+
+def compute_bond_length_std(neighbors, center_site):
+    """
+    Returns the standard deviation of the bond lengths from `center_site` to each neighbor site.
+
+    Parameters
+    ----------
+    neighbors : list of dict
+        Each dict is typically returned by something like CrystalNN.get_nn_info(structure, site_index).
+        It should have at least a "site" key storing the neighbor site, e.g. neighbor_info["site"].
+
+    center_site : pymatgen.core.sites.Site or PeriodicSite
+        The site (usually the central atom) from which to compute distances.
+
+    Returns
+    -------
+    float
+        The standard deviation of bond lengths. If neighbors is empty, returns 0.0.
+    """
+    if not neighbors:
+        return 0.0
+
+    # Calculate bond lengths
+    distances = [center_site.distance(n["site"]) for n in neighbors]
+
+    # Compute and return standard deviation
+    return np.std(distances, ddof=1)  # ddof=1 for sample standard deviation
+
+
+def compute_electronegativity_stats(neighbors):
+    """
+    Returns the average and standard deviation of the electronegativity of neighbor atoms.
+
+    Parameters
+    ----------
+    neighbors : list of dict
+        Each dict is typically returned by something like CrystalNN.get_nn_info(structure, site_index).
+        It should have at least a "site" key storing the neighbor site, e.g. neighbor_info["site"].
+
+    Returns
+    -------
+    tuple (float, float)
+        The average electronegativity and standard deviation.
+        If neighbors list is empty or electronegativity is unavailable, returns (0.0, 0.0).
+    """
+    if not neighbors:
+        return 0.0, 0.0
+
+    # Get electronegativity values of neighbor elements
+    electronegativities = []
+    for n in neighbors:
+        element = n["site"].specie.symbol  # Get element symbol
+        try:
+            electronegativities.append(Element(element).X)  # Get Pauling electronegativity
+        except AttributeError:
+            continue  # Skip elements without electronegativity
+
+    # Check if we got any valid electronegativities
+    if not electronegativities:
+        return 0.0, 0.0
+
+    # Compute average and standard deviation
+    avg_en = np.mean(electronegativities)
+    std_en = np.std(electronegativities, ddof=1)  # Sample standard deviation
+
+    return avg_en, std_en
 
 
 def read_mp_id_file(file_path):
@@ -1750,19 +1848,31 @@ def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quad
             material_dict = json.load(file)
 
             # Extract MP-ID and Material Name
-            mp_id = material_dict.get("MP-ID", file_path.stem.replace("_factor_dict", ""))
-            material = material_dict.get("Material", "Unknown")
+            material = material_dict.get("MP-ID", file_path.stem.replace("_factor_dict", ""))
+            chem_formula = material_dict.get("Chem Formula", "Unknown")
+            cif_name = material_dict.get("CIF Name", "Unkown")
 
             # Extract Space Group Number
             space_group_number = material_dict.get("Space Group Number", np.nan)  # Default to NaN if missing
 
             # Initialize row with mandatory fields
-            data_row = [mp_id, material, space_group_number]
+            data_row = [material, chem_formula, cif_name, space_group_number]
 
             # Define column headers
-            columns = ["MP-ID", "Material", "Space Group Number"]
+            columns = ["Material", "Chem Formula", "Cif Name", "Space Group Number"]
 
             if mat_props:
+
+                #Add chemical info bond length number of ligands and electornegativity
+                ave_bond_length = material_dict.get("Average Bond Length",0)
+                std_bond_length = material_dict.get("Bond Length Std",0)
+                num_of_ligands = material_dict.get("Number of Unique Ligands",0)
+                ave_en = material_dict.get("Average Electronegativity",0)
+                std_en = material_dict.get("Electronegativity Std",0)
+                data_row.extend([ave_bond_length, std_bond_length, num_of_ligands, ave_en, std_en])
+                columns.extend(["Average Bond Length", "Bond Length Std", "Number of Unique Ligands", "Average Electronegativity", "Std Electronegativity"])
+
+
                 # Extract band gap, density, oxidation states
                 band_gap = material_dict.get("band_gap", 0.0)
                 density = material_dict.get("density", 0.0)
@@ -1805,7 +1915,7 @@ def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quad
     factor_df = pd.DataFrame(data_list, columns=columns)
 
     # Set 'MP-ID' as the index
-    factor_df.set_index("MP-ID", inplace=True)
+    factor_df.set_index("Material", inplace=True)
 
     return factor_df
 
@@ -1915,19 +2025,19 @@ def compute_normed_off_diagonal_sum(anisotropy_spectra_matrix):
     """
 
     # Identify the off-diagonal columns
-    off_diagonal_cols = ["m01", "m02", "m10"]
+    off_diagonal_cols = ["m01", "m02", "m12"]
 
     # Sum the off-diagonal entries (row-wise)
-    anisotropy_spectra_matrix["off_diagonal_sum"] = anisotropy_spectra_matrix[off_diagonal_cols].sum(axis=1)
+    anisotropy_spectra_matrix["Off Diagonal Sum"] = anisotropy_spectra_matrix[off_diagonal_cols].sum(axis=1)
 
     # Determine the largest off-diagonal entry in each row
-    largest_off_diagonal = anisotropy_spectra_matrix["off_diagonal_sum"].max()
+    largest_off_diagonal = anisotropy_spectra_matrix["Off Diagonal Sum"].max()
 
     # Compute the ratio (handling zero-division issues)
     if largest_off_diagonal != 0:
-        anisotropy_spectra_matrix["normed_sum"] = anisotropy_spectra_matrix["off_diagonal_sum"] / largest_off_diagonal
+        anisotropy_spectra_matrix["Normed Sum"] = anisotropy_spectra_matrix["Off Diagonal Sum"] / largest_off_diagonal
     else:
-        anisotropy_spectra_matrix["normed_sum"] = 0  # Avoid division by zero
+        anisotropy_spectra_matrix["Normed Sum"] = 0  # Avoid division by zero
 
     return anisotropy_spectra_matrix
 
@@ -1944,10 +2054,10 @@ def compute_off_diagonal_sum(anisotropy_spectra_matrix):
     """
 
     # Identify the off-diagonal columns
-    off_diagonal_cols = ["m01", "m02", "m10"]
+    off_diagonal_cols = ["m01", "m02", "m12"]
 
     # Sum the off-diagonal entries (row-wise)
-    anisotropy_spectra_matrix["anisotropy_matrix_sum"] = anisotropy_spectra_matrix[off_diagonal_cols].sum(axis=1)
+    anisotropy_spectra_matrix["Anisotropy Matrix Sum"] = anisotropy_spectra_matrix[off_diagonal_cols].sum(axis=1)
 
     return anisotropy_spectra_matrix
 

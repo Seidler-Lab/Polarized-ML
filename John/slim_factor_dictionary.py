@@ -10,14 +10,13 @@ from pymatgen.core import Structure
 import importlib
 importlib.reload(helpers) #Reload helpers if necessary
 
-def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_radius=0):
+def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_radius=0, cif_name = 'cif_name'):
     """
     Generate a dictionary containing various properties and factors for a material cluster extracted 
     from a CIF file. This function computes various descriptors such as Steinhart parameters, quadrupole 
     moments, and material properties, and returns them in a dictionary format.
     """
-    
-    
+   
     # Get cluster name from the CIF file
     cluster_name = structure.composition.reduced_formula
     print(f"Extracted cluster name: {cluster_name}")
@@ -58,6 +57,7 @@ def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_
         try:
             cluster_data = helpers.crystalnn_extract_cluster_structure(structure, central_atom)
             coords, atomic_symbols, atomic_numbers, neighbors = cluster_data
+            center_site = structure[0]
         except Exception as e:
             print(f"Error extracting cluster data: {e} using crystal_NN.")
             return None
@@ -84,6 +84,7 @@ def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_
 
     factor_dict = {}
     factor_dict['MP-ID'] = mp_id
+    factor_dict['CIF Name'] = cif_name
     factor_dict['Material'] = cluster_name
     factor_dict['Space Group'] = space_group
     factor_dict['Space Group Number'] = space_group_number
@@ -101,20 +102,45 @@ def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_
     if neighbors != []:
         print(f"Computing number of ligands")
         try:
-            number_of_ligands = helpers.compute_number_of_ligands(neighbors)
+            number_of_unique_ligands = helpers.compute_number_of_unique_ligands(neighbors)
         except Exception as e:
             print(f"Error computing number of ligands: {e}")
             return None
 
         print(f"Computing average bond length")
         try:
-            average_bond_length = helpers.compute_average_bond_distance(neighbors)
+            average_bond_length = helpers.compute_average_bond_distance(neighbors, center_site)
         except Exception as e:
             print(f"Error computing average bond length: {e}")
             return None
+        
+        print(f"Computing bond length std")
+        try:
+            bond_length_std = helpers.compute_bond_length_std(neighbors, center_site)
+        except Exception as e:
+            print(f"Error computing std of bond length: {e}")
+            return None
+        
+        print(f'Computing average and standard deviation of electronegativity')
+        try:
+            avg_en, std_en = helpers.compute_electronegativity_stats(neighbors)
+        except Exception as e:
+            print(f"Error computing average and std of electronegativity: {e}")
+            return None    
 
-    factor_dictionary['Number of Ligands'] = number_of_ligands
-    factor_dictionary['Average Bond Length'] = average_bond_length
+        factor_dict["Number of Unique Ligands"] = number_of_unique_ligands
+        factor_dict['Average Bond Length'] = average_bond_length
+        factor_dict['Bond Length Std'] = bond_length_std
+        factor_dict["Average Electronegativity"] = avg_en
+        factor_dict["Electronegativity Std"]= std_en
+    
+    else:
+        factor_dict["Number of Unique Ligands"] = "Could not compute"
+        factor_dict['Average Bond Length'] = "Could not compute"
+        factor_dict['Bond Length Std'] = "Could not compute"
+        factor_dict["Average Electronegativity"] = "Could not compute"
+        factor_dict["Electronegativity Std"]= "Could not compute"
+
 
     # Get charges based on possible species
     oxidation_states = helpers.get_oxidation_state_formula(cluster_name)
@@ -129,6 +155,9 @@ def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_
     
     else:
         print(f'Oxidation states: {oxidation_states}')
+
+        print(oxidation_states)
+
         charges = helpers.get_charges(atomic_symbols, oxidation_states)
 
         # Compute the normalized dipole moment
@@ -207,6 +236,7 @@ def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_
 
 
 def write_factor_dictionary_to_file(factor_dict, filename):
+
     """
     Writes the factor dictionary to a JSON file.
 
@@ -304,10 +334,13 @@ def process_folder_of_cifs(
             # -----------------------------------------------------------
             for cif_path in all_cif_paths:
                 cif_file = os.path.basename(cif_path)
+                
+                cif_name = cif_name = os.path.splitext(cif_file)[0] #Grab just the name of the cif file
 
             # Only extract MP-ID from the filename if it's not provided in the function input
                 if mp_id == "":
                     mp_id = os.path.splitext(cif_file)[0]
+                    mp_reset = True #Bool var used to distinguish if mp id is given or not in function input
 
                 print("\n\n----------------------------------------------------------")
                 print(f"Index: {index}\n")
@@ -341,7 +374,8 @@ def process_folder_of_cifs(
                     mp_id,
                     central_atom,
                     crystal_NN,
-                    cluster_radius
+                    cluster_radius,
+                    cif_name
                 )
 
                 print("\nFactor Dictionary")
@@ -367,8 +401,9 @@ def process_folder_of_cifs(
 
                 index += 1
 
-                #reset mp id
-                mp_id = "mp-19399"
+                #Reset mp-id after run
+                if mp_reset == True:
+                    mp_id = ""
 
             # Summary of runs
             print(f"\nSummary:")
@@ -384,12 +419,12 @@ def process_folder_of_cifs(
         finally:
             sys.stdout = sys.__stdout__  # Restore original stdout
 
-Cr_log_message = """Date: 2/9/2025, Extraction: CNN, Central Atom Cr. First calculation with Space group numbers."""
+Cr_log_message = """Date: 2/21/2025, Extraction: CNN, Central Atom Cr. First calculation with bond length num of ligands and electronegativity."""
 Cu_log_message = """Date: 2/10/2025, Extraction: CNN, Central Atom Cu. First calculation with Space group numbers."""
 Fe_log_message = """Date: 2/15/2025, Extraction: Radial 10 A, Central Atom Fe."""
 
 
-#process_folder_of_cifs("Cr_Data_dir", "Cr_data/Cr_fd_2_9_2025", central_atom ="Cr", crystal_NN=True, log_message = Cr_log_message)
+process_folder_of_cifs("Cr_Data_dir", "Cr_data/Cr_fd_2_21_2025", central_atom ="Cr", crystal_NN=True, log_message = Cr_log_message)
 #process_folder_of_cifs("Cu_Data_dir", "Cu_data/Cu_fd_2_10_2025", central_atom ="Cu", crystal_NN=True, log_message = Cu_log_message)
 #process_folder_of_cifs("Fe_Data_dir", "Fe_data/Fe_fd_2_10_2025", central_atom ="Fe", crystal_NN=True, log_message = Fe_log_message)
 
@@ -400,6 +435,6 @@ Fe_log_message = """Date: 2/15/2025, Extraction: Radial 10 A, Central Atom Fe.""
 #process_folder_of_cifs("Practice_Cif", "Practice_Cif/Practice_Cif_fd", crystal_NN=False, cluster_radius=10)
 #process_folder_of_cifs("Practice_Cif", "Practice_Cif/Practice_Cif_fd", crystal_NN=True)
 #process_folder_of_cifs(cif_folder = "Practice_fd_runs/NiO_stretched_structures", output_folder = "Practice_fd_runs/NiO_stretched_structures_fd_2182025", crystal_NN=True, central_atom = "Ni", mp_id = "mp-19009")
-process_folder_of_cifs(cif_folder = "Practice_fd_runs/Cr2O3_stretched_structures", output_folder = "Practice_fd_runs/Cr203_stretched_structures_fd_2182025", crystal_NN=True, central_atom = "Cr", mp_id = "mp-19399")
+#process_folder_of_cifs(cif_folder = "Practice_fd_runs/Cr2O3_stretched_structures", output_folder = "Practice_fd_runs/Cr203_stretched_structures_fd_2212025", crystal_NN=True, central_atom = "Cr", mp_id = "mp-19399")
 
 #Set up process folder so that I can add a message to the top of the process log describing the run
