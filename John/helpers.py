@@ -567,7 +567,7 @@ def calculate_real_sph_harm(m, l, theta, phi):
     return Ylm_real
 
 
-def calculate_lbop_r(sph_coords, atomic_numbers, degree_l, order_m, parity=True):
+def calculate_lbop_r(sph_coords, atomic_numbers, degree_l, order_m, parity=True, norm_exp = 6):
     """
     Calculate the local bond order paramater for a set of spherical coordinates.
 
@@ -604,13 +604,13 @@ def calculate_lbop_r(sph_coords, atomic_numbers, degree_l, order_m, parity=True)
     # Compute considering parity
     if parity == True:
         # Sum over all neighbors
-        Ylm_sum = np.sum(sph_harm(order_m, degree_l, theta, phi)*(1/r**6)*1/atomic_numbers)
+        Ylm_sum = np.sum(sph_harm(order_m, degree_l, theta, phi)*(1/r**norm_exp)*1/atomic_numbers)
 
     # Compute without considering parity
     else:
         # Sum over all neighbors
         Ylm_sum = np.sum(
-            np.abs(calculate_real_sph_harm(order_m, degree_l, theta, phi))*(1/r**6)*1/atomic_numbers)
+            np.abs(calculate_real_sph_harm(order_m, degree_l, theta, phi))*(1/r**norm_exp)*1/atomic_numbers)
 
     # Calculate the local bond order paramater
     local_bond_order_paramater = 1 / n_neighbors * Ylm_sum
@@ -618,7 +618,7 @@ def calculate_lbop_r(sph_coords, atomic_numbers, degree_l, order_m, parity=True)
     return local_bond_order_paramater
 
 
-def calculate_steinhart(spherical_coords, atomic_numbers, degree_l):
+def calculate_steinhart(spherical_coords, atomic_numbers, degree_l, norm_exp):
     """
     Calculate the Steinhardt parameter (ql) for a given degree l using atomic information
     provided in spherical coordinates. This function computes ql by summing the squares of
@@ -643,7 +643,7 @@ def calculate_steinhart(spherical_coords, atomic_numbers, degree_l):
     while order_m <= degree_l:
         # Calculate the SP for each m and add it to the sum
         q_lm_squared_sum += np.abs((calculate_lbop_r(spherical_coords, atomic_numbers,
-                                                     degree_l, order_m, parity)))**2
+                                                     degree_l, order_m, parity, norm_exp)))**2
         order_m += 1  # Move to the next order m
 
     # Calculate the overall SP for degree l using the accumulated sum of q_lm values
@@ -712,7 +712,7 @@ def calculate_steinhart_sum_from_filepath(file_path, degree_l):
     return q_l_sum
 
 
-def calculate_steinhart_sum(spherical_coords, atomic_numbers, degree_l):
+def calculate_steinhart_sum(spherical_coords, atomic_numbers, degree_l, norm_exp):
     """
     Calculates the sum of Steinhardt parameters (q_l) up to a given degree (l) for a cluster of atoms.
 
@@ -741,7 +741,7 @@ def calculate_steinhart_sum(spherical_coords, atomic_numbers, degree_l):
         while order_m <= degree_l:
             # Calculate the SP for each m and add it to the sum
             q_lm_squarred_sum += np.abs(calculate_lbop_r(spherical_coords, atomic_numbers,
-                                                         degree_l, order_m, parity))**2
+                                                         degree_l, order_m, parity, norm_exp))**2
             order_m += 1  # Move to the next order m
 
         # Calculate the overall SP for degree l using the accumulated sum of q_lm values
@@ -846,7 +846,7 @@ def compute_steinhart_vector_from_structure(structure, degree_l, central_atom):
     return ql_list, cluster_name
 
 
-def compute_steinhart_vector(spherical_coords, atomic_numbers, degree_l, cluster_name="Cluster"):
+def compute_steinhart_vector(spherical_coords, atomic_numbers, degree_l, cluster_name="Cluster", norm_exp = 6):
     """
     Compute the Steinhardt parameters for all degrees from 0 up to the specified degree_l
     based on atomic coordinates and types, assuming the coordinates are given in spherical form
@@ -856,7 +856,8 @@ def compute_steinhart_vector(spherical_coords, atomic_numbers, degree_l, cluster
     - spherical_coords (np.ndarray): Array of atomic spherical coordinates with shape (n, 3), excluding the central atom.
     - atomic_numbers (list or np.ndarray): List or array of atomic numbers corresponding to the atoms, excluding the central atom.
     - degree_l (int): The highest degree (l) of Steinhardt parameters to compute.
-    - cluster_name (str): Name of the cluster being processed.
+    - cluster_name (str): Name of the cluster being processed. 
+    - norm_exp (int): 1/r^n norm for lbop
 
     Returns:
     - list: A list of Steinhardt parameters ql for each degree from 0 to degree_l.
@@ -869,7 +870,7 @@ def compute_steinhart_vector(spherical_coords, atomic_numbers, degree_l, cluster
 
     ql_list = []
     for i in range(degree_l + 1):  # Compute ql for each degree from 0 to degree_l
-        ql = calculate_steinhart(spherical_coords, atomic_numbers, i)
+        ql = calculate_steinhart(spherical_coords, atomic_numbers, i, norm_exp)
         ql_list.append(ql)
 
     return ql_list, cluster_name
@@ -1288,17 +1289,24 @@ def get_cluster_properties(mp_id, api_key=api_key):
 
     Args:
     - mp_id (str): The Materials Project ID of the material.
-    - central_atom (str): The symbol of the central atom (e.g., 'V' for vanadium).
     - api_key (str): Your Materials Project API key.
 
     Returns:
     - dict: A dictionary containing band gap, oxidation state, and density.
     """
+
+    print(f"Using MP ID: {mp_id}")
+    print("MP ID repr:", repr(mp_id))
+
     with MPRester(api_key) as mpr:
         # Search for the material using its MP-ID
         materials = mpr.materials.summary.search(
             material_ids=[mp_id]
         )
+
+        if not materials:
+            raise ValueError(f"No materials found for the MP ID '{mp_id}'. "
+                             "Check that it is a valid Materials Project ID.")
 
         # Select the first material from the returned materials list
         material = materials[0]
@@ -1308,9 +1316,9 @@ def get_cluster_properties(mp_id, api_key=api_key):
 
         # Get the band gap of the material
         if hasattr(material, 'band_gap'):
-            properties['band_gap'] = material.band_gap
+            properties['band gap'] = material.band_gap
         else:
-            properties['band_gap'] = "Band gap not available"
+            properties['band gap'] = "Band gap not available"
 
         # Get density
         if hasattr(material, 'density'):
@@ -1447,6 +1455,117 @@ def compute_electronegativity_stats(neighbors):
     return avg_en, std_en
 
 
+def compute_bond_angles(center_site, neighbors):
+    """
+    Computes the bond angles between neighboring atoms of a central atom.
+
+    Parameters:
+    - center_site (Site): Pymatgen Site object representing the central atom.
+    - neighbors (list): List of PeriodicSite objects representing the neighbors.
+
+    Returns:
+    - list: Bond angles in degrees.
+    """
+    # Get Cartesian coordinates
+    central_coord = center_site.coords
+
+    # Extract coordinates from neighbor PeriodicSite objects
+    neighbor_coords = np.array([neighbor['site'].coords for neighbor in neighbors])
+
+    bond_angles = []
+    for i in range(len(neighbor_coords)):
+        for j in range(i + 1, len(neighbor_coords)):
+            vec1 = neighbor_coords[i] - central_coord
+            vec2 = neighbor_coords[j] - central_coord
+            cos_theta = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+            
+            # Handle potential floating point precision errors
+            cos_theta = np.clip(cos_theta, -1.0, 1.0)
+            angle = np.degrees(np.arccos(cos_theta))
+            bond_angles.append(angle)
+    
+    return bond_angles
+
+
+def bond_angle_statistics(center_site, neighbors):
+    """
+    Computes the average and standard deviation of bond angles around a central atom.
+
+    Parameters:
+    - center_site (Site): Pymatgen Site object representing the central atom.
+    - neighbors (list): List of PeriodicSite objects representing the neighbors.
+
+    Returns:
+    - tuple: (average bond angle, standard deviation of bond angles)
+    """
+    
+    bond_angles = compute_bond_angles(center_site, neighbors)
+    
+    if not bond_angles:
+        return None, None  # Handle cases where no angles are computed
+    
+    avg_angle = np.mean(bond_angles)
+    std_angle = np.std(bond_angles)
+    
+    return avg_angle, std_angle
+
+
+def compute_electronegativity_stats_cluster(atomic_symbols):
+    """
+    Computes the average electronegativity of a cluster given atomic symbols and oxidation states.
+
+    Parameters:
+        atomic_symbols (list): List of atomic symbols (e.g., ['Cr', 'Te', 'Cr', ...])
+
+    Returns:
+        float: Average electronegativity of the cluster.
+    """
+    electronegativities = []
+
+    for symbol in atomic_symbols:
+        element = Element(symbol)
+        # Use the Pauling electronegativity
+        electronegativity = element.X
+
+        # Handle elements without defined electronegativity
+        if electronegativity is None:
+            raise ValueError(f"Electronegativity not defined for element: {symbol}")
+
+        electronegativities.append(electronegativity)
+
+    avg_electronegativity = np.mean(electronegativities)
+    std_electronegativity = np.std(electronegativities)
+
+    return avg_electronegativity, std_electronegativity
+
+
+def compute_bond_length_stats_cluster(coords):
+    """
+    Computes the average and standard deviation of bond lengths for a cluster given atomic coordinates.
+
+    Parameters:
+        coords (list of tuples): List of atomic coordinates (x, y, z).
+
+    Returns:
+        tuple: (Average bond length, Standard deviation of bond lengths)
+    """
+    coords_array = np.array(coords)
+    distances = []
+
+    for i in range(len(coords_array)):
+        for j in range(i + 1, len(coords_array)):
+            distance = np.linalg.norm(coords_array[i] - coords_array[j])
+            distances.append(distance)
+
+    # Correctly calculate average and standard deviation
+    if distances:  # Ensure distances list is not empty
+        avg_bond_length = np.mean(distances)
+        std_bond_length = np.std(distances)
+        return avg_bond_length, std_bond_length
+    else:
+        return None, None  # Handle edge cases where no distances are found
+
+
 def read_mp_id_file(file_path):
     """
     Reads a text file containing compound names and their corresponding 
@@ -1524,13 +1643,14 @@ def quadrupole_moment(positions, charges):
     return Q
 
 
-def quadrupole_moment_normalized(positions, charges):
+def quadrupole_moment_normalized(positions, charges, qm_exponent):
     """
     Calculate the non traceless form of the quadrupole moment tensor for a system of point charges, normalized by the atomic number.
 
     Args:
     - positions: Nx3 array, where N is the number of particles, and each row is the (x, y, z) coordinates of a particle.
     - charges: 1D array of length N, where each element is the charge of the corresponding particle.
+    - qm_exponent: integer, Defines the exponent on the dist for normalization
 
     Returns:
     - Q: 3x3 numpy array representing the normalized quadrupole moment tensor.
@@ -1545,7 +1665,7 @@ def quadrupole_moment_normalized(positions, charges):
         dist = np.sqrt(r_x**2+r_y**2+r_z**2)
 
         # Update the Q matrix using the normalized formula.
-        normalization_factor = charge / (dist)**6
+        normalization_factor = charge / dist**qm_exponent
 
         Q[0, 0] += normalization_factor * (r_x * r_x)
         Q[0, 1] += normalization_factor * (r_x * r_y)
@@ -1614,7 +1734,7 @@ def q_anisotropy_matrix_sum(q_anisotropy_matrix):
     return sum
 
 
-def dipole_moment_normalized(positions, charges):
+def dipole_moment(positions,charges):
     """
     Compute the normalized dipole moment vector for a system of charges.
 
@@ -1639,6 +1759,42 @@ def dipole_moment_normalized(positions, charges):
     
     for pos, charge in zip(positions, charges):
         r_x, r_y, r_z = pos
+
+        # Normalize the position vector
+        P[0] += charge * r_x
+        P[1] += charge * r_y
+        P[2] += charge * r_z
+
+    return P
+
+
+def dipole_moment_normalized(positions, charges, dm_exponent):
+    """
+    Compute the normalized dipole moment vector for a system of charges.
+
+    Parameters:
+    positions : list of tuples
+        A list of 3D position vectors (x, y, z) for the charges.
+    charges : list of floats
+        A list of charges corresponding to the position vectors.
+    dm_exponent: integer
+        Defines the exponent on the dist for normalization
+
+    Returns:
+    numpy.ndarray
+        A 3D vector representing the normalized dipole moment.
+
+    Notes:
+    ------
+    - Positions with a distance of zero are skipped to avoid division by zero.
+    - The normalization factor is calculated as charge / (distance^5).
+    """
+
+    # Initialize the dipole moment vector as a 3D vector
+    P = np.zeros(3)
+    
+    for pos, charge in zip(positions, charges):
+        r_x, r_y, r_z = pos
         dist = np.sqrt(r_x**2 + r_y**2 + r_z**2)
         
         # Avoid division by zero in normalization
@@ -1646,7 +1802,7 @@ def dipole_moment_normalized(positions, charges):
             continue
 
         # Normalize the position vector
-        normalization_factor = charge / dist**5
+        normalization_factor = charge / dist**dm_exponent
         P[0] += normalization_factor * r_x
         P[1] += normalization_factor * r_y
         P[2] += normalization_factor * r_z
@@ -1656,8 +1812,7 @@ def dipole_moment_normalized(positions, charges):
 
 def dipole_anisotropy_matrix(dipole_vector):
     """
-    Create a matrix where the components are the difference squared 
-    of the components of the vector normalized by the mean of the components.
+    Create a matrix where the components are the difference of the components of the vector
 
     Parameters:
     dipole_vector (array-like): A 3D vector representing the dipole moment.
@@ -1688,7 +1843,7 @@ def dipole_anisotropy_matrix(dipole_vector):
     return dipole_matrix
 
 
-def p_anisotropy_matrix_sum(dipole_anisotropy_matrix):
+def d_anisotropy_matrix_sum(dipole_anisotropy_matrix):
     """
     Compute the sum of select off-diagonal elements of a dipole anisotropy matrix.
 
@@ -1838,7 +1993,7 @@ def convert_to_json_serializable(data):
         return data    
 
 
-def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quadrupole=False):
+def generate_factor_df_old(factor_dict_dir_path, mat_props=False, dipole=False, quadrupole=False, steinhart = False):
     # Initialize an empty list to store rows of data
     data_list = []
 
@@ -1848,12 +2003,12 @@ def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quad
             material_dict = json.load(file)
 
             # Extract MP-ID and Material Name
-            material = material_dict.get("MP-ID", file_path.stem.replace("_factor_dict", ""))
-            chem_formula = material_dict.get("Chem Formula", "Unknown")
-            cif_name = material_dict.get("CIF Name", "Unkown")
+            material = material_dict.get("mp-id", file_path.stem.replace("_factor_dict", ""))
+            chem_formula = material_dict.get("chem formula", "Unknown")
+            cif_name = material_dict.get("cif name", "Unkown")
 
             # Extract Space Group Number
-            space_group_number = material_dict.get("Space Group Number", np.nan)  # Default to NaN if missing
+            space_group_number = material_dict.get("space group number", np.nan)  # Default to NaN if missing
 
             # Initialize row with mandatory fields
             data_row = [material, chem_formula, cif_name, space_group_number]
@@ -1864,19 +2019,21 @@ def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quad
             if mat_props:
 
                 #Add chemical info bond length number of ligands and electornegativity
-                ave_bond_length = material_dict.get("Average Bond Length",0)
-                std_bond_length = material_dict.get("Bond Length Std",0)
-                num_of_ligands = material_dict.get("Number of Unique Ligands",0)
-                ave_en = material_dict.get("Average Electronegativity",0)
-                std_en = material_dict.get("Electronegativity Std",0)
-                data_row.extend([ave_bond_length, std_bond_length, num_of_ligands, ave_en, std_en])
-                columns.extend(["Average Bond Length", "Bond Length Std", "Number of Unique Ligands", "Average Electronegativity", "Std Electronegativity"])
+                ave_bond_length = material_dict.get("average bond length",0)
+                std_bond_length = material_dict.get("bond length std",0)
+                ave_bond_angle = material_dict.get("average bond angle",0)
+                std_bond_angle = material_dict.get("bond angle std",0)
+                num_of_ligands = material_dict.get("number of unique ligands",0)
+                ave_en = material_dict.get("average electronegativity",0)
+                std_en = material_dict.get("electronegativity std",0)
+                data_row.extend([ave_bond_length, std_bond_length, ave_bond_angle, std_bond_angle, num_of_ligands, ave_en, std_en])
+                columns.extend(["Average Bond Length", "Bond Length Std", "Average Bond Angle", "Bond Angle Std", "Number of Unique Ligands", "Average Electronegativity", "Std Electronegativity"])
 
 
                 # Extract band gap, density, oxidation states
-                band_gap = material_dict.get("band_gap", 0.0)
+                band_gap = material_dict.get("band gap", 0.0)
                 density = material_dict.get("density", 0.0)
-                oxidation_states = material_dict.get("oxidation_states", {})
+                oxidation_states = material_dict.get("oxidation states", {})
                 oxidation_states_str = str(oxidation_states)
 
                 data_row.extend([band_gap, density, oxidation_states_str])
@@ -1908,6 +2065,18 @@ def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quad
                 columns.extend([f"Aniso QM {i}" for i in range(9)])
                 columns.append("Aniso Sum QM")
 
+            if steinhart:
+                # Extract Steinhart vector, ensuring only numbers are included
+                steinhart_vector = np.array(material_dict.get("steinhart vector", [[0]])[0]).flatten()
+                steinhart_vector_sum = material_dict.get("steinhart parameter sum", 0.0)
+
+                data_row.extend([*steinhart_vector, steinhart_vector_sum])
+
+                # Dynamically adjust the number of Steinhart vector columns
+                columns.extend([f"Steinhart Vector {i}" for i in range(len(steinhart_vector))])
+                columns.append("Steinhart Vector Sum")
+
+                
             # Append row to data list
             data_list.append(data_row)
 
@@ -1917,6 +2086,258 @@ def generate_factor_df(factor_dict_dir_path, mat_props=False, dipole=False, quad
     # Set 'MP-ID' as the index
     factor_df.set_index("Material", inplace=True)
 
+    return factor_df
+
+
+def generate_factor_df(
+    factor_dict_dir_path,
+    mat_props=False,
+    dipole=False,
+    quadrupole=False,
+    steinhart=False,
+    normalization_orders=None,
+):
+    """
+    Generate a pandas DataFrame from JSON factor dictionaries in the specified folder.
+
+    This function reads all JSON files in `factor_dict_dir_path` and creates a DataFrame 
+    of materials data. If you specify certain flags (e.g., `dipole=True`), the function 
+    includes columns for dipole- or quadrupole-related properties. It also optionally 
+    handles normalization orders for dipole/quadrupole keys like 
+    `"dipole moment normalized 1/r^{n}"`.
+
+    Parameters
+    ----------
+    factor_dict_dir_path : str or Path
+        A path to the folder containing all the JSON factor dictionary files.
+    mat_props : bool, optional
+        If True, material properties such as bond length, density, and oxidation states 
+        will be included in the resulting DataFrame.
+    dipole : bool, optional
+        If True, the function will read dipole data from each JSON (e.g. 
+        `"dipole moment normalized"`, `"normalized dipole anisotropy matrix"`). 
+        If `normalization_orders` is provided, it will also look for 
+        `"dipole moment normalized 1/r^n"` keys.
+    quadrupole : bool, optional
+        If True, the function will read quadrupole data from each JSON (e.g. 
+        `"quadrupole moment normalized"`, `"normalized quadrupole anisotropy matrix"`). 
+        If `normalization_orders` is provided, it will also look for 
+        `"quadrupole moment normalized 1/r^n"` keys.
+    steinhart : bool, optional
+        If True, the function will gather Steinhart vector data from `"steinhart vector"` 
+        and `"steinhart parameter sum"` keys.
+    normalization_orders : list of int, optional
+        If provided, these are the exponent values `n` used for searching keys like 
+        `"dipole moment normalized 1/r^{n}"` or `"quadrupole moment normalized 1/r^{n}"`.
+        If `None`, the function only uses the “single-value” approach.
+
+    Returns
+    -------
+    factor_df : pandas.DataFrame
+        A DataFrame where each row corresponds to one JSON file (identified by “Material”), 
+        and columns represent extracted properties. The “Material” column is set as the 
+        DataFrame’s index.
+
+    Notes
+    -----
+    - For dipole or quadrupole keys that are not found, arrays of `[None, None, ...]` 
+      (or a single None) are used instead, so missing data is clearly indicated.
+    - For steinhart data, if the JSON lacks `"steinhart vector"`, it falls back to `[0]`.
+    - You can easily alter the default fallbacks for missing data to suit your needs.
+    - The function sets the “Material” column as index, meaning the returned DataFrame’s 
+      first column is that index rather than a standard column.
+
+    Examples
+    --------
+    # Basic usage:
+    >>> df = generate_factor_df("my_json_folder", dipole=True, quadrupole=True)
+
+    # With normalization:
+    >>> df = generate_factor_df(
+    ...     "my_json_folder",
+    ...     dipole=True, quadrupole=True,
+    ...     normalization_orders=[1,2,3]
+    ... )
+
+    # Including material properties only:
+    >>> df = generate_factor_df("my_json_folder", mat_props=True)
+    """
+
+
+    data_list = []
+
+    for file_path in Path(factor_dict_dir_path).glob("*.json"):
+        with open(file_path, "r") as fp:
+            material_dict = json.load(fp)
+        
+        # Skip materials with undefined oxidation states
+        if material_dict.get("oxidation states") == "Oxidation states could not be determined.":
+            continue
+
+        # Extract MP-ID and Material Name
+        material = material_dict.get("mp-id", file_path.stem.replace("_factor_dict", ""))
+        chem_formula = material_dict.get("chem formula", "Unknown")
+        cif_name = material_dict.get("cif name", "Unkown")
+
+        # Extract Space Group Number
+        space_group_number = material_dict.get("space group number", np.nan)  # Default to NaN if missing
+
+        # Initialize row with mandatory fields
+        data_row = [material, chem_formula, cif_name, space_group_number]
+
+        # Define column headers
+        columns = ["Material", "Chem Formula", "Cif Name", "Space Group Number"]
+
+        # ---------------------------
+        #   Material properties
+        # ---------------------------
+        if mat_props:
+    
+            #Add chemical info bond length number of ligands and electornegativity
+            ave_bond_length = material_dict.get("average bond length",0)
+            std_bond_length = material_dict.get("bond length std",0)
+            ave_bond_angle = material_dict.get("average bond angle",0)
+            std_bond_angle = material_dict.get("bond angle std",0)
+            num_of_ligands = material_dict.get("number of unique ligands",0)
+            ave_en = material_dict.get("average electronegativity",0)
+            std_en = material_dict.get("electronegativity std",0)
+            data_row.extend([ave_bond_length, std_bond_length, ave_bond_angle, std_bond_angle, num_of_ligands, ave_en, std_en])
+            columns.extend(["Average Bond Length", "Bond Length Std", "Average Bond Angle", "Bond Angle Std", "Number of Unique Ligands", "Average Electronegativity", "Std Electronegativity"])
+
+
+            # Extract band gap, density, oxidation states
+            band_gap = material_dict.get("band gap", 0.0)
+            density = material_dict.get("density", 0.0)
+            oxidation_states = material_dict.get("oxidation states", {})
+            oxidation_states_str = str(oxidation_states)
+
+            data_row.extend([band_gap, density, oxidation_states_str])
+            columns.extend(["Band Gap", "Density", "Oxidation States"])
+
+
+        # --------------------------------------------
+        # Handle dipole normalization single value or range
+        # --------------------------------------------
+        if dipole:
+            if normalization_orders is None:
+                #
+                # -- single “dipole moment normalized” 
+                #
+                # Extract Dipole Moments
+                dipole_moment_norm = np.array(material_dict.get("dipole moment normalized", [None, None, None])).flatten()
+                normalized_d_anisotropy_matrix = np.array(
+                    material_dict.get("normalized dipole anisotropy matrix", [[None] * 3] * 3)
+                ).flatten()
+                normalized_d_anisotropy_matrix_sum = material_dict.get("normalized dipole anisotropy matrix sum", None)
+
+                data_row.extend([*dipole_moment_norm, *normalized_d_anisotropy_matrix, normalized_d_anisotropy_matrix_sum])
+                columns.extend([f"DM Norm {i}" for i in range(3)])
+                columns.extend([f"Aniso DM {i}" for i in range(9)])
+                columns.append("Aniso Sum DM")
+
+            else:
+                #
+                # -- loop over 1/r^n for each n
+                #
+                for n in normalization_orders:
+                    # Extract Dipole Moments
+                    dipole_moment_norm = np.array(material_dict.get(f"dipole moment normalized 1/r^{n}", [None, None, None])).flatten()
+                    normalized_d_anisotropy_matrix = np.array(
+                        material_dict.get(f"normalized dipole anisotropy matrix 1/r^{n}", [[None] * 3] * 3)
+                    ).flatten()
+                    normalized_d_anisotropy_matrix_sum = material_dict.get(f"normalized dipole anisotropy matrix sum 1/r^{n}", None)
+
+                    data_row.extend([*dipole_moment_norm, *normalized_d_anisotropy_matrix, normalized_d_anisotropy_matrix_sum])
+                    columns.extend([f"DM Norm 1/r^{n} {i}" for i in range(3)])
+                    columns.extend([f"Aniso DM 1/r^{n} {i}" for i in range(9)])
+                    columns.append(f"Aniso Sum DM 1/r^{n}")
+
+        # --------------------------------------------
+        # Handle quadrupole normalization single value or range
+        # --------------------------------------------
+        if quadrupole:
+            if normalization_orders is None:
+                #
+                # -- single “quadrupole moment normalized,” 
+                #
+                # Extract Quadrupole Moments
+                quadrupole_moment_norm = np.array(material_dict.get("quadrupole moment normalized", [[None] * 3] * 3)).flatten()
+                normalized_q_anisotropy_matrix = np.array(
+                    material_dict.get("normalized quadrupole anisotropy matrix", [[None] * 3] * 3)
+                ).flatten()
+                normalized_q_anisotropy_matrix_sum = material_dict.get("normalized quadrupole anisotropy matrix sum", None)
+
+                data_row.extend([*quadrupole_moment_norm, *normalized_q_anisotropy_matrix, normalized_q_anisotropy_matrix_sum])
+                columns.extend([f"QM Norm {i}" for i in range(9)])
+                columns.extend([f"Aniso QM {i}" for i in range(9)])
+                columns.append("Aniso Sum QM")
+
+            else:
+                #
+                # -- loop 1/r^
+                #
+                for n in normalization_orders:
+                    qm_key = f"quadrupole moment normalized 1/r^{n}"
+                    aniso_mat_key = f"normalized quadrupole anisotropy matrix 1/r^{n}"
+                    aniso_sum_key = f"normalized quadrupole anisotropy matrix sum 1/r^{n}"
+
+                    # Skip this normalization order if any required key is missing
+                    if not all(k in material_dict for k in [qm_key, aniso_mat_key, aniso_sum_key]):
+                        continue  # don't add any row or columns for this n
+
+                    # Extract and flatten data
+                    quadrupole_moment_norm = np.array(material_dict[qm_key]).flatten()
+                    normalized_q_anisotropy_matrix = np.array(material_dict[aniso_mat_key]).flatten()
+                    normalized_q_anisotropy_matrix_sum = material_dict[aniso_sum_key]
+
+                    # Add to row and column structures
+                    data_row.extend([*quadrupole_moment_norm, *normalized_q_anisotropy_matrix, normalized_q_anisotropy_matrix_sum])
+                    columns.extend([f"QM Norm 1/r^{n} {i}" for i in range(9)])
+                    columns.extend([f"Aniso QM 1/r^{n} {i}" for i in range(9)])
+                    columns.append(f"Aniso Sum QM 1/r^{n}")
+
+
+        # --------------------------------------------
+        # STEINHART
+        # --------------------------------------------
+        if steinhart:
+
+            if normalization_orders is None:
+                #
+                # -- single “Steinhart parameter” 
+                #
+                # Extract Steinhart vector, ensuring only numbers are included
+                steinhart_vector = np.array(material_dict.get("steinhart vector", [[0]])[0]).flatten()
+                steinhart_vector_sum = material_dict.get("steinhart parameter sum", 0.0)
+
+                data_row.extend([*steinhart_vector, steinhart_vector_sum])
+
+                # Dynamically adjust the number of Steinhart vector columns
+                columns.extend([f"Steinhart Vector {i}" for i in range(len(steinhart_vector))])
+                columns.append("Steinhart Vector Sum")
+
+            else:
+                #
+                # -- loop 1/r^
+                #
+                for n in normalization_orders:
+                    # Extract Steinhart vector, ensuring only numbers are included
+                    steinhart_vector = np.array(material_dict.get(f"steinhart vector 1/r^{n}", [[0]])[0]).flatten()
+                    steinhart_vector_sum = material_dict.get(f"steinhart parameter sum 1/r^{n}", 0.0)
+
+                    data_row.extend([*steinhart_vector, steinhart_vector_sum])
+
+                    # Dynamically adjust the number of Steinhart vector columns
+                    columns.extend([f"Steinhart Vector 1/r^{n} {i}" for i in range(len(steinhart_vector))])
+                    columns.append(f"Steinhart Vector Sum 1/r^{n}")
+
+        # done with this row
+        data_list.append(data_row)
+
+
+    # Build final dataframe
+    factor_df = pd.DataFrame(data_list, columns=columns)
+    factor_df.set_index("Material", inplace=True)
     return factor_df
 
 
@@ -1935,7 +2356,7 @@ def load_anisotropy_matrix(csv_path, center_atom):
     csv_path = Path(csv_path)
 
     # Read the CSV file, assuming tab-separated values
-    anisotropy_matrix_df = pd.read_csv(csv_path, sep='\t')
+    anisotropy_matrix_df = pd.read_csv(csv_path)
 
     # Set the first column as the index
     anisotropy_matrix_df.set_index(anisotropy_matrix_df.columns[0], inplace=True)
@@ -1950,7 +2371,7 @@ def load_anisotropy_matrix(csv_path, center_atom):
     return anisotropy_matrix_df
 
 
-def load_anisotropy_matrix_json(json_file_path):
+def load_anisotropy_matrix_json_old(json_file_path):
     """
     Load a JSON file where each key maps to a 3x3 matrix
     (as a list of lists), and return a DataFrame of the
@@ -1981,6 +2402,22 @@ def load_anisotropy_matrix_json(json_file_path):
 
     df = pd.DataFrame(rows)
     return df.set_index('Material')
+
+
+def load_anisotropy_matrix_json(json_file_path):
+    with open(json_file_path, 'r') as file:
+        data = json.load(file)
+
+    records = []
+    for mpid, mat in data.items():
+        flat = [val for row in mat for val in row]
+        if len(flat) != 9:
+            print(f"Warning: {mpid} has an unexpected matrix shape.")
+            continue
+        records.append({'Material': mpid, **{f'm{i}{j}': flat[i*3 + j] for i in range(3) for j in range(3)}})
+
+    df = pd.DataFrame(records).set_index('Material')
+    return df
 
 
 def print_factor_dict(factor_dict_path):
@@ -2035,9 +2472,9 @@ def compute_normed_off_diagonal_sum(anisotropy_spectra_matrix):
 
     # Compute the ratio (handling zero-division issues)
     if largest_off_diagonal != 0:
-        anisotropy_spectra_matrix["Normed Sum"] = anisotropy_spectra_matrix["Off Diagonal Sum"] / largest_off_diagonal
+        anisotropy_spectra_matrix["Anisotropy Matrix Sum"] = anisotropy_spectra_matrix["Off Diagonal Sum"] / largest_off_diagonal
     else:
-        anisotropy_spectra_matrix["Normed Sum"] = 0  # Avoid division by zero
+        anisotropy_spectra_matrix["Anisotropy Matrix Sum"] = 0  # Avoid division by zero
 
     return anisotropy_spectra_matrix
 
@@ -2095,39 +2532,60 @@ def filter_matching_mpids(factor_df, anisotropy_df):
         anisotropy_df (pd.DataFrame): The anisotropy DataFrame indexed by MP-ID.
 
     Returns:
-        tuple: Filtered DataFrames containing only matching MP-IDs.
+        tuple: (filtered_factor_df, filtered_anisotropy_df, dropped_factor_df)
+               where dropped_factor_df contains entries removed from factor_df.
     """
+
+    original_factor_index = factor_df.index
+
     # Find common MP-IDs in both DataFrames
     common_mp_ids = factor_df.index.intersection(anisotropy_df.index)
-    
+
+    #print(common_mp_ids)
+
     # Filter both DataFrames to keep only the rows with matching MP-IDs
     filtered_factor_df = factor_df.loc[common_mp_ids]
     filtered_anisotropy_df = anisotropy_df.loc[common_mp_ids]
-    
-    return filtered_factor_df, filtered_anisotropy_df
+
+    # Any factor_df rows not in the intersection are considered dropped
+    dropped_mp_ids = original_factor_index.difference(common_mp_ids)
+    dropped_factor_df = factor_df.loc[dropped_mp_ids]
+
+    #print(dropped_mp_ids)
+
+    return filtered_factor_df, filtered_anisotropy_df, dropped_factor_df
 
 
 def remove_nan_entries(factor_df, anisotropy_df):
     """
-    Removes rows with NaN values from the factor DataFrame and filters the anisotropy DataFrame accordingly.
+    Removes rows with NaN values from the factor DataFrame and filters
+    the anisotropy DataFrame accordingly.
 
     Parameters:
         factor_df (pd.DataFrame): The factor DataFrame indexed by MP-ID.
         anisotropy_df (pd.DataFrame): The anisotropy DataFrame indexed by MP-ID.
 
     Returns:
-        tuple: Cleaned factor DataFrame and corresponding anisotropy DataFrame.
+        tuple: (cleaned_factor_df, cleaned_anisotropy_df, dropped_factor_df)
+               where dropped_factor_df contains the factor rows removed.
     """
+    
+    original_factor_index = factor_df.index
+
     # Drop rows with NaN values from the factor DataFrame
     cleaned_factor_df = factor_df.dropna()
-    
-    # Extract the MP-IDs of the valid rows
+
+    # Extract MP-IDs of the valid rows
     valid_mp_ids = cleaned_factor_df.index
-    
+
     # Filter the anisotropy DataFrame to keep only rows matching the valid MP-IDs
-    cleaned_anisotropy_df = anisotropy_df.loc[anisotropy_df.index.isin(valid_mp_ids)]
-    
-    return cleaned_factor_df, cleaned_anisotropy_df
+    cleaned_anisotropy_df = anisotropy_df.loc[anisotropy_df.index.intersection(valid_mp_ids)]
+
+    # Any factor_df rows not in 'valid_mp_ids' were dropped
+    dropped_mp_ids = original_factor_index.difference(valid_mp_ids)
+    dropped_factor_df = factor_df.loc[dropped_mp_ids]
+
+    return cleaned_factor_df, cleaned_anisotropy_df, dropped_factor_df
 
 
 def align_dataframes_by_index(factor_df, anisotropy_df):
@@ -2136,41 +2594,76 @@ def align_dataframes_by_index(factor_df, anisotropy_df):
     rows in the same order.
 
     Args:
-        df1 (pd.DataFrame): First DataFrame (indexed by Material).
-        df2 (pd.DataFrame): Second DataFrame (indexed by Material).
+        factor_df (pd.DataFrame): First DataFrame (indexed by MP-ID).
+        anisotropy_df (pd.DataFrame): Second DataFrame (indexed by MP-ID).
 
     Returns:
-        (pd.DataFrame, pd.DataFrame): The aligned DataFrames, filtered to the
-        intersection of their indices and sorted row-by-row.
+        (pd.DataFrame, pd.DataFrame, pd.DataFrame):
+            The aligned factor DataFrame, the aligned anisotropy DataFrame,
+            and a factor DataFrame of dropped entries.
     """
-    # Find the common indices (intersection of MPIDs)
+
+    original_factor_index = factor_df.index
+
+    # Find the common indices
     common_indices = factor_df.index.intersection(anisotropy_df.index)
-    
+
     if common_indices.empty:
         print("Warning: No common indices. Returning empty DataFrames.")
-    
+
+
     # Filter and sort both DataFrames by the common indices
     factor_df_aligned = factor_df.loc[common_indices].sort_index()
     anisotropy_df_aligned = anisotropy_df.loc[common_indices].sort_index()
-    
-    return factor_df_aligned, anisotropy_df_aligned
+
+    # Identify dropped factor entries
+    dropped_mp_ids = original_factor_index.difference(common_indices)
+    dropped_factor_df = factor_df.loc[dropped_mp_ids]
+
+    return factor_df_aligned, anisotropy_df_aligned, dropped_factor_df
 
 
 def align_dataframes(factor_df, anisotropy_spectra_matrix):
     """
     Cleans and aligns the factor DataFrame and anisotropy spectra DataFrame by:
-    1. Filtering only the rows with matching MP-IDs.
-    2. Removing rows with NaN values in the factor DataFrame and filtering anisotropy accordingly.
-    3. Ensuring both DataFrames have the same indices in the same order.
+      1. Filtering only rows with matching MP-IDs.
+      2. Removing rows with NaN values in the factor DataFrame
+         and filtering anisotropy accordingly.
+      3. Ensuring both DataFrames have the same indices in the same order.
 
     Parameters:
-        factor_df (pd.DataFrame): The factor dictionary DataFrame indexed by MP-ID.
-        anisotropy_spectra_matrix (pd.DataFrame): The anisotropy spectra DataFrame indexed by MP-ID.
+        factor_df (pd.DataFrame): Factor dictionary DataFrame indexed by MP-ID.
+        anisotropy_spectra_matrix (pd.DataFrame): Anisotropy spectra
+                                                 DataFrame indexed by MP-ID.
 
     Returns:
-        tuple: Cleaned and aligned (factor_df, anisotropy_spectra_matrix).
+        (pd.DataFrame, pd.DataFrame, pd.DataFrame):
+            - Final aligned factor_df
+            - Final aligned anisotropy_spectra_matrix
+            - factor_df of all dropped entries at any step
     """
-    factor_df, anisotropy_spectra_matrix = filter_matching_mpids(factor_df, anisotropy_spectra_matrix)
-    factor_df, anisotropy_spectra_matrix = remove_nan_entries(factor_df, anisotropy_spectra_matrix)
-    factor_df, anisotropy_spectra_matrix = align_dataframes_by_index(factor_df, anisotropy_spectra_matrix)
-    return factor_df, anisotropy_spectra_matrix
+    # Keep track of dropped factor rows across steps
+    all_dropped_factor_df = pd.DataFrame()
+
+    # 1) Filter for matching MP-IDs
+    factor_df, anisotropy_spectra_matrix, dropped1 = filter_matching_mpids(factor_df, anisotropy_spectra_matrix)
+    all_dropped_factor_df = pd.concat([all_dropped_factor_df, dropped1])
+
+    print(f"Dropped 1 {dropped1}")
+
+    # 2) Remove NaN entries in factor_df
+    factor_df, anisotropy_spectra_matrix, dropped2 = remove_nan_entries(factor_df, anisotropy_spectra_matrix)
+    all_dropped_factor_df = pd.concat([all_dropped_factor_df, dropped2])
+
+    print(f"Dropped 2 {dropped2}")
+
+    # 3) Final alignment by index
+    factor_df, anisotropy_spectra_matrix, dropped3 = align_dataframes_by_index(factor_df, anisotropy_spectra_matrix)
+    all_dropped_factor_df = pd.concat([all_dropped_factor_df, dropped3])
+
+    print(f"Dropped 3 {dropped3}")
+
+    # Remove duplicates if an MP-ID was dropped in multiple steps
+    all_dropped_factor_df = all_dropped_factor_df[~all_dropped_factor_df.index.duplicated(keep='first')]
+
+    return factor_df, anisotropy_spectra_matrix, all_dropped_factor_df
