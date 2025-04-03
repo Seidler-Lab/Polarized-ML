@@ -18,10 +18,10 @@ importlib.reload(helpers) #Reload helpers if necessary
 DEGREE_L = 10 #Defined for steinhart parameters
 
 #Specify the range of exponents for the distance norm in the ST QM and DM
-NORM_EXP_LOW = 0
-NORM_EXP_HIGH = 14
+NORM_EXP_LOW = 7
+NORM_EXP_HIGH = 13
 
-CHARGES = "uniform" #Set to "uniform" to make all charges equal to 1
+CHARGES = "non uniform" #Set to "uniform" to make all charges equal to 1
 
 load_up_end = datetime.now()
 
@@ -293,85 +293,85 @@ def factor_dictionary(structure, mp_id, central_atom, crystal_NN=False, cluster_
             print(f"Error computing Steinhart parameter sum: {e}")
             return None
 
-        if CHARGES == "uniform":
-            print("----------------- Using uniform charges -----------------")
-            charges = np.ones(len(coords))
-        else:
-            charges = helpers.get_charges(atomic_symbols, oxidation_states)
-            print("Using charges from oxidation state")
+    if CHARGES == "uniform":
+        print("----------------- Using uniform charges -----------------")
+        charges = np.ones(len(coords))
+    else:
+        charges = helpers.get_charges(atomic_symbols, oxidation_states)
+        print("Using charges from oxidation state")
         
-        #Range of exponents to
-        for qm_exp in range(NORM_EXP_LOW, NORM_EXP_HIGH):
-            for dm_exp in range(qm_exp - 2, qm_exp + 1):
+    #Range of exponents to
+    for exp in range(NORM_EXP_LOW, NORM_EXP_HIGH):
+        #for dm_exp in range(qm_exp, qm_exp + 1):
 
-                # Compute the normalized dipole moment
-                print(f"Computing normalized dipole moment with 1/r^{dm_exp}")
-                try:
-                    dipole_moment_normalized = helpers.dipole_moment_normalized(coords, charges, dm_exp)
-                    factor_dict[f"dipole moment normalized 1/r^{dm_exp}"] = dipole_moment_normalized
-                    print(f"Normalized dipole moment 1/r^{dm_exp} calculated successfully.")
-                except Exception as e:
-                    print(f"Error computing normalized dipole moment 1/r^{dm_exp}: {e}")
-                    return None
-                
-                # Compute the normalized dipole moment anisotropy matrix
-                print(f"Computing normalized dipole anisotropy matrix 1/r^{dm_exp}")
-                try:
-                    normalized_dipole_anisotropy_matrix = helpers.dipole_anisotropy_matrix(dipole_moment_normalized)
+        # Compute the normalized dipole moment
+        print(f"Computing normalized dipole moment with 1/r^{exp}")
+        try:
+            dipole_moment_normalized = helpers.dipole_moment_normalized(coords, charges, exp)
+            factor_dict[f"dipole moment normalized 1/r^{exp}"] = dipole_moment_normalized
+            print(f"Normalized dipole moment 1/r^{exp} calculated successfully.")
+        except Exception as e:
+            print(f"Error computing normalized dipole moment 1/r^{exp}: {e}")
+            return None
+        
+        # Compute the normalized dipole moment anisotropy matrix
+        print(f"Computing normalized dipole anisotropy matrix 1/r^{exp}")
+        try:
+            normalized_dipole_anisotropy_matrix = helpers.dipole_anisotropy_matrix(dipole_moment_normalized)
 
-                    factor_dict[f"normalized dipole anisotropy matrix 1/r^{dm_exp}"] = normalized_dipole_anisotropy_matrix
-                    print(f"Normalized dipole anisotropy matrix 1/r^{dm_exp} calculated successfully.")
-                except Exception as e:
-                    print(f"Error computing normalized dipole anisotropy matrix 1/r^{dm_exp}: {e}")
-                    return None
-                
-                # Compute the normalized dipole moment anisotropy matrix sum
-                print(f"Computing normalized dipole anisotropy matrix sum 1/r^{dm_exp}")
-                try:
-                    normalized_dipole_anisotropy_matrix_sum = helpers.d_anisotropy_matrix_sum(normalized_dipole_anisotropy_matrix)
+            factor_dict[f"normalized dipole anisotropy matrix 1/r^{exp}"] = normalized_dipole_anisotropy_matrix
+            print(f"Normalized dipole anisotropy matrix 1/r^{exp} calculated successfully.")
+        except Exception as e:
+            print(f"Error computing normalized dipole anisotropy matrix 1/r^{exp}: {e}")
+            return None
+        
+        # Compute the normalized dipole moment anisotropy matrix sum
+        print(f"Computing normalized dipole anisotropy matrix sum 1/r^{exp}")
+        try:
+            normalized_dipole_anisotropy_matrix_sum = helpers.d_anisotropy_matrix_sum(normalized_dipole_anisotropy_matrix)
 
-                    factor_dict[f"normalized dipole anisotropy matrix sum 1/r^{dm_exp}"] = normalized_dipole_anisotropy_matrix_sum
-                    print(f"Computing normalized dipole anisotropy matrix sum 1/r^{dm_exp} calculated successfully.")
-                except Exception as e:
-                    print(f"Error computing normalized dipole anisotropy matrix sum 1/r^{dm_exp}: {e}")
-                    return None
+            factor_dict[f"normalized dipole anisotropy matrix sum 1/r^{exp}"] = normalized_dipole_anisotropy_matrix_sum
+            print(f"Computing normalized dipole anisotropy matrix sum 1/r^{exp} calculated successfully.")
+        except Exception as e:
+            print(f"Error computing normalized dipole anisotropy matrix sum 1/r^{exp}: {e}")
+            return None
 
-                # Compute the normalized quadrupole moment
-                print(f"Computing normalized quadrupole moment with 1/r^{qm_exp}")
-                try:
-                    quad_moment_normalized = helpers.quadrupole_moment_normalized(coords, charges, qm_exp)
-                    factor_dict[f"quadrupole moment normalized 1/r^{qm_exp}"] = quad_moment_normalized
-                    print("Normalized quadrupole moment 1/r^{qm_exp} calculated successfully.")
-                except Exception as e:
-                    print(f"Error computing normalized quadrupole moment 1/r^{qm_exp}: {e}")
-                    return None
-                
-                # Compute the normalized quadrupole moment anisotropy matrix
-                print(f"Computing normalized quadrupole anisotropy matrix 1/r^{qm_exp}")
-                try:
-                    #Get diagonal components of the normalized quadrupole moment matrx ie Q00,Q11,Q22
-                    qxx = quad_moment_normalized[0,0]
-                    qyy = quad_moment_normalized[1,1]
-                    qzz = quad_moment_normalized[2,2]
+        # Compute the normalized quadrupole moment
+        print(f"Computing normalized quadrupole moment with 1/r^{exp}")
+        try:
+            quad_moment_normalized = helpers.quadrupole_moment_normalized(coords, charges, exp)
+            factor_dict[f"quadrupole moment normalized 1/r^{exp}"] = quad_moment_normalized
+            print(f"Normalized quadrupole moment 1/r^{exp} calculated successfully.")
+        except Exception as e:
+            print(f"Error computing normalized quadrupole moment 1/r^{exp}: {e}")
+            return None
+        
+        # Compute the normalized quadrupole moment anisotropy matrix
+        print(f"Computing normalized quadrupole anisotropy matrix 1/r^{exp}")
+        try:
+            #Get diagonal components of the normalized quadrupole moment matrx ie Q00,Q11,Q22
+            qxx = quad_moment_normalized[0,0]
+            qyy = quad_moment_normalized[1,1]
+            qzz = quad_moment_normalized[2,2]
 
-                    normalized_quadrupole_anisotropy_matrix = helpers.quadrupole_anisotropy_matrix(qxx,qyy,qzz)
+            normalized_quadrupole_anisotropy_matrix = helpers.quadrupole_anisotropy_matrix(qxx,qyy,qzz)
 
-                    factor_dict[f"normalized quadrupole anisotropy matrix 1/r^{qm_exp}"] = normalized_quadrupole_anisotropy_matrix
-                    print(f"Normalized quadrupole anisotropy matrix 1/r^{qm_exp} calculated successfully.")
-                except Exception as e:
-                    print(f"Error computing normalized quadrupole anisotropy matrix 1/r^{qm_exp}: {e}")
-                    return None
-                
-                # Compute the normalized quadrupole moment anisotropy matrix sum
-                print(f"Computing normalized quadrupole anisotropy matrix sum 1/r^{qm_exp}")
-                try:
-                    normalized_quadrupole_anisotropy_matrix_sum = helpers.q_anisotropy_matrix_sum(normalized_quadrupole_anisotropy_matrix)
+            factor_dict[f"normalized quadrupole anisotropy matrix 1/r^{exp}"] = normalized_quadrupole_anisotropy_matrix
+            print(f"Normalized quadrupole anisotropy matrix 1/r^{exp} calculated successfully.")
+        except Exception as e:
+            print(f"Error computing normalized quadrupole anisotropy matrix 1/r^{exp}: {e}")
+            return None
+        
+        # Compute the normalized quadrupole moment anisotropy matrix sum
+        print(f"Computing normalized quadrupole anisotropy matrix sum 1/r^{exp}")
+        try:
+            normalized_quadrupole_anisotropy_matrix_sum = helpers.q_anisotropy_matrix_sum(normalized_quadrupole_anisotropy_matrix)
 
-                    factor_dict[f"normalized quadrupole anisotropy matrix sum 1/r^{qm_exp}"] = normalized_quadrupole_anisotropy_matrix_sum
-                    print(f"Computing normalized quadrupole anisotropy matrix sum 1/r^{qm_exp} calculated successfully.")
-                except Exception as e:
-                    print(f"Error computing normalized quadrupole anisotropy matrix sum 1/r^{qm_exp}: {e}")
-                    return None
+            factor_dict[f"normalized quadrupole anisotropy matrix sum 1/r^{exp}"] = normalized_quadrupole_anisotropy_matrix_sum
+            print(f"Computing normalized quadrupole anisotropy matrix sum 1/r^{exp} calculated successfully.")
+        except Exception as e:
+            print(f"Error computing normalized quadrupole anisotropy matrix sum 1/r^{exp}: {e}")
+            return None
 
 
     sys.stdout.flush()  # Flush to ensure all output is printed
@@ -535,7 +535,7 @@ def process_folder_of_cifs(
                         print(f"Completed processing CIF file: {cif_file}, but oxidation state could not be found")
                         incomplete_runs += 1
                         incomplete_index.append(("No oxidation states", "Index:", index, mp_id, cluster_name))
-                    elif np.isnan(factor_dict[f'steinhart parameter sum 1/r^{6}']): #Arbitrary norm if one is nan they are all nan
+                    elif np.isnan(factor_dict[f'steinhart parameter sum 1/r^{NORM_EXP_LOW}']): #Arbitrary norm if one is nan they are all nan
                         print(f"Completed processing CIF file: {cif_file}, but steinhart_parameter_sum is NaN")
                         incomplete_runs += 1
                         incomplete_index.append(("Steinhart is NaN", f"Index: {index}", mp_id, cluster_name))
@@ -579,7 +579,7 @@ def process_folder_of_cifs(
 
 
 Cr_log_message = """Date: 2/24/2025, Extraction: Cluster 5 A, Central Atom Cr. Trying to extract larger cluster because NN is not getting all atoms for every cluster QM normalized by 1/r^3 and DM by 1/r^2"""
-Cr_oxides_log_message = """Date: 3/29/2025, Extraction: Cluster 6 A, Central Atom Cr. Running the materials charles sent after he ran his own calculations on Cr Oxide spectra"""
+Cr_oxides_log_message = """Date: 4/2/2025, Extraction: Cluster 10 A, Central Atom Cr. Enlarging the cluster radius to capture more atoms around the central atom"""
 Cu_log_message = """Date: 2/24/2025, Extraction: CNN, Central Atom Cr. Re added steinhart parameters added chemical info and refactored the nameing convention for the dictionarys"""
 Fe_log_message = """Date: 2/24/2025, Extraction: CNN, Central Atom Cr. Re added steinhart parameters added chemical info and refactored the nameing convention for the dictionarys"""
 
@@ -594,9 +594,9 @@ Fe_log_message = """Date: 2/24/2025, Extraction: CNN, Central Atom Cr. Re added 
 #process_folder_of_cifs("Fe_Data_dir", "Fe_data/Fe_fd_2_15_2025", central_atom ="Fe", crystal_NN=False, cluster_radius=10, log_message = Fe_log_message)
 
 #process_folder_of_cifs("Practice_Cif", "Practice_Cif/Practice_Cif_fd", crystal_NN=False, cluster_radius=6, qm_exponent=14 )
-process_folder_of_cifs("Practice_Cif", "Practice_Cif/Practice_Cif_fd", crystal_NN=True)
+#process_folder_of_cifs("Practice_Cif", "Practice_Cif/Practice_Cif_fd", crystal_NN=True)
 #process_folder_of_cifs(cif_folder = "Practice_fd_runs/NiO_stretched_structures", output_folder = "Practice_fd_runs/NiO_stretched_structures_fd_2182025", crystal_NN=True, central_atom = "Ni", mp_id = "mp-19009")
 #process_folder_of_cifs(cif_folder = "Practice_fd_runs/Cr2O3_stretched_structures", output_folder = "Practice_fd_runs/Cr203_stretched_structures_fd_2212025", crystal_NN=True, central_atom = "Cr", mp_id = "mp-19399")
 
 
-#process_folder_of_cifs("Cr_oxide_Data_dir_Charles",f"Cr_oxide_data/Cr_oxide_fd_3_29_2025", central_atom ="Cr", crystal_NN=False, cluster_radius=6 , log_message = Cr_oxides_log_message)
+process_folder_of_cifs("Cr_oxide_Data_dir_Charles",f"Cr_oxide_data/Cr_oxide_fd_4_2_2025", central_atom ="Cr", crystal_NN=False, cluster_radius=10 , log_message = Cr_oxides_log_message)
