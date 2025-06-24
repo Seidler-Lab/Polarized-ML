@@ -1,5 +1,7 @@
 #!/usr/bin/env Corvus
 
+import qsub_job_create_n_submission as qsub
+
 import sys
 import shutil 
 import os
@@ -15,11 +17,11 @@ import subprocess
 from pathlib import Path
 from pymatgen.io.cif import CifParser
 from pymatgen.core import Structure, Composition
+from pymatgen.core.periodic_table import Element
 from pymatgen.analysis.bond_valence import BVAnalyzer
 from pymatgen.ext.matproj import MPRester
 
 import time
-import copy
 
 
 """
@@ -44,9 +46,9 @@ There is a large commented out section about changing the polarizations. Kept fo
 """
 ### Step 1: Global variables
 TARGET_DIRECTORY = Path(sys.argv[1]).absolute()
+ABSORBING_ATOM = sys.argv[2]
 CIF_PATHS = sorted(Path(TARGET_DIRECTORY).glob('*.cif'))
 CIF_FILENAMES = [x.name for x in CIF_PATHS]
-MPAPIKEY = "ip1uxjREKOFWAHOAoFHeUCJXbeVXXZfC"
 
 print(TARGET_DIRECTORY)
 
@@ -70,13 +72,13 @@ class Calculation:
                             'feff.edge':'K',
                             'target_list':'cluster_array',
                             'cfavg.target':'xes',
-                            'feff.scf': '3.0 0 30 0.1 0',
-                            'feff.fms': '4.0 0 0 0.0 0.0 40',
+                            'feff.scf': '5.0 0 30 0.1 0',
+                            'feff.fms': '5.0 0 0 0.0 0.0 40',
                             'feff.corehole':'None',
                             'Usehandlers':'Feff',
                             'feff.control':'1 1 1 1 1 1',
                             'feff.egrid':'e_grid -30 5 0.1',
-                            'multiprocessing.ncpu': '2'}
+                            'multiprocessing.ncpu': '1'}
 
         #Queryable info about the specific calculation instance.
         self.cif_information = None
@@ -120,7 +122,7 @@ class Calculation:
 
         in_file_path = output_directory / f"{output_directory.name}.in"
 
-        print("This is where I am writing the input file to: ", in_file_path)
+        # print("This is where I am writing the input file to: ", in_file_path)
 
         with open(in_file_path, 'w') as f:  # Open the file in write mode
             for key, value in list(self.input_file.items())[1:]:  # Use items() to get key-value pairs
@@ -180,7 +182,7 @@ class Calculation:
         with open(metadata_file_path, 'w') as json_file:
             json.dump(metadata, json_file, indent=4)
 
-        print(f"Metadata written to hidden JSON file: {metadata_file_path}")
+        # print(f"Metadata written to hidden JSON file: {metadata_file_path}")
 
     # def get_reduced_formula_name_from_cif_file(self):
     #     """Get's reduced formula name to be passed to quadropole function for matrix"""
@@ -209,16 +211,12 @@ def get_oxidation_state_formula(cif_file:Path) -> dict:
         ex: {'V':2.0, 'O':-2.0}
     """
 
-    from pymatgen.core.periodic_table import Species
     from collections import Counter
 
     try:
         cif_parser = CifParser(cif_file)
 
         structure = cif_parser.parse_structures()[0]
-        print(structure)
-        print(len(structure))
-        print(type(structure))
         composition = structure.composition
         reduced_formula = composition.reduced_formula
         # Use pymatgen's Composition to parse the formula
@@ -284,6 +282,7 @@ def get_Nx4_arrays_from_cluster_array_json(oxidation_dict, cluster_array_json_pa
     Returns:
         list of np.ndarray: A list of Nx3 arrays, one for each cluster
     """
+
     with open(cluster_array_json_path, 'r') as f:
         clusters = json.load(f)
 
@@ -299,8 +298,13 @@ def get_Nx4_arrays_from_cluster_array_json(oxidation_dict, cluster_array_json_pa
             x,y,z = atom[1], atom[2], atom[3]
             charge = oxidation_dict.get(element, None)
             if charge is None:
-                raise ValueError(f"This element {element} is missing a charge (in the Nx4 function)")
-            cluster.append([charge, x, y, z])
+                print("This charge cannot be determined, skippin")
+                break
+            
+
+            dist = np.sqrt((x**2 + y**2 + z**2))
+            if dist > 0: # Avoid atom at 0, 0, 0
+                cluster.append([charge, x, y, z])
 
         cluster_arrays.append(np.array(cluster))
 
@@ -329,34 +333,46 @@ def quadrupole_moment(cluster_arrays):
             (3, 3))
         for row in cluster:
             charge, r_x, r_y, r_z = row
+            # print("This is the x ", r_x)
+            # print(r_y)
+            # print(r_z)
+
+            dist = (r_x**2 + r_y**2 + r_z**2)**(1/2)
+            # print(charge)
+            # print(dist)
+            norm_factor = charge / dist**7
 
             # Update the Q matrix using the formula.
-            Q[0, 0] += charge * (r_x * r_x)
-            Q[0, 1] += charge * (r_x * r_y)
-            Q[0, 2] += charge * (r_x * r_z)
+            Q[0, 0] += norm_factor * (r_x * r_x)
+            Q[0, 1] += norm_factor * (r_x * r_y)
+            Q[0, 2] += norm_factor * (r_x * r_z)
 
-            Q[1, 0] += charge * (r_y * r_x)
-            Q[1, 1] += charge * (r_y * r_y)
-            Q[1, 2] += charge * (r_y * r_z)
+            Q[1, 0] += norm_factor * (r_y * r_x)
+            Q[1, 1] += norm_factor * (r_y * r_y)
+            Q[1, 2] += norm_factor * (r_y * r_z)
 
-            Q[2, 0] += charge * (r_z * r_x)
-            Q[2, 1] += charge * (r_z * r_y)
-            Q[2, 2] += charge * (r_z * r_z)
+            Q[2, 0] += norm_factor * (r_z * r_x)
+            Q[2, 1] += norm_factor * (r_z * r_y)
+            Q[2, 2] += norm_factor * (r_z * r_z)
 
         list_quadrupole_moments.append(Q)
         #print("This is in qudrupole_moment. This is the quadrupole matrix of this cluster")
         #print(Q)
     
-    print("These are all of the quadrupole moment tensors: ", list_quadrupole_moments)
+    # print("These are all of the quadrupole moment tensors: ", list_quadrupole_moments)
     return list_quadrupole_moments
 
 def average_over_all_quadrupole_moments(list_of_quadrupole_matrices):
     """Sum all quadrupole matrices and divide by N qudropole matrices in list"""
 
+
     sum_of_quadrupole_matrices = np.sum(list_of_quadrupole_matrices, axis=0)
+    # print(sum_of_quadrupole_matrices)
 
     # Compute average
     average_quadrupole_matrix = sum_of_quadrupole_matrices / len(list_of_quadrupole_matrices)
+
+    # print("This is the average ", average_quadrupole_matrix)
 
     #print("This is the average quadrupole matrix for this material:\n", average_quadrupole_matrix) 
     return average_quadrupole_matrix
@@ -413,31 +429,13 @@ def make_calc_directory(target_directory)->Path:
         print(f"The target directory '{target_directory}' does not exist in the current working directory.")
         raise SystemExit
     
-    # Asks for user input about what you want your calculation name to be, and detection of similar named directiories    
-    global calculation_name
-    calculation_name = input("What would you like to name your calculation? Letters and numbers are accepted: ")
-    
-    answer = None
-    if os.path.exists(Path(target_directory) / calculation_name.replace('"','')):
-        answer = input(f"The directory {calculation_name} already exists! Would you like to overwrite it? [y/n]. Case sensitive single letter answer please.")
-
-        if not(answer in ['y', 'n', 'Y', 'N']):
-            print("BAD ANSWER")
-            quit()
-
-        if answer == 'n' or 'N':
-            print('Okay! Quiting ...')
-            quit()
-    
-        else:
-            shutil.rmtree(Path(target_directory) / calculation_name.replace('"',''))
-    
     else:
-        calc_directory_path = target_directory / calculation_name.replace('"','')
-        Path.mkdir(calc_directory_path)
+        calc_directory_path = f"{target_directory.name}_{ABSORBING_ATOM}_{time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())}"
+
+        Path.mkdir(target_directory / calc_directory_path)
     
     print("This is the path where all of the calculations will go to:", calc_directory_path)
-    return calc_directory_path
+    return Path(target_directory / calc_directory_path)
 
 def copy_cifs_to_calc_directory(target_directory:Path, calc_directory:Path):
     """
@@ -587,14 +585,11 @@ def write_qsub_script(instance):
         script_file.write("search_and_run\n")  
 
 def submit_job_with_directory(instance):
-    """Submits a job using a central qsub script but specifies different working directories for each job."""
+    """Submits a job using a central qsub script but specifies different working directories for each job.
 
-    """
     INPUT:
     A Calculation object
-    """
 
-    """
     OUTPUT:
     Initiation of the run-corvus command by usage of the qsub.scipt file, and submission
     to the given job system
@@ -604,7 +599,7 @@ def submit_job_with_directory(instance):
     job_directory = instance.input_file['Output Path'].parent
 
     script_path = job_directory / "qsub.script"
-    print("This is the script path that is being initiated:", script_path)
+    # print("This is the script path that is being initiated:", script_path)
 
     job_name = job_directory.name
 
@@ -719,7 +714,7 @@ def reference_cif(mpapi: str, calc_directory: Path)-> list:
 
     return downloaded_files
 
-def wait_for_file(file_path, timeout=60, check_interval=1):
+def wait_for_file(file_path, timeout=1200, check_interval=5):
     """
     Waits for a file to appear on disk.
 
@@ -737,9 +732,11 @@ def wait_for_file(file_path, timeout=60, check_interval=1):
     while not file_path.exists():
         if time.time() - start_time > timeout:
             raise FileNotFoundError(f"File {file_path} did not appear within {timeout} seconds.")
+        
+        print("The file was not found, going back to sleep")
         time.sleep(check_interval)
 
-    print(f"File {file_path} is now available.")
+    # print(f"File {file_path} is now available.")
 
 def format_polarization_block(matrix):
     """
@@ -759,9 +756,9 @@ def format_polarization_block(matrix):
 
     return '\n'.join(lines)
 
+def main(TARGET_DIRECTORY, ABSORBING_ATOM):
+    """Is the main function"""
 
-#this is how the program is called 'python full_polarization.py [name of target directory of cifs]'
-if __name__ == "__main__":
     calc_directory = make_calc_directory(TARGET_DIRECTORY)
     copy_cifs_to_calc_directory(TARGET_DIRECTORY, calc_directory)   
 
@@ -778,46 +775,80 @@ if __name__ == "__main__":
         calc_instance = Calculation(cif_file)
         shutil.copy(src= cif_file, dst=calc_directory)
         all_calculation_instances.append(calc_instance)
-        Calculation.read_cif_file_custom_API(calc_instance, calc_instance.cif_file)
+        #Calculation.read_cif_file_custom_API(calc_instance, calc_instance.cif_file)
         
-    print(f"These are all of the calculation instances: {all_calculation_instances}")
+    # print(f"These are all of the calculation instances: {all_calculation_instances}")
     for instance in all_calculation_instances:
 
-        elements = 'Cr'
-        print(f"These are the elements: {elements} from this calculation instance: {instance}")
+        elements = ABSORBING_ATOM
 
-        if 'Cr' in elements:
-            instance.input_file['absorbing_atom_type'] = 'Cr' 
+        if ABSORBING_ATOM in elements:
+            instance.input_file['absorbing_atom_type'] = ABSORBING_ATOM 
             cif_file_path = calc_directory / instance.cif_file
             #print('This is the cif_file_path', cif_file_path)
-            new_dir = make_dir_with_suffix(calc_directory / cif_file_path.stem, 'Cr')
+            new_dir = make_dir_with_suffix(calc_directory / cif_file_path.stem, ABSORBING_ATOM)
             shutil.copy(instance.cif_file, new_dir)
             print("This is the new_dir", new_dir)
             instance.write_corvus_in_file(new_dir)
-            write_qsub_script(instance)
-            job_id = submit_job_with_directory(instance)
             
+    corvus_in_file_list = qsub.create_list_of_corvus_input_files(calc_directory)
+    input_list_file = qsub.save_input_file_list(corvus_in_file_list)
+    script_path = qsub.write_corvus_array_script(input_list_file)
+    qsub.submit_corvus_job_array(input_list_file, script_path)
+    #All of the files should be finished
 
-            oxidation_dict = get_oxidation_state_formula(instance.cif_file)
-            print('This is the oxidation dict: ', oxidation_dict)
-            wait_for_file(file_path=new_dir/"cluster_array.json")
-            list_of_cluster_arrays = get_Nx4_arrays_from_cluster_array_json(oxidation_dict, cluster_array_json_path=new_dir/"cluster_array.json")
-            list_of_quadrupole_matrices = quadrupole_moment(list_of_cluster_arrays)
-            avg_quad_matrix = average_over_all_quadrupole_moments(list_of_quadrupole_matrices)
-            eigvalues, eigvecs, D_clean = diagonalize_matrix(avg_quad_matrix)
-            eigvecs = eigvecs.T # For writing to file simplicty
-            instance.quadropole_tensor = str(eigvecs)
-            instance.diagonalized_quadropole_tensor = str(D_clean)
+    for instance in all_calculation_instances:
+        individual_path = Path(calc_directory / instance.cif_file.stem / f"{instance.cif_file.stem}_{ABSORBING_ATOM}")
+        print("This is the path to this calculation:", individual_path)
 
-            instance.write_metadata_to_json(new_dir)
-            instance.update_input_file('target_list', value='cfavg')
-            matrix_turned_into_string = format_polarization_block(eigvecs)
-            instance.update_input_file('polarization', value=matrix_turned_into_string)
-            instance.write_corvus_in_file(new_dir)
-            job_id = submit_job_with_directory(instance)
-   
+        oxidation_dict = get_oxidation_state_formula(instance.cif_file)
+        if isinstance(oxidation_dict, str):
+            print("[SKIPPING] oxidation state cannot be determined: ", oxidation_dict)
+            continue
 
-if len(sys.argv) != 2:
-    print("Usage: python Full_Polarization.py <target_directory>")
-    sys.exit(1)
+        print('This is the oxidation dict: ', oxidation_dict)
+        wait_for_file(file_path=new_dir/"cluster_array.json")
+        list_of_cluster_arrays = get_Nx4_arrays_from_cluster_array_json(oxidation_dict, cluster_array_json_path=new_dir/"cluster_array.json")
+        print("This is the list of cluster arrays: ", list_of_cluster_arrays)
+
+        list_of_quadrupole_matrices = quadrupole_moment(list_of_cluster_arrays)
+        print("This is the list of quadrupole matricies: ", list_of_quadrupole_matrices)
+
+        avg_quad_matrix = average_over_all_quadrupole_moments(list_of_quadrupole_matrices)
+        eigvalues, eigvecs, D_clean = diagonalize_matrix(avg_quad_matrix.copy())
+        eigvecs = eigvecs.T # For writing to file simplicty
+        instance.quadropole_tensor = avg_quad_matrix.tolist()
+        instance.diagonalized_quadropole_tensor = D_clean.tolist()
+
+        instance.write_metadata_to_json(new_dir)
+        instance.update_input_file('target_list', value='cfavg')
+        matrix_turned_into_string = format_polarization_block(eigvecs)
+        instance.update_input_file('polarization', value=matrix_turned_into_string)
+        instance.write_corvus_in_file(individual_path)
+
+        json_dict = {
+            'Determined Charges': {Element(el).Z: oxi for el, oxi in oxidation_dict.items()},
+            'Avg Quadrupole Matrix': instance.quadropole_tensor,
+            'Avg Diagonalized Quadrupole matrix': instance.diagonalized_quadropole_tensor
+        }            
+
+        with open(Path(f"{individual_path}/{cif_file_path.stem}_{ABSORBING_ATOM}.json"), 'w') as f:
+            json.dump(json_dict, f, indent=4)
+
+    script_path = qsub.write_corvus_array_script(input_list_file)
+    qsub.submit_corvus_job_array(input_list_file, script_path)
+
+#    for instance in all_calculation_instances:
+        #initialize JSON dict here
+        #individual_path = Path(calc_directory / instance.cif_file.stem / f"{instance.cif_file.stem}_{ABSORBING_ATOM}")
+
+#this is how the program is called 'python full_polarization.py [name of target directory of cifs]'
+if __name__ == "__main__":
+
+    if len(sys.argv) != 3:
+        print("Usage: python Full_Polarization.py <target_directory> <absorbing_atom>")
+        sys.exit(1)
+    
+    main(TARGET_DIRECTORY, ABSORBING_ATOM)
+
 
