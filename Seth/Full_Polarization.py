@@ -282,6 +282,7 @@ def get_Nx4_arrays_from_cluster_array_json(oxidation_dict, cluster_array_json_pa
     Returns:
         list of np.ndarray: A list of Nx3 arrays, one for each cluster
     """
+    assert isinstance(oxidation_dict, dict)
 
     with open(cluster_array_json_path, 'r') as f:
         clusters = json.load(f)
@@ -322,6 +323,7 @@ def quadrupole_moment(cluster_arrays):
     Returns:
     - Q: A list of 3x3 numpy arrays representing the quadrupole moment tensor for each cluster from the cluster arrays.
     """
+    assert(isinstance(cluster_arrays, list))
     
     list_quadrupole_moments = []
 
@@ -365,6 +367,7 @@ def quadrupole_moment(cluster_arrays):
 def average_over_all_quadrupole_moments(list_of_quadrupole_matrices):
     """Sum all quadrupole matrices and divide by N qudropole matrices in list"""
 
+    assert(list(list_of_quadrupole_matrices))
 
     sum_of_quadrupole_matrices = np.sum(list_of_quadrupole_matrices, axis=0)
     # print(sum_of_quadrupole_matrices)
@@ -754,6 +757,9 @@ def format_polarization_block(matrix):
         formatted_row = ' '.join(f"{val:.3f}" for val in row)
         lines.append(formatted_row)
 
+    print("These are the lines in format_polarization_block ", lines)
+    print('\n'.join(lines))
+
     return '\n'.join(lines)
 
 def main(TARGET_DIRECTORY, ABSORBING_ATOM):
@@ -796,6 +802,9 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
     script_path = qsub.write_corvus_array_script(input_list_file)
     qsub.submit_corvus_job_array(input_list_file, script_path)
     #All of the files should be finished
+    print("It is now finished!")
+
+    good_calculation_list = []
 
     for instance in all_calculation_instances:
         individual_path = Path(calc_directory / instance.cif_file.stem / f"{instance.cif_file.stem}_{ABSORBING_ATOM}")
@@ -804,9 +813,12 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
         oxidation_dict = get_oxidation_state_formula(instance.cif_file)
         if isinstance(oxidation_dict, str):
             print("[SKIPPING] oxidation state cannot be determined: ", oxidation_dict)
+            print(f"I am breaking the for loop because I am {oxidation_dict} this is for {individual_path}")
             continue
 
         print('This is the oxidation dict: ', oxidation_dict)
+        print(f"This is supposed to be a dictionary, {type(oxidation_dict)}")
+
         wait_for_file(file_path=new_dir/"cluster_array.json")
         list_of_cluster_arrays = get_Nx4_arrays_from_cluster_array_json(oxidation_dict, cluster_array_json_path=new_dir/"cluster_array.json")
         print("This is the list of cluster arrays: ", list_of_cluster_arrays)
@@ -815,7 +827,17 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
         print("This is the list of quadrupole matricies: ", list_of_quadrupole_matrices)
 
         avg_quad_matrix = average_over_all_quadrupole_moments(list_of_quadrupole_matrices)
+        print(f"This is the average quad matrix {avg_quad_matrix} for path {individual_path}")
+        print(type(avg_quad_matrix))
+        if not np.any(avg_quad_matrix):
+
+            print(f"[SKIPPING] completely zero matrix, no need to run. This is the job {individual_path}")
+            continue
+
         eigvalues, eigvecs, D_clean = diagonalize_matrix(avg_quad_matrix.copy())
+
+        print("These are the:")
+        print("The eigvecs: ", eigvecs)
         eigvecs = eigvecs.T # For writing to file simplicty
         instance.quadropole_tensor = avg_quad_matrix.tolist()
         instance.diagonalized_quadropole_tensor = D_clean.tolist()
@@ -823,20 +845,27 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
         instance.write_metadata_to_json(new_dir)
         instance.update_input_file('target_list', value='cfavg')
         matrix_turned_into_string = format_polarization_block(eigvecs)
+        print("This is what is being turned into a string to be put into the input file ", matrix_turned_into_string)
         instance.update_input_file('polarization', value=matrix_turned_into_string)
         instance.write_corvus_in_file(individual_path)
 
-        json_dict = {
+        json_dict = {f'{individual_path.name}' : {
             'Determined Charges': {Element(el).Z: oxi for el, oxi in oxidation_dict.items()},
             'Avg Quadrupole Matrix': instance.quadropole_tensor,
             'Avg Diagonalized Quadrupole matrix': instance.diagonalized_quadropole_tensor
-        }            
+            }            
+        }
 
-        with open(Path(f"{individual_path}/{cif_file_path.stem}_{ABSORBING_ATOM}.json"), 'w') as f:
+        with open(Path(f"{individual_path}/{individual_path.name}.json"), 'w') as f:
+            print("This is me trying to see where this individual loop is writing the file to ", Path(f"{individual_path}/{individual_path.name}.json"))
             json.dump(json_dict, f, indent=4)
 
-    script_path = qsub.write_corvus_array_script(input_list_file)
-    qsub.submit_corvus_job_array(input_list_file, script_path)
+        good_calculation_list.append(f"{individual_path}/{individual_path}_{ABSORBING_ATOM}/.in")
+
+    print("I SHOULD NOW BE DONE WRITING ALL OF THE JSON FILES.")
+    good_input_list_file = qsub.save_input_file_list(good_calculation_list, "corvus_good_file_list.txt")
+    script_path = qsub.write_corvus_array_script(good_input_list_file)
+    qsub.submit_corvus_job_array(good_input_list_file, script_path)
 
 #    for instance in all_calculation_instances:
         #initialize JSON dict here

@@ -52,7 +52,7 @@ def write_corvus_array_script(job_list_file, script_path="submit_corvus_array.pb
     script = f"""#!/bin/bash
 #PBS -N corvus_array
 #PBS -J 0-{num_jobs - 1}%4
-#PBS -l select=1:ncpus=2:mem=2gb
+#PBS -l select=1:ncpus=1:mem=2gb
 #PBS -l walltime=02:00:00
 #PBS -o logs/output_$PBS_ARRAY_INDEX.log
 #PBS -e logs/error_$PBS_ARRAY_INDEX.log
@@ -78,7 +78,7 @@ run-corvus -i "$INPUT_NAME"
 
     return script_path
 
-def submit_corvus_job_array(job_list_file, script_path, poll_interval=60):
+def submit_corvus_job_array(job_list_file, script_path, poll_interval=5):
     """
     Submit the job array
     ARGS:
@@ -110,13 +110,14 @@ def submit_corvus_job_array(job_list_file, script_path, poll_interval=60):
 
             # Poll until job disappears from qstat
             while True:
-                qstat_result = subprocess.run(["qstat", "-f", job_id], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                qstat_result = subprocess.run(["qstat", f"{job_id}[]"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
                 if qstat_result.returncode != 0:
                     print("Job array is no longer in queue. Assuming it completed.")
                     break
 
                 print(f"Job array {job_id} still running... sleeping for {poll_interval} seconds.")
+                print(qstat_result)
                 time.sleep(poll_interval)
 
             return True
