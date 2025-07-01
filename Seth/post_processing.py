@@ -193,8 +193,8 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
     good_calculation_tuple_list, bad_tuple_list, _ = file.find_pertinent_files_from_calc_directory(TARGET_DIRECTORY, ABSORBING_ATOM)
     # print("This is the good file_tuple list ", good_calculation_tuple_list)
     print("This is the bad tuples list")
-    for tuple in bad_tuple_list:
-        pprint.pprint(tuple)
+    #for tuple in bad_tuple_list:
+    #    pprint.pprint(tuple)
 
     for good_calculation_tuple in good_calculation_tuple_list:
         # print("This is a tuple from good file tuple", good_calculation_tuple)
@@ -203,7 +203,8 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
         _, corvus_cfavg_file, feff_log1_pairs, json_dictionary, _ = file_tuple
 
         #spectral anisotropy matrix
-        #corvus_cfavg_xes_out_dictionary = file.read_corvus_cfavg_xes_out_file_to_numpy(corvus_cfavg_file)       
+        #corvus_cfavg_xes_out_dictionary = file.read_corvus_cfavg_xes_out_file_to_numpy(corvus_cfavg_file)  
+        print("Starting the anisotropy matrix")     
         anisotropy_mat = anisotropy_matrix(corvus_cfavg_file['x_polarization'],
                         corvus_cfavg_file['y_polarization'],
                         corvus_cfavg_file['z_polarization'])
@@ -211,15 +212,26 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
         # Load the existing JSON file
         with open(json_dictionary, 'r') as f:
             data = json.load(f)
+        
+        print("This is the json we are trying to load into: ", data)
 
         # Insert matrix into the dictionary
         data = file.insert_matrix_to_json(data, 'Avg Spectral Anisotropy Matrix', anisotropy_mat)
 
         #feff charges
+        print("Starting the writing of the FEFF Charges for: ", good_calculation_tuple)
         for i, (log1_dat_file, feff_inp_file) in enumerate(feff_log1_pairs, start=1):
+            print("This is the file pair: ", feff_log1_pairs)
+            print("This is the log1 dat file: ", log1_dat_file)
+            print("This is the feff.inp file ", feff_inp_file)
+
+            
             cluster_key = f"{ABSORBING_ATOM}{i}"
+            print("This is the cluster key: ", cluster_key)
+
             charge_dictionary = file.create_charges_json_dictionary_from_feff_and_log1_arrays(log1_dat_file, feff_inp_file)
             # pprint.pprint("This is the charge dictionary coming from creating the charges: ", charge_dictionary)
+
             data[cluster_key] = charge_dictionary
 
         # Write the updated dict back to the JSON file

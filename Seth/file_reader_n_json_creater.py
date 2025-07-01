@@ -243,6 +243,7 @@ def create_charges_json_dictionary_from_feff_and_log1_arrays(log1_dat_file, feff
     if not df_feff_inp or not df_log1_dat or not df_feff_cluster:
         status = "Either the log1.dat or the feff.inp did not have the proper string, and thus did not populate"
         # create_file_tuple(cif_file_path, data_df, log1_dat_file, feff_inp_file, status)
+        print(status)
         return {}
     else:
         # charge_dictionary = calculate_mean_charges(df_log1_dat, df_feff_inp)
@@ -302,12 +303,11 @@ def read_corvus_cfavg_xes_out_file_to_numpy(corvus_cfavg_xes_out_file_path: Path
 
 def find_pertinent_files_from_calc_directory(parent_dir:str, absorbing_element:str):
     """
-    Looks inside of the parent_dir variable declared at the top of this
-    jupyter notebook and globs all of the pertinent files (Corvus.cfavg.xes.out, .cif)
+    Looks inside of the parent_dir variable and globs all of the pertinent files (Corvus.cfavg.xes.out, .cif)
 
     ARGS:
-    parent_dir: String found at top of this notebook, is the single point access for everything
-    absorbing_element: String found at top of this notebook, describes the absorbing atom that we
+    parent_dir: An existing directory, is the single point access for everything
+    absorbing_element: String, describes the absorbing atom that we
     want to get from the data set
 
     RETURNS:
