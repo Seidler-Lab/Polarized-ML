@@ -64,14 +64,14 @@ class Calculation:
                             'absorbing_atom_type': None,
                             'feff.edge':'K',
                             'target_list':'cfavg',
-                            'cfavg_target':'xes',
-                            'feff.scf': '3.0 0 30 0.1 0',
-                            'feff.fms': '4.0 0 0 0.0 0.0 40',
+                            'cfavg.target':'xes',
+                            'feff.scf': '5.0 0 30 0.1 0',
+                            'feff.fms': '5.0 0 0 0.0 0.0 40',
                             'feff.corehole':'None',
                             'Usehandlers':'Feff',
                             'feff.control':'1 1 1 1 1 1',
                             'feff.egrid':'e_grid -30 5 0.1',
-                            'multiprocessing_ncpu': '2'}
+                            'multiprocessing.ncpu': '2'}
 
         #Queryable info about the specific calculation instance.
         self.cif_information = None
@@ -402,6 +402,8 @@ def submit_job_with_directory(instance):
             ['qsub', '-N', job_name, '-v', f'JOB_DIRECTORY={job_directory}', str(script_path)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            # vstdout="/dev/null",
+            # vstderr="/dev/null",
             check=True,
             text=True
 
@@ -508,15 +510,16 @@ if __name__ == "__main__":
    #initial run for control 1 1 1 1 1 1 
     all_calculation_instances = [] 
 
-    reference_cifs = reference_cif(mpapi= 'Vw5EOA3uyseD8Hi81bsRXYA1XIX2lXiY', calc_directory= calc_directory)
-    for reference in reference_cifs:
-        reference_instance = Calculation(reference)
-        all_calculation_instances.append(reference_instance)
-        Calculation.read_cif_file_custom_API(reference_instance, reference_instance.cif_file)
+    # reference_cifs = reference_cif(mpapi= 'Vw5EOA3uyseD8Hi81bsRXYA1XIX2lXiY', calc_directory= calc_directory)
+    # for reference in reference_cifs:
+    #     reference_instance = Calculation(reference)
+    #     all_calculation_instances.append(reference_instance)
+    #     Calculation.read_cif_file_custom_API(reference_instance, reference_instance.cif_file)
     
     for cif_file in CIF_PATHS:
         calc_instance = Calculation(cif_file)
         all_calculation_instances.append(calc_instance)
+        print(all_calculation_instances)
         Calculation.read_cif_file_custom_API(calc_instance, calc_instance.cif_file)
         
     #downloads the reference .cifs for linear background deletion (specifically for xes)
@@ -531,12 +534,12 @@ if __name__ == "__main__":
         elements = instance.extract_elements()
         print(f"These are the elements: {elements} from this calculation instance: {instance}")
 
-        for element in elements:
+        if 'Cr' in elements:
             copied_instance = copy.deepcopy(instance)
-            copied_instance.input_file['absorbing_atom_type'] = element 
+            copied_instance.input_file['absorbing_atom_type'] = 'Cr' 
             cif_file_path = calc_directory / copied_instance.cif_file
-            new_dir = make_dir_with_suffix(cif_file_path.parent / cif_file_path.stem, element)
-            #shutil.copy(copied_instance.cif_file, new_dir)
+            new_dir = make_dir_with_suffix(cif_file_path.parent / cif_file_path.stem, 'Cr')
+            shutil.copy(copied_instance.cif_file, new_dir)
             copied_instance.write_corvus_in_file(new_dir)
             copied_instance.write_metadata_to_json(new_dir)
             write_qsub_script(copied_instance)
