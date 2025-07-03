@@ -45,7 +45,7 @@ There is a large commented out section about changing the polarizations. Kept fo
 
 """
 ### Step 1: Global variables
-TARGET_DIRECTORY = Path(sys.argv[1]).absolute()
+TARGET_DIRECTORY = Path(sys.argv[1])
 ABSORBING_ATOM = sys.argv[2]
 CIF_PATHS = sorted(Path(TARGET_DIRECTORY).glob('*.cif'))
 CIF_FILENAMES = [x.name for x in CIF_PATHS]
@@ -817,8 +817,9 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
     good_calculation_list = []
 
     for instance in all_calculation_instances:
+        print("calc_dir", calc_directory)
         individual_path = Path(calc_directory / instance.cif_file.stem / f"{instance.cif_file.stem}_{ABSORBING_ATOM}")
-        #print("This is the path to this calculation:", individual_path)
+        print("This is the path to this calculation:", individual_path)
 
         oxidation_dict = get_oxidation_state_formula(instance.cif_file)
         if isinstance(oxidation_dict, str):
@@ -829,8 +830,11 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
         #print('This is the oxidation dict: ', oxidation_dict)
         #print(f"This is supposed to be a dictionary, {type(oxidation_dict)}")
 
-        wait_for_file(file_path=new_dir/"cluster_array.json")
-        list_of_cluster_arrays = get_Nx4_arrays_from_cluster_array_json(oxidation_dict, cluster_array_json_path=f'{individual_path}/cluster_array.json')
+        print(new_dir)
+        # wait_for_file(file_path=new_dir/"cluster_array.json")
+        wait_for_file(file_path=individual_path/"cluster_array.json")
+        list_of_cluster_arrays = get_Nx4_arrays_from_cluster_array_json(oxidation_dict, 
+            cluster_array_json_path=f'{individual_path}/cluster_array.json')
         #print("This is the list of cluster arrays: ", list_of_cluster_arrays)
 
         list_of_quadrupole_matrices = quadrupole_moment(list_of_cluster_arrays)
