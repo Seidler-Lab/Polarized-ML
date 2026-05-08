@@ -1,4 +1,5 @@
 import file_reader_n_json_creater as file
+import shutil
 import pprint
 #import glob
 from collections import defaultdict
@@ -8,22 +9,8 @@ import json
 import sys
 
 TARGET_DIRECTORY = Path(sys.argv[1]).absolute()
-ABSORBING_ATOM = sys.argv[2]
-
-reference_cifs_dictionary = {
- "Sc": "mp-644481", 
- "Ti": "mp-1215", 
- "V": "mp-18937", 
- "Cr": "mp-19177", 
- "Mn": "mp-510408",
- "Fe": "mp-19770", 
- "Co": "mp-22408", 
- "Ni": "mp-19009", 
- "Cu": "mp-704645", 
- "Zn": "mp-2133" 
-  }
-
-
+DELIVERABLE_DIRECTORY = Path(sys.argv[2]).absolute()
+ABSORBING_ATOM = sys.argv[3]
 
 def file_contains(file_path:Path, target:str)->bool:
     """
@@ -187,15 +174,24 @@ def anisotropy_matrix(data_x, data_y, data_z):
 
     return anisotropy_mat
 
-def main(TARGET_DIRECTORY, ABSORBING_ATOM):
+def main(TARGET_DIRECTORY, DELIVERABLE_DIRECTORY, ABSORBING_ATOM):
     """ This is the main function of the post_processing module"""
 
-    good_calculation_tuple_list, bad_tuple_list, _ = file.find_pertinent_files_from_calc_directory(TARGET_DIRECTORY, ABSORBING_ATOM)
-    # print("This is the good file_tuple list ", good_calculation_tuple_list)
-    print("This is the bad tuples list")
-    #for tuple in bad_tuple_list:
-    #    pprint.pprint(tuple)
+    # Define the destination directory
+    destination = Path(DELIVERABLE_DIRECTORY)
+    
+    # Delete destination folder if it exists
+    if destination.exists() and destination.is_dir():
+        shutil.rmtree(destination)
+        print(f"Deleted existing directory: {destination}")
+    
+    # Create the fresh destination folder
+    destination.mkdir(parents=True)
+    print(f"Created new directory: {destination}")
 
+    good_calculation_tuple_list, bad_tuple_list, _ = file.find_pertinent_files_from_calc_directory(TARGET_DIRECTORY, ABSORBING_ATOM)
+
+    print("Writing .json output files")
     for good_calculation_tuple in good_calculation_tuple_list:
         # print("This is a tuple from good file tuple", good_calculation_tuple)
         # print("This is the length of the tuple ", len(good_calculation_tuple))
@@ -204,7 +200,6 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
 
         #spectral anisotropy matrix
         #corvus_cfavg_xes_out_dictionary = file.read_corvus_cfavg_xes_out_file_to_numpy(corvus_cfavg_file)  
-        print("Starting the anisotropy matrix")     
         anisotropy_mat = anisotropy_matrix(corvus_cfavg_file['x_polarization'],
                         corvus_cfavg_file['y_polarization'],
                         corvus_cfavg_file['z_polarization'])
@@ -213,36 +208,42 @@ def main(TARGET_DIRECTORY, ABSORBING_ATOM):
         with open(json_dictionary, 'r') as f:
             data = json.load(f)
         
-        print("This is the json we are trying to load into: ", data)
+        # print("This is the json we are trying to load into: ", data)
 
         # Insert matrix into the dictionary
         data = file.insert_matrix_to_json(data, 'Avg Spectral Anisotropy Matrix', anisotropy_mat)
 
-        #feff charges
-        print("Starting the writing of the FEFF Charges for: ", good_calculation_tuple)
+        # feff charges
+        should_skip = False
         for i, (log1_dat_file, feff_inp_file) in enumerate(feff_log1_pairs, start=1):
-            print("This is the file pair: ", feff_log1_pairs)
-            print("This is the log1 dat file: ", log1_dat_file)
-            print("This is the feff.inp file ", feff_inp_file)
-
-            
             cluster_key = f"{ABSORBING_ATOM}{i}"
-            print("This is the cluster key: ", cluster_key)
-
             charge_dictionary = file.create_charges_json_dictionary_from_feff_and_log1_arrays(log1_dat_file, feff_inp_file)
-            # pprint.pprint("This is the charge dictionary coming from creating the charges: ", charge_dictionary)
-
+            if not charge_dictionary:
+                print(f"Charge dictionary for {ABSORBING_ATOM}{i} not created correctly, skipping")
+                should_skip = True
+                break
             data[cluster_key] = charge_dictionary
+
+        if should_skip:
+            continue
 
         # Write the updated dict back to the JSON file
         with open(json_dictionary, 'w') as f:
             json.dump(data, f, indent=4)
 
+        json_dictionary = Path(json_dictionary)
+        shutil.copy(json_dictionary, destination)
+    
+        # Copy corresponding .cif file(s) from the same folder
+        cif_files = list(json_dictionary.parent.glob("*.cif"))
+        for cif_file in cif_files:
+            shutil.copy(cif_file, destination)
+
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 3:
-        print("Usage: python Full_Polarization.py <target_directory> <absorbing_atom>")
+    if len(sys.argv) != 4:
+        print("Usage: python post_processing.py <target_directory> <deliverable_dictory> <absorbing_atom>")
         sys.exit(1)
     
-    main(TARGET_DIRECTORY, ABSORBING_ATOM)
+    main(TARGET_DIRECTORY, DELIVERABLE_DIRECTORY, ABSORBING_ATOM)
